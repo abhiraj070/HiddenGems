@@ -1,0 +1,168 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Warm earthy theme - HiddenGems custom colors */
+  --background: #f7f4ef;
+  --foreground: #1a1a1a;
+  --sand: #f7f4ef;
+  --teal: #0f766e;
+  --coral: #fb7185;
+  --cream: #faf8f3;
+  --stone: #e8e4db;
+  --dark-text: #2d2d2d;
+
+  --card: #faf8f3;
+  --card-foreground: #1a1a1a;
+  --popover: #faf8f3;
+  --popover-foreground: #1a1a1a;
+  --primary: #0f766e;
+  --primary-foreground: #f7f4ef;
+  --secondary: #fb7185;
+  --secondary-foreground: #fff;
+  --muted: #e8e4db;
+  --muted-foreground: #666;
+  --accent: #fb7185;
+  --accent-foreground: #fff;
+  --destructive: #ef4444;
+  --destructive-foreground: #fff;
+  --border: #e8e4db;
+  --input: #faf8f3;
+  --ring: #0f766e;
+
+  /* shadcn/ui defaults */
+  --chart-1: #f97316;
+  --chart-2: #0ea5e9;
+  --chart-3: #8b5cf6;
+  --chart-4: #ec4899;
+  --chart-5: #f59e0b;
+  --radius: 0.5rem;
+  --sidebar: #faf8f3;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #0f766e;
+  --sidebar-primary-foreground: #f7f4ef;
+  --sidebar-accent: #fb7185;
+  --sidebar-accent-foreground: #fff;
+  --sidebar-border: #e8e4db;
+  --sidebar-ring: #0f766e;
+}
+
+.dark {
+  --background: #1a1a1a;
+  --foreground: #f7f4ef;
+  --card: #2d2d2d;
+  --card-foreground: #f7f4ef;
+  --popover: #2d2d2d;
+  --popover-foreground: #f7f4ef;
+  --primary: #14b8a6;
+  --primary-foreground: #1a1a1a;
+  --secondary: #fb7185;
+  --secondary-foreground: #1a1a1a;
+  --muted: #444;
+  --muted-foreground: #999;
+  --accent: #fb7185;
+  --accent-foreground: #1a1a1a;
+  --destructive: #ef4444;
+  --destructive-foreground: #fecaca;
+  --border: #444;
+  --input: #2d2d2d;
+  --ring: #14b8a6;
+
+  /* shadcn/ui dark mode defaults */
+  --chart-1: #fb923c;
+  --chart-2: #06b6d4;
+  --chart-3: #a78bfa;
+  --chart-4: #f472b6;
+  --chart-5: #fbbf24;
+  --sidebar: #1a1a1a;
+  --sidebar-foreground: #f7f4ef;
+  --sidebar-primary: #14b8a6;
+  --sidebar-primary-foreground: #1a1a1a;
+  --sidebar-accent: #fb7185;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: #444;
+  --sidebar-ring: #14b8a6;
+}
+
+@theme inline {
+  --font-sans: "Geist", "Geist Fallback";
+  --font-mono: "Geist Mono", "Geist Mono Fallback";
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Utility classes */
+.glass {
+  @apply backdrop-blur-md bg-white/10 border border-white/20;
+}
+
+.btn-primary {
+  @apply px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity font-medium cursor-pointer;
+}
+
+.btn-secondary {
+  @apply px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:opacity-90 transition-opacity font-medium cursor-pointer;
+}
+
+.btn-outline {
+  @apply px-4 py-2 border-2 border-primary text-primary rounded-lg hover:bg-primary hover:text-primary-foreground transition-colors font-medium cursor-pointer;
+}
+
+button {
+  @apply cursor-pointer;
+}
+
+a {
+  @apply cursor-pointer;
+}
+
+input[type="checkbox"],
+input[type="radio"],
+select {
+  @apply cursor-pointer;
+}
