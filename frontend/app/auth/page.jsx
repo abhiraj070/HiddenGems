@@ -104,7 +104,7 @@ export default function AuthPage() {
       <div className="w-full max-w-md">
         {/* Header */}
         <Link href="/" className="inline-flex items-center mb-8 gap-2 hover:opacity-80 transition-opacity">
-          <div className="text-2xl font-bold text-teal">HiddenGems</div>
+          <div className="text-2xl font-bold text-gradient">HiddenGems</div>
         </Link>
 
         {/* Form Card */}

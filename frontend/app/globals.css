@@ -166,3 +166,11 @@ input[type="radio"],
 select {
   @apply cursor-pointer;
 }
+
+/* Multicolor gradient for HiddenGems logo */
+.text-gradient {
+  background: linear-gradient(90deg, #0f766e 0%, #fb7185 25%, #f97316 50%, #8b5cf6 75%, #0ea5e9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

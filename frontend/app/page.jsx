@@ -12,26 +12,11 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sand via-cream to-stone">
+    <div className="min-h-screen bg-linear-to-br from-sand via-cream to-stone">
       {/* Navigation */}
       <nav className="flex items-center justify-between px-6 py-4 bg-sand/80 backdrop-blur-sm border-b border-stone">
-        <div className="text-2xl font-bold text-teal">HiddenGems</div>
-        <div className="flex gap-4">
-          {isLoggedIn ? (
-            <Link href="/home" className="btn-primary">
-              Dashboard
-            </Link>
-          ) : (
-            <>
-              <Link href="/auth?mode=login" className="btn-outline">
-                Login
-              </Link>
-              <Link href="/auth?mode=signup" className="btn-primary">
-                Sign Up
-              </Link>
-            </>
-          )}
-        </div>
+        <div className="text-3xl font-bold text-gradient">HiddenGems</div>
+        
       </nav>
 
       {/* Hero Section */}

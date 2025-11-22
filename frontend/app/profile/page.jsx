@@ -75,7 +75,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gradient-to-br from-sand via-cream to-stone">
       {/* Navigation */}
       <nav className="flex items-center justify-between px-6 py-4 bg-sand/80 backdrop-blur-sm border-b border-stone">
-        <Link href="/home" className="text-2xl font-bold text-teal hover:opacity-80 cursor-pointer">
+        <Link href="/home" className="text-2xl font-bold text-gradient hover:opacity-80 cursor-pointer">
           HiddenGems
         </Link>
         <button onClick={handleLogout} className="btn-outline cursor-pointer">

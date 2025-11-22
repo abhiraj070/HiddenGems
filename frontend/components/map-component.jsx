@@ -10,17 +10,33 @@ export default function MapComponent({ spots, onToggleFavorite, selectedSpot, pi
   useEffect(() => {
     if (typeof window === "undefined") return
 
-    // Dynamically load Leaflet
-    const link = document.createElement("link")
-    link.rel = "stylesheet"
-    link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    document.head.appendChild(link)
+    // Check if Leaflet is already loaded
+    if (window.L) {
+      initMap()
+      return
+    }
 
-    const script = document.createElement("script")
-    script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    script.async = true
-    script.onload = initMap
-    document.body.appendChild(script)
+    const loadScript = () => {
+      const script = document.createElement("script")
+      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      script.async = true
+      script.onload = initMap
+      document.body.appendChild(script)
+    }
+
+    // Dynamically load Leaflet CSS
+    if (!document.querySelector('link[href*="leaflet.css"]')) {
+      const link = document.createElement("link")
+      link.rel = "stylesheet"
+      link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      link.onload = () => {
+        // CSS loaded, now load JS
+        loadScript()
+      }
+      document.head.appendChild(link)
+    } else {
+      loadScript()
+    }
 
     return () => {
       if (map.current) {
@@ -108,7 +124,7 @@ export default function MapComponent({ spots, onToggleFavorite, selectedSpot, pi
     <div
       ref={mapContainer}
       className="w-full h-full rounded-lg border border-stone overflow-hidden"
-      style={{ minHeight: "400px", zIndex: 1 }}
+      style={{ height: "100%", width: "100%", zIndex: 1 }}
     />
   )
 }

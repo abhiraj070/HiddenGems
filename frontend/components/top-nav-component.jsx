@@ -28,7 +28,7 @@ export default function TopNavComponent({ user, onAddSpot }) {
 
   return (
     <nav className="flex items-center justify-between px-6 py-4 bg-sand border-b border-stone shadow-sm z-50 relative">
-      <Link href="/home" className="text-2xl font-bold text-teal hover:opacity-80 cursor-pointer">
+      <Link href="/home" className="text-3xl font-bold text-gradient hover:opacity-80 cursor-pointer">
         HiddenGems
       </Link>
 

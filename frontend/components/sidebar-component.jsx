@@ -37,7 +37,7 @@ export default function SidebarComponent({
   return (
     <div
       className="fixed left-0 top-20 bottom-0 w-80 bg-cream border-r border-stone flex flex-col z-10 overflow-hidden"
-      style={{ height: "calc(100vh - 80px)" }}
+      style={{ height: "calc(100vh - 80px)", fontFamily: "Arial, sans-serif" }}
     >
       <div className="p-6 border-b border-stone">
         <button
@@ -75,7 +75,7 @@ export default function SidebarComponent({
             onClick={() => onShowFavorites("favorites")}
             className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-coral/10 text-coral hover:bg-coral/20 transition-colors cursor-pointer font-medium"
           >
-            <span>❤️ Saved</span>
+            <span>♥️ Saved</span>
             <span className="bg-coral text-white text-xs font-bold px-2 py-1 rounded-full">{favorites.length}</span>
           </button>
 
