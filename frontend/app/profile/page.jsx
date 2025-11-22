@@ -72,7 +72,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sand via-cream to-stone">
+    <div className="min-h-screen bg-linear-to-br from-sand via-cream to-stone">
       {/* Navigation */}
       <nav className="flex items-center justify-between px-6 py-4 bg-sand/80 backdrop-blur-sm border-b border-stone">
         <Link href="/home" className="text-2xl font-bold text-gradient hover:opacity-80 cursor-pointer">

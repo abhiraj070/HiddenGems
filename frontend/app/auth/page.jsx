@@ -100,7 +100,7 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sand via-cream to-stone flex items-center justify-center px-4">
+    <div className="min-h-screen bg-linear-to-br from-sand via-cream to-stone flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <Link href="/" className="inline-flex items-center mb-8 gap-2 hover:opacity-80 transition-opacity">
