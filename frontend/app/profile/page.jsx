@@ -75,7 +75,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-linear-to-br from-sand via-cream to-stone">
       {/* Navigation */}
       <nav className="flex items-center justify-between px-6 py-4 bg-sand/80 backdrop-blur-sm border-b border-stone">
-        <Link href="/home" className="text-2xl font-bold text-gradient hover:opacity-80 cursor-pointer">
+        <Link href="/home" className="text-3xl font-bold text-gradient hover:opacity-80 cursor-pointer">
           HiddenGems
         </Link>
         <button onClick={handleLogout} className="btn-outline cursor-pointer">
@@ -131,9 +131,14 @@ export default function ProfilePage() {
           )}
         </div>
 
-        {reviewHistory.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-dark-text mb-8">Review History ({reviewHistory.length})</h2>
+        {/* Review History Section */}
+        <div className="mb-12">
+          <h2 className="text-3xl font-bold text-dark-text mb-8">Review History ({reviewHistory.length})</h2>
+          {reviewHistory.length === 0 ? (
+            <div className="bg-white rounded-lg border border-stone p-12 text-center">
+              <p className="text-dark-text/60 text-lg">No reviews yet</p>
+            </div>
+          ) : (
             <div className="space-y-4">
               {reviewHistory.map((review, idx) => (
                 <div key={idx} className="bg-white rounded-lg border border-stone p-6 shadow-md">
@@ -146,8 +151,9 @@ export default function ProfilePage() {
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          )}
+        </div>
+          
 
         {/* Favorites Section */}
         <div>

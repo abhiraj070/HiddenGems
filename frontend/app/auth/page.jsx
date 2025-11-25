@@ -17,6 +17,7 @@ export default function AuthPage() {
   const [profilePicture, setProfilePicture] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [username, setUsername] =useState()
 
   const handleProfilePictureChange = (e) => {
     const file = e.target.files?.[0]
@@ -104,7 +105,7 @@ export default function AuthPage() {
       <div className="w-full max-w-md">
         {/* Header */}
         <Link href="/" className="inline-flex items-center mb-8 gap-2 hover:opacity-80 transition-opacity">
-          <div className="text-2xl font-bold text-gradient">HiddenGems</div>
+          <div className="text-3xl font-bold text-gradient">HiddenGems</div>
         </Link>
 
         {/* Form Card */}
@@ -129,7 +130,7 @@ export default function AuthPage() {
                     onChange={(e) => setName(e.target.value)}
                     required={!isLogin}
                     className="w-full px-4 py-2 border border-stone rounded-lg focus:outline-none focus:ring-2 focus:ring-teal bg-cream"
-                    placeholder="John Doe"
+                    placeholder="Your Full Name"
                   />
                 </div>
 
@@ -155,6 +156,18 @@ export default function AuthPage() {
               </>
             )}
 
+            <div>
+                  <label className="block text-sm font-medium text-dark-text mb-2">Username</label>
+                  <input
+                    type="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                    className="w-full px-4 py-2 border border-stone rounded-lg focus:outline-none focus:ring-2 focus:ring-teal bg-cream"
+                    placeholder=""
+                  />
+                </div>
+                
             <div>
               <label className="block text-sm font-medium text-dark-text mb-2">Email</label>
               <input
