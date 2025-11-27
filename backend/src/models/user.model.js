@@ -16,7 +16,7 @@ const userschema= Schema({
         type: String,
         required: true
     },
-    Email:{
+    email:{
         type: String,
         required: true,
         lowercase: true
@@ -41,6 +41,20 @@ const userschema= Schema({
         ref: Spot
     }
 },{Timestamps: true})
+
+userschema.pre("save",async function(next){
+    if(!this.isModified("password")){
+        return next()
+    }
+    this.password=await bcrypt.hash(this.password,10)
+    next()
+})
+
+
+
+
+
+
 
 
 export const User= mongoose.model("User",userschema)
