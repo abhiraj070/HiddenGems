@@ -1,4 +1,6 @@
 import mongoose ,{ Schema } from "mongoose";
+import JWT from 'jsonwebtoken'
+
 
 const userschema= Schema({
     fullname:{
@@ -28,18 +30,18 @@ const userschema= Schema({
     refreshToken:{
         type: String,
     },
-    reviewHistory:{
-        type: [Schema.Types.ObjectId],
-        ref: Spot
-    },
-    savedPlaces:{
-        type: [Schema.Types.ObjectId],
-        ref: Spot
-    },
-    favourite:{
-        type: [Schema.Types.ObjectId],
-        ref: Spot
-    }
+    // reviewHistory:{
+    //     type: [Schema.Types.ObjectId],
+    //     ref: Spot
+    // },
+    // savedPlaces:{
+    //     type: [Schema.Types.ObjectId],
+    //     ref: Spot
+    // },
+    // favourite:{
+    //     type: [Schema.Types.ObjectId],
+    //     ref: Spot
+    // }
 },{Timestamps: true})
 
 userschema.pre("save",async function(next){
@@ -52,10 +54,34 @@ userschema.pre("save",async function(next){
 
 userschema.method.isPasswordCorrect=async function (password) {
     return await bcrypt.compare(password,this.password)
-
 }
 
+userschema.method.generateAccessToken= async function(){
+    JWT.sign(
+        {
+            _id: this._id,
+            email: this.email,
+            username: this.username,
+            fullName: this.fullName
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        }
+    )
+}
 
+userschema.method.generateRefreshToken=async function(){
+    JWT.sign(
+        {
+            _id: this._id
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+            expiresIn:process.env.ACCESS_TOKEN_EXPIRY
+        }
+    )
+}
 
 
 

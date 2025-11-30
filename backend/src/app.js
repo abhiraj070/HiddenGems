@@ -16,6 +16,11 @@ app.use(express.static("public"))
 
 
 
+//route imports
+import userRouter from './routes/user.route.js'
+
+//route decleration
+app.use("/api/v1/users",userRouter)
 
 
 

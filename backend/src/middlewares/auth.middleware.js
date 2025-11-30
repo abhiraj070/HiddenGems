@@ -1,6 +1,6 @@
-import { User } from '../models/user.model'
-import { ApiError } from '../utils/ApiError'
-import asynchandler from '../utils/asynchandler'
+import { User } from '../models/user.model.js'
+import { ApiError } from '../utils/ApiError.js'
+import {asynchandler} from '../utils/asynchandler.js'
 import JWT from 'jsonwebtoken'
 
 const verifyJWT=asynchandler (async ()=>{
@@ -18,7 +18,6 @@ const verifyJWT=asynchandler (async ()=>{
     if(!user){
         throw new ApiError(400,"Unauthorized request")
     }
-
     req.user=user
     return next()
 })

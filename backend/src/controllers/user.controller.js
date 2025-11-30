@@ -1,8 +1,8 @@
-import { User } from "../models/user.model"
-import { ApiError } from "../utils/ApiError"
-import { ApiResponse } from "../utils/ApiResponse"
-import { uploadOnCloudinary } from "../utils/cloudinary"
-import { asynchandler } from "../utils/asynchandler"
+import { User } from "../models/user.model.js"
+import { ApiError } from "../utils/ApiError.js"
+import { ApiResponse } from "../utils/ApiResponse.js"
+import { uploadOnCloudinary } from "../utils/cloudinary.js"
+import { asynchandler } from "../utils/asynchandler.js"
 
 
 const registerUser= asynchandler(async(req,res)=>{
@@ -55,20 +55,72 @@ const loginUser= asynchandler(async(req,res)=>{
         throw new ApiError(400,"All the fields are required")
     }
 
-    const isUser=User.findOne({
+    const user=await User.findOne({
         username,
         email,
     })
-
-    if(!isUser){
+    if(!user){
         throw new ApiError(400,"User not Registered")
     }
 
-    const isPasswordCorrect= bcrypt
+    const isPasswordCorrect= await user.isPasswordCorrect(password)
+    if(!isPasswordCorrect){
+        throw new ApiError(400,"Incorrect Password")
+    }
 
+    const accessToken= user.generateAccessToken()
+    const refreshToken= user.generateRefreshToken()
 
+    if(!accessToken || !refreshToken){
+        throw new ApiError(500,"Issue in generating token")
+    }
+
+    user.refreshToken=refreshToken
+
+    const loggedInUser= User.findById(user._id).select("-password -refreshToken")
+
+    user.save({validatebeforesave: false})
+    const options={
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        path: "/"
+    }
 
     return res
     .status(200)
-    .json(new ApiResponse(200,isUser,"User logged in successfully"))
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(new ApiResponse(200,{
+        user: loggedInUser,
+        accessToken,
+        refreshToken
+    },"User logged in successfully"))
 })
+
+const logout= asynchandler(async(req,res)=>{
+    const user_id= req.user?._id
+    const delete_rt= User.updateOne(
+        {_id: user_id},
+        {$unset: {refreshToken: 1}}
+    )
+    /*  {
+            "acknowledged": true,
+            "matchedCount": 1,
+            "modifiedCount": 1
+        }   
+    */
+   // so to check whether the delete was successfull or not we need to check modifiedCount.
+   if(delete_rt.modifiedCount==0){
+        throw new ApiError(500,"Unable to delete refresh Token")
+   }
+   return res
+   .status(200)
+   .json(new ApiResponse(200, delete_rt, "User logged out successfully"))
+})
+
+export {
+    registerUser,
+    loginUser,
+    logout
+}
