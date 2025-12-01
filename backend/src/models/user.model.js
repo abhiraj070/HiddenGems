@@ -44,7 +44,7 @@ const userschema = Schema({
     // }
 },{Timestamps: true})
 
-userschema.pre("save", async function() {
+userschema.pre("save", async function() { // next() is not required in aysnc function in moongoose middleware
     if (!this.isModified("password")) {
         return;
     }
