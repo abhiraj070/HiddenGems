@@ -1,18 +1,17 @@
-import { app } from "./app.js";
-import dotenv from 'dotenv';
-import db_connect from "./db/dbconnect.js";
+import dotenv from 'dotenv'
 
-dotenv.config({
-    path: ".env"
-})
+dotenv.config({ path: ".env" })
+
+import  db_connect  from "./db/dbconnect.js"
+import {app } from "./app.js"
 
 db_connect()
-    .then(()=>{
-        app.listen(process.env.PORT,()=>{
-            console.log(`the server is connected on port: ${process.env.PORT}`);
-        })
+    .then(() => {
+        app.listen(process.env.PORT, () => {
+            console.log(`the server is connected on port: ${process.env.PORT}`)
+        });
     })
-    .catch((error)=>{
-        console.log("error occured");
-        throw error
+    .catch((error) => {
+        console.log("error occured")
+        throw error;
     })

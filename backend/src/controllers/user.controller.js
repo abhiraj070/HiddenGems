@@ -16,7 +16,7 @@ const registerUser= asynchandler(async(req,res)=>{
     }
 
     const isUsernameNew=await User.find({username})
-    if(isUsernameNew){
+    if(!isUsernameNew){
         throw new ApiError(400,"Username already taken")
     }
 
@@ -25,16 +25,16 @@ const registerUser= asynchandler(async(req,res)=>{
         throw new ApiError(400,"User Already exist")
     }
 
-    const photoLocalPath= req.file?.profilepicture[0]?.path
+    const photoLocalPath= req.file?.path
     if(!photoLocalPath){
-        throw new ApiError(500,"Multer didn't returned the file path in req.file")
+        throw new ApiError(400,"Profile picture is required")
     }
     const isUploaded= await uploadOnCloudinary(photoLocalPath)
 
     const user= await User.create({
         fullname,
         email,
-        username: username.toLowercase(),
+        username: username.toLowerCase(),
         password,
         profilepicture: isUploaded.url || ""
     })
