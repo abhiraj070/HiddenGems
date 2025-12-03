@@ -62,9 +62,11 @@ const loginUser= asynchandler(async(req,res)=>{
     if(!user){
         throw new ApiError(400,"User not Registered")
     }
+    console.log(user);
+    
 
-    const isPasswordCorrect= await user.isPasswordCorrect(password)
-    if(!isPasswordCorrect){
+    const isPassCorrect= await user.isPasswordCorrect(password)
+    if(!isPassCorrect){
         throw new ApiError(400,"Incorrect Password")
     }
 

@@ -9,8 +9,8 @@ router.route("/register").post(
     upload.single("profilepicture"),
     registerUser
 )
-router.route("/login").post(verifyJWT,loginUser)
-router.route("/logout").post(logout)
+router.route("/login").post(loginUser)
+router.route("/logout").post(verifyJWT,logout)
 
 
 
