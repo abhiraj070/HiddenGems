@@ -4,22 +4,26 @@ import {asynchandler} from '../utils/asynchandler.js'
 import JWT from 'jsonwebtoken'
 
 const verifyJWT=asynchandler (async (req,res,next)=>{
-    const accessToken=req.cookies?.accessToken
-     
-    if(!accessToken){
-        throw new ApiError(400,"Unauthorized request")
+    try {
+        const accessToken=req.cookies?.accessToken
+         
+        if(!accessToken){
+            throw new ApiError(400,"Unauthorized request")
+        }
+    
+        const decodeToken= JWT.verify(accessToken,process.env.ACCESS_TOKEN_SECRET) // if access token is expired this will throw error
+    
+        const user= await User.findById(decodeToken?._id).select(
+            "-password -refreshTOken"
+        )
+        if(!user){
+            throw new ApiError(400,"Unauthorized request")
+        }
+        req.user=user
+        return next()
+    } catch (error) {
+        throw new ApiError(401,error?.message,"Expired or invalid access token")
     }
-
-    const decodeToken= JWT.verify(accessToken,process.env.ACCESS_TOKEN_SECRET) 
-
-    const user= await User.findById(decodeToken?._id).select(
-        "-password -refreshTOken"
-    )
-    if(!user){
-        throw new ApiError(400,"Unauthorized request")
-    }
-    req.user=user
-    return next()
 })
 
 export {verifyJWT}
