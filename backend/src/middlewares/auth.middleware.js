@@ -3,16 +3,16 @@ import { ApiError } from '../utils/ApiError.js'
 import {asynchandler} from '../utils/asynchandler.js'
 import JWT from 'jsonwebtoken'
 
-const verifyJWT=asynchandler (async ()=>{
+const verifyJWT=asynchandler (async (req,res,next)=>{
     const accessToken=req.cookies?.accessToken
-
+     
     if(!accessToken){
         throw new ApiError(400,"Unauthorized request")
     }
 
     const decodeToken= JWT.verify(accessToken,process.env.ACCESS_TOKEN_SECRET) 
 
-    const user= User.findByID(decodeToken?._id).select(
+    const user= await User.findById(decodeToken?._id).select(
         "-password -refreshTOken"
     )
     if(!user){

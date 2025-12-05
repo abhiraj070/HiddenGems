@@ -51,7 +51,7 @@ userschema.pre("save", async function() { // next() is not required in aysnc fun
     this.password = await bcrypt.hash(this.password, 10);
 });
 
-userschema.method.isPasswordCorrect=async function (password) {
+userschema.methods.isPasswordCorrect=async function (password) {
     return await bcrypt.compare(password,this.password)
 }
 

@@ -64,7 +64,6 @@ const loginUser= asynchandler(async(req,res)=>{
     }
     console.log(user);
     
-
     const isPassCorrect= await user.isPasswordCorrect(password)
     if(!isPassCorrect){
         throw new ApiError(400,"Incorrect Password")
@@ -79,7 +78,7 @@ const loginUser= asynchandler(async(req,res)=>{
 
     user.refreshToken=refreshToken
 
-    const loggedInUser= User.findById(user._id).select("-password -refreshToken")
+    const loggedInUser= await User.findById(user._id).select("-password -refreshToken")
 
     user.save({validatebeforesave: false})
     const options={
@@ -102,11 +101,11 @@ const loginUser= asynchandler(async(req,res)=>{
 
 const logout= asynchandler(async(req,res)=>{
     const user_id= req.user?._id
-    const delete_rt= User.updateOne(
+    const delete_rt=await User.updateOne(
         {_id: user_id},
         {$unset: {refreshToken: 1}}
     )
-    /*  {
+    /*  delete_rt= {
             "acknowledged": true,
             "matchedCount": 1,
             "modifiedCount": 1
