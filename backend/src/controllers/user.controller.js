@@ -200,11 +200,26 @@ const refreshAccessToken= asynchandler(async(req,res)=>{
     .cookie("refreshToken",newrefreshToken,options)
     .json(new ApiResponse(200,{accessToken,refreshToken},"Refresh token updated"))
 })
+
+const changePassword= asynchandler(async(req,res)=>{
+    const {password}= req.body
+    const user_id=req.user._id
+
+    const user= await User.findById(user_id)
+    user.password=password
+
+    await user.save() //this will trigger the .pre("save") mongoose middleware. 
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200,user,"Password updated successfully"))
+})
 export {
     registerUser,
     loginUser,
     logout,
     changeUserDetails,
     changePhoto,
-    refreshAccessToken
+    refreshAccessToken,
+    changePassword
 }
