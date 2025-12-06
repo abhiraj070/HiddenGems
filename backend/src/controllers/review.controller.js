@@ -1,15 +1,16 @@
-import { Review } from "../models/review.model";
-import { User } from "../models/user.model";
-import { ApiError } from "../utils/ApiError";
-import { ApiResponse } from "../utils/ApiResponse";
-import { asynchandler } from "../utils/asynchandler";
+import { Review } from "../models/review.model.js";
+import { User } from "../models/user.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asynchandler } from "../utils/asynchandler.js";
 
 const createReview= asynchandler(async(req,res)=>{
-    const {owner, spotName, content, tag}= req.body
+    const {spotName, content, tag}= req.body
 
-    if(!owner || !spotName || !content || !tag){
+    if(!spotName || !content || !tag){
         throw new ApiError(400,"All the fields are required")
     }
+    const owner= req.user._id
     const createdReview=await Review.create({
         owner,
         spotName,

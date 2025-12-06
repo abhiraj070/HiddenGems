@@ -2,7 +2,8 @@ import mongoose,{Schema} from "mongoose"
 
 const spotSchema= Schema({
     spotName:{
-        type: String.toLowerCase(),
+        type: String,
+        lowercase: true,
         required: true,
         trim: true
     },
@@ -10,6 +11,8 @@ const spotSchema= Schema({
         type: Schema.Types.ObjectId,
         ref: "Review"
     }]
+    // lat:
+    // long:
 })
 
 export const Spot= mongoose.model("Spot",spotSchema)

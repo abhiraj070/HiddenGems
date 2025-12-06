@@ -3,10 +3,11 @@ import mongoose, {Schema} from 'mongoose'
 const reviewSchema= Schema({
     owner:{
         type: Schema.Types.ObjectId,
-        ref: "Owner"
+        ref: "User"
     },
     spotName:{
-        type: String.toLowerCase(),
+        type: String,
+        lowercase:true,
         required: true,
         trim: true
     },
