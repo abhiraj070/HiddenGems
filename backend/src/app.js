@@ -16,9 +16,10 @@ app.use(express.static("public"))
 
 //route imports
 import userRouter from './routes/user.route.js'
+import reviewRouter from './routes/review.route.js'
 
 //route decleration
 app.use("/api/v1/users",userRouter)
-
+app.use("/api/v1/review",reviewRouter)
 
 export { app }

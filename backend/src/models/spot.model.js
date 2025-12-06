@@ -1,19 +1,15 @@
-import mongoose, {Schema} from 'mongoose'
+import mongoose,{Schema} from "mongoose"
 
 const spotSchema= Schema({
-    owner:{
+    spotName:{
+        type: String.toLowerCase(),
+        required: true,
+        trim: true
+    },
+    reviews:[{
         type: Schema.Types.ObjectId,
-        ref: Owner
-    },
-    content:{
-        type: String,
-        required: true
-    },
-    tag:{
-        type: String,
-        required: true
-    }
-    
+        ref: "Review"
+    }]
 })
 
 export const Spot= mongoose.model("Spot",spotSchema)

@@ -30,18 +30,18 @@ const userschema = Schema({
     refreshToken:{
         type: String,
     },
-    // reviewHistory:{
-    //     type: [Schema.Types.ObjectId],
-    //     ref: Spot
-    // },
-    // savedPlaces:{
-    //     type: [Schema.Types.ObjectId],
-    //     ref: Spot
-    // },
-    // favourite:{
-    //     type: [Schema.Types.ObjectId],
-    //     ref: Spot
-    // }
+    reviewHistory:[{
+        type: Schema.Types.ObjectId,
+        ref: "Review"
+    }],
+    savedPlaces:[{
+        type: Schema.Types.ObjectId,
+        ref: "Spot"
+    }],
+    favourite:[{
+        type: Schema.Types.ObjectId,
+        ref: "Spot"
+    }]
 },{Timestamps: true})
 
 userschema.pre("save", async function() { // next() is not required in aysnc function in moongoose middleware
