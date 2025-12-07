@@ -19,15 +19,6 @@ export default function HomePage() {
   const [wishlist, setWishlist] = useState([])
 
   useEffect(() => {
-    const userData = localStorage.getItem("user")
-    if (!userData) {
-      router.push("/auth?mode=login")
-      return
-    }
-
-    const parsedUser = JSON.parse(userData)
-    setUser(parsedUser)
-
     const sampleSpots = [
       {
         id: 1,
@@ -37,7 +28,6 @@ export default function HomePage() {
         lng: -74.006,
         description: "Beautiful mountain view with sunset views",
         image: "/mountain-viewpoint.jpg",
-        isFavorite: parsedUser.favorites?.includes(1) || false,
       },
       {
         id: 2,
@@ -47,7 +37,6 @@ export default function HomePage() {
         lng: -73.9391,
         description: "Cozy coffee shop with great ambiance",
         image: "/local-cafe.jpg",
-        isFavorite: parsedUser.favorites?.includes(2) || false,
       },
       {
         id: 3,
@@ -57,7 +46,6 @@ export default function HomePage() {
         lng: -73.968,
         description: "Authentic cuisine with outdoor seating",
         image: "/cozy-italian-restaurant.png",
-        isFavorite: parsedUser.favorites?.includes(3) || false,
       },
       {
         id: 4,
@@ -67,7 +55,6 @@ export default function HomePage() {
         lng: -73.9972,
         description: "Historic library with rare collections",
         image: "/grand-library.png",
-        isFavorite: parsedUser.favorites?.includes(4) || false,
       },
       {
         id: 5,
@@ -77,15 +64,11 @@ export default function HomePage() {
         lng: -74.0127,
         description: "Affordable stay with great facilities",
         image: "/hostel.jpg",
-        isFavorite: parsedUser.favorites?.includes(5) || false,
       },
     ]
 
     setSpots(sampleSpots)
     filterSpots(sampleSpots, [])
-
-    const savedWishlist = JSON.parse(localStorage.getItem("wishlist") || "[]")
-    setWishlist(savedWishlist)
   }, [router])
 
   const filterSpots = (spotsToFilter, categories) => {
@@ -139,9 +122,9 @@ export default function HomePage() {
     console.log("[v0] Location picked:", lat, lng)
   }
 
-  if (!user) {
-    return <div className="min-h-screen bg-sand flex items-center justify-center">Loading...</div>
-  }
+  // if (!user) {
+  //   return <div className="min-h-screen bg-sand flex items-center justify-center">Loading...</div>
+  // }
 
   return (
     <div className="min-h-screen bg-background">
@@ -152,7 +135,7 @@ export default function HomePage() {
           selectedCategories={selectedCategories}
           onCategoryChange={handleCategoryChange}
           spots={filteredSpots}
-          favorites={user.favorites || []}
+          //favorites={user.favorites || []}
           wishlist={wishlist}
           onSelectSpot={setSelectedSpot}
         />

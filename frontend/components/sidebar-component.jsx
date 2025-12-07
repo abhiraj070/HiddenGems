@@ -76,7 +76,7 @@ export default function SidebarComponent({
             className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-coral/10 text-coral hover:bg-coral/20 transition-colors cursor-pointer font-medium"
           >
             <span>🔖 Saved</span>
-            <span className="bg-coral text-white text-xs font-bold px-2 py-1 rounded-full">{favorites.length}</span>
+            {/* {<span className="bg-coral text-white text-xs font-bold px-2 py-1 rounded-full">{favorites.length}</span>} */}
           </button>
 
           <button

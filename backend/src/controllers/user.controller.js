@@ -43,7 +43,6 @@ const registerUser= asynchandler(async(req,res)=>{
     const userreturn= await User.findById(user._id).select(
         "-password -refreshToken"
     )
-
     return res
     .status(200)
     .json(new ApiResponse(200, userreturn, "User registered Successfully"))

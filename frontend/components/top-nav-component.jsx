@@ -53,9 +53,9 @@ export default function TopNavComponent({ user, onAddSpot }) {
             className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-stone/30 transition-colors cursor-pointer"
           >
             <div className="w-8 h-8 rounded-full bg-teal text-sand flex items-center justify-center font-bold text-sm">
-              {user.name.charAt(0).toUpperCase()}
+              {/*{user.name.charAt(0).toUpperCase()}*/}
             </div>
-            <span className="text-dark-text font-medium hidden sm:inline">{user.name}</span>
+            {/* {<span className="text-dark-text font-medium hidden sm:inline">{user.name}</span>} */}
           </button>
 
           {showProfileMenu && (

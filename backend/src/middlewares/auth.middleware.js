@@ -5,16 +5,16 @@ import JWT from 'jsonwebtoken'
 
 const verifyJWT=asynchandler (async (req,res,next)=>{
     try {
-        const accessToken=req.cookies?.accessToken
+        const accessToken=req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
          
         if(!accessToken){
-            throw new ApiError(400,"Unauthorized request")
+            throw new ApiError(401,"Unauthorized request")
         }
     
         const decodeToken= JWT.verify(accessToken,process.env.ACCESS_TOKEN_SECRET) // if access token is expired this will throw error
     
         const user= await User.findById(decodeToken?._id).select(
-            "-password -refreshTOken"
+            "-password -refreshToken"
         )
         if(!user){
             throw new ApiError(400,"Unauthorized request")
