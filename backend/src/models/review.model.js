@@ -18,8 +18,15 @@ const reviewSchema= Schema({
     tag:{
         type: String,
         required: true
+    },
+    latitude:{
+        type: Number,
+        set: val => Number(val.toFixed(3))
+    },
+    longitude:{
+        type: Number,
+        set: val => Number(val.toFixed(3))
     }
-    
 })
 
 export const Review= mongoose.model("Review",reviewSchema)

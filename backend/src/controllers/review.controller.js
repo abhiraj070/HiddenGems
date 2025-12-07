@@ -1,11 +1,12 @@
 import { Review } from "../models/review.model.js";
+import { Spot } from "../models/spot.model.js";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asynchandler } from "../utils/asynchandler.js";
 
 const createReview= asynchandler(async(req,res)=>{
-    const {spotName, content, tag}= req.body
+    const {spotName, content, tag, latitude, longitude}= req.body
 
     if(!spotName || !content || !tag){
         throw new ApiError(400,"All the fields are required")
@@ -15,16 +16,42 @@ const createReview= asynchandler(async(req,res)=>{
         owner,
         spotName,
         content,
-        tag
+        tag,
+        latitude,
+        longitude
     })
     req.user.reviewHistory.push(createdReview)
     req.user.save()
+
+    const isSpot=await Spot.findOne({
+        latitude,
+        longitude
+    })
+
+    let task
+
+    if(!isSpot){
+        task= await Spot.create({
+            spotName,
+            latitude,
+            longitude,
+            reviews:[createdReview._id]
+        })
+    }
+    else{
+        await isSpot.reviews.push(createdReview._id)
+        await isSpot.save()
+        task= isSpot
+    }
+
+    await task.populate("reviews")
+
     if(!createdReview){
         throw new ApiError(500,"Something went wrong while creating review")
     }
     return res
     .status(200)
-    .json(new ApiResponse(200,createdReview,"Review created successfully"))
+    .json(new ApiResponse(200,{createdReview, task},"Review created successfully"))
 })
 
 const editReview= asynchandler(async (req,res) => {
@@ -55,6 +82,9 @@ const deleteReview= asynchandler(async (req,res) => {
     if(!deletedReview){
         throw new ApiError(404,"review not found or already deleted")
     }
+
+    //delete spot.
+
     return res
     .status(200)
     .json(new ApiResponse(200,deletedReview,"Review deleted successfully"))

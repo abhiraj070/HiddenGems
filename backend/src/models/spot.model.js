@@ -10,9 +10,15 @@ const spotSchema= Schema({
     reviews:[{
         type: Schema.Types.ObjectId,
         ref: "Review"
-    }]
-    // lat:
-    // long:
+    }],
+    latitude:{
+        type: Number,
+        set: val => Number(val.toFixed(3))
+    },
+    longitude:{
+        type: Number,
+        set: val => Number(val.toFixed(3))
+    }
 })
 
 export const Spot= mongoose.model("Spot",spotSchema)

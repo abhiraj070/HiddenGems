@@ -214,6 +214,32 @@ const changePassword= asynchandler(async(req,res)=>{
     .status(200)
     .json(new ApiResponse(200,user,"Password updated successfully"))
 })
+
+const saveASpot= asynchandler(async (req,res) => {
+    const spot_id= req.params.id
+    const user_id= req.user._id
+    const user= await User.findById(user_id)
+    user.savedPlaces.push(spot_id)
+    await user.save()
+    await user.populate("savedPlaces")
+    return res
+    .status(200)
+    .json(new ApiResponse(200,user.savedPlaces,"Spot saved successfully"))
+})
+
+const favSpot= asynchandler(async (req,res) => {
+    const spot_id= req.params.id
+    const user_id= req.user._id
+    const user= await User.findById(user_id)
+    user.favourite.push(spot_id)
+    await user.save()
+    await user.populate("favourite")
+    return res
+    .status(200)
+    .json(new ApiResponse(200,user.savedPlaces,"Spot marked favourite successfully"))
+})
+
+
 export {
     registerUser,
     loginUser,
@@ -221,5 +247,7 @@ export {
     changeUserDetails,
     changePhoto,
     refreshAccessToken,
-    changePassword
+    changePassword,
+    saveASpot,
+    favSpot
 }
