@@ -17,7 +17,8 @@ const createReview= asynchandler(async(req,res)=>{
         content,
         tag
     })
-
+    req.user.reviewHistory.push(createdReview)
+    req.user.save()
     if(!createdReview){
         throw new ApiError(500,"Something went wrong while creating review")
     }
@@ -27,12 +28,11 @@ const createReview= asynchandler(async(req,res)=>{
 })
 
 const editReview= asynchandler(async (req,res) => {
-    const {owner, spotName, content, tag}= req.body
+    const {spotName, content, tag}= req.body
     const review_id= req.params.id
     const updatedreview=await Review.findByIdAndUpdate(
         review_id,
         {
-            owner:owner ?? undefined,
             spotName: spotName ?? undefined,
             content: content ?? undefined,
             tag: tag ?? undefined
@@ -67,6 +67,7 @@ const getUserReview= asynchandler(async (req,res) => {
         throw new ApiError(404,"User not found")
     }
     await user.populate("reviewHistory")
+    
     const reviews= user.reviewHistory
     
     return res
