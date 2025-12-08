@@ -35,23 +35,19 @@ export default function AuthPage() {
     e.preventDefault()
     setError("")
     setLoading(true)
-    console.log(13);
-    
     try {
       if (isLogin) {
         // Login      
-        console.log(11);
-          
         const res= await axios.post(
           "/api/v1/users/login",
           {email, username, password},
           { withCredentials: true }
         )
+        const user= res.data.data.user
+        localStorage.setItem("user",JSON.stringify(user))
         router.push("/home")
       } else {
         // signup
-        console.log(12);
-        
         const formData = new FormData(); //sending formdata while register because of a file.
         formData.append("email", email);
         formData.append("fullname", name);
@@ -59,12 +55,17 @@ export default function AuthPage() {
         formData.append("password", password);
         formData.append("profilepicture", fileInputRef.current?.files?.[0]);
         const res= await axios.post(
-          "/api/v1/users/register", formData)
+          "/api/v1/users/register", formData
+        )
+        const user= res.data.data
+        console.log("userstr:",res);
+        console.log("user1:",user);
+        
+        localStorage.setItem("user",JSON.stringify(user))
+        //(another method)localStorage.setItem("user",JSON.stringify({name, username, profilepicture}))  //local storage only stores strings so by using json.stringify we convert each element in the object into a valid string which can be stored in the local storage.
         router.push("/home")
       }
     } catch (err) {
-      console.log("DATA:", err.response?.data);
-      console.error("LOGIN ERROR:", err);
       setError(err.response?.data?.message || "An error occurred. Please try again.");
     } finally {
       setLoading(false)

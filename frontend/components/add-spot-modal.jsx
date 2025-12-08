@@ -9,15 +9,8 @@ const CATEGORIES = [
   { id: "adventure", name: "Adventure" },
 ]
 
-export default function AddSpotModal({ onClose, onAddSpot }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    category: "nature",
-    photoUrl: "",
-    lat: "",
-    lng: "",
-  })
+export default function AddSpotModal({ onClose, onAddSpot,setShowAddModal, formData, setFormData }) {
+  
   const [pickingOnMap, setPickingOnMap] = useState(false)
 
   const handleChange = (e) => {
@@ -26,6 +19,11 @@ export default function AddSpotModal({ onClose, onAddSpot }) {
       ...prev,
       [name]: value,
     }))
+  }
+
+  const onTick= (val)=>{
+    setPickingOnMap(val)
+    setShowAddModal(false)
   }
 
   const handleSubmit = (e) => {
@@ -45,8 +43,6 @@ export default function AddSpotModal({ onClose, onAddSpot }) {
       name: formData.name,
       description: formData.description,
       category: formData.category,
-      lat: Number.parseFloat(formData.lat),
-      lng: Number.parseFloat(formData.lng),
       image: formData.photoUrl || "/new-gem.jpg",
     })
   }
@@ -54,7 +50,7 @@ export default function AddSpotModal({ onClose, onAddSpot }) {
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg border border-stone shadow-xl max-w-md w-full max-h-96 overflow-y-auto">
-        <div className="sticky top-0 bg-sand border-b border-stone px-6 py-4 flex justify-between items-center">
+        <div className="top-0 bg-sand border-b border-stone px-6 py-4 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-dark-text">Add New Gem</h2>
           <button
             onClick={onClose}
@@ -124,7 +120,7 @@ export default function AddSpotModal({ onClose, onAddSpot }) {
               <input
                 type="checkbox"
                 checked={pickingOnMap}
-                onChange={(e) => setPickingOnMap(e.target.checked)}
+                onChange={(e) => {onTick(e.target.checked)}}
                 className="w-4 h-4 cursor-pointer"
               />
               Pick location on map
@@ -159,7 +155,7 @@ export default function AddSpotModal({ onClose, onAddSpot }) {
               </div>
             ) : (
               <p className="text-sm text-teal bg-teal/10 p-3 rounded-lg">
-                Click on the map to select a location, then close this modal to confirm.
+                Click on the map to select a location.
               </p>
             )}
           </div>

@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState, useRef, useEffect } from "react"
+import Image from "next/image"
 
 export default function TopNavComponent({ user, onAddSpot }) {
   const router = useRouter()
@@ -20,6 +21,8 @@ export default function TopNavComponent({ user, onAddSpot }) {
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
+  console.log("user: ",user);
+  
 
   const handleLogout = () => {
     localStorage.removeItem("user")
@@ -52,10 +55,16 @@ export default function TopNavComponent({ user, onAddSpot }) {
             onClick={() => setShowProfileMenu(!showProfileMenu)}
             className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-stone/30 transition-colors cursor-pointer"
           >
-            <div className="w-8 h-8 rounded-full bg-teal text-sand flex items-center justify-center font-bold text-sm">
-              {/*{user.name.charAt(0).toUpperCase()}*/}
+            <div className="w-10 h-10 rounded-full bg-teal flex items-center justify-center overflow-hidden">
+              <Image
+                src={user.profilepicture}
+                alt="Profile"
+                width={32}
+                height={32}
+                className="w-full h-full object-cover"
+              />
             </div>
-            {/* {<span className="text-dark-text font-medium hidden sm:inline">{user.name}</span>} */}
+            {<span className="text-dark-text font-medium hidden sm:inline">{user.fullname}</span>}
           </button>
 
           {showProfileMenu && (

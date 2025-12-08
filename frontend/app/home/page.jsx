@@ -17,8 +17,31 @@ export default function HomePage() {
   const [selectedSpot, setSelectedSpot] = useState(null)
   const [pickingLocation, setPickingLocation] = useState(false)
   const [wishlist, setWishlist] = useState([])
-
+  const [locationPicked, setLocationPicked]= useState()
+  const [formData, setFormData] = useState({
+        name: "",
+        description: "",
+        category: "nature",
+        photoUrl: "",
+        lat: "",
+        lng: "",
+    })
   useEffect(() => {
+    //getting user data from local storage
+    const userdata= localStorage.getItem("user")
+    console.log("userdata:",userdata);
+    
+    console.log(33);
+    
+    if(!userdata){
+      router.push("/auth?mode=login")
+      return
+    }
+    const parseduser= JSON.parse(userdata)
+    console.log("parseduser:",parseduser);
+
+    setUser(parseduser)
+
     const sampleSpots = [
       {
         id: 1,
@@ -37,6 +60,7 @@ export default function HomePage() {
         lng: -73.9391,
         description: "Cozy coffee shop with great ambiance",
         image: "/local-cafe.jpg",
+        //isFavorite
       },
       {
         id: 3,
@@ -119,16 +143,32 @@ export default function HomePage() {
   }
 
   const handleLocationPicked = (lat, lng) => {
-    console.log("[v0] Location picked:", lat, lng)
+    console.log("Location picked:", lat, lng)
+    setFormData(prev=>({
+      ...prev,
+      lat: lat,
+      lng: lng,
+    }))
+    setShowAddModal(true)
   }
 
-  // if (!user) {
-  //   return <div className="min-h-screen bg-sand flex items-center justify-center">Loading...</div>
-  // }
+  if (!user) {
+    return <div className="min-h-screen bg-sand flex items-center justify-center">Loading...</div>
+  }
+
+  
 
   return (
+    // a huge screen which will render all its components one by one
     <div className="min-h-screen bg-background">
-      <TopNavComponent user={user} onAddSpot={() => setShowAddModal(true)} />
+
+      {/* all these green texts are components which will render when i run the program */}
+      {/* all the things inside the component tag are its props. they will be transfered to the component and do the desired work, like getting some value. */}
+      {/* when any of these props update value. the whole home page gets re-rendered */}
+      <TopNavComponent 
+        user={user} 
+        onAddSpot={() => setShowAddModal(true)} 
+      />
 
       <div className="flex h-[calc(100vh-80px)]">
         <SidebarComponent
@@ -151,7 +191,16 @@ export default function HomePage() {
         </div>
       </div>
 
-      {showAddModal && <AddSpotModal onClose={() => setShowAddModal(false)} onAddSpot={handleAddSpot} />}
+      {/* all the rendering was going smoothly when a condition arrived that if showAddmodal is true then only addApotModal will be rendered*/}
+      {/* heres how the popup components are handeled. if i press the button then only render the component */}
+      {showAddModal && 
+      <AddSpotModal  
+        onClose={() => setShowAddModal(false)} 
+        onAddSpot={handleAddSpot} 
+        formData={formData}
+        setFormData={setFormData} 
+        setShowAddModal={setShowAddModal}
+      />}
     </div>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react"
 
-export default function MapComponent() {
+export default function MapComponent({onLocationPicked}) {
   const mapContainer = useRef(null)
   const map = useRef(null)
 
@@ -39,6 +39,10 @@ export default function MapComponent() {
     }
   }, [])
 
+  const onMapClick=(lat,lng)=>{
+    onLocationPicked(lat,lng)
+  }
+
   const initMap = () => {
     if (!mapContainer.current || map.current) return
 
@@ -52,8 +56,7 @@ export default function MapComponent() {
     }).addTo(map.current)
 
     map.current.on("click", (e) => {
-      console.log("MAP CLICK RAW:", e.latlng)
-      alert(`Clicked at:\nlat: ${e.latlng.lat}\nlng: ${e.latlng.lng}`)
+      onMapClick(e.latlng.lat,e.latlng.lng)
     })
   }
 
