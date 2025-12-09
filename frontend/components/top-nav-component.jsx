@@ -12,6 +12,7 @@ export default function TopNavComponent({ user, onAddSpot }) {
   const menuRef = useRef(null)
 
   useEffect(() => {
+    
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setShowProfileMenu(false)
@@ -21,7 +22,8 @@ export default function TopNavComponent({ user, onAddSpot }) {
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
-  console.log("user: ",user);
+  console.log("3. top nav component loaded");
+  //console.log("user: ",user);
   
 
   const handleLogout = () => {

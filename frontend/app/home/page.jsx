@@ -15,9 +15,9 @@ export default function HomePage() {
   const [selectedCategories, setSelectedCategories] = useState([])
   const [showAddModal, setShowAddModal] = useState(false)
   const [selectedSpot, setSelectedSpot] = useState(null)
-  const [pickingLocation, setPickingLocation] = useState(false)
   const [wishlist, setWishlist] = useState([])
   const [locationPicked, setLocationPicked]= useState()
+  const [currentLocation, setCurrentLocation]= useState()
   const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -29,18 +29,23 @@ export default function HomePage() {
   useEffect(() => {
     //getting user data from local storage
     const userdata= localStorage.getItem("user")
-    console.log("userdata:",userdata);
-    
-    console.log(33);
-    
+    //console.log("userdata:",userdata);
     if(!userdata){
       router.push("/auth?mode=login")
       return
     }
     const parseduser= JSON.parse(userdata)
-    console.log("parseduser:",parseduser);
-
+    console.log("2. got parsed data and now going for re-render because of setUser");
+    //console.log("parseduser:",parseduser)
     setUser(parseduser)
+    //to get the current location of the user
+    navigator.geolocation.getCurrentPosition(
+      async (position)=>{  //browser runs this callback function when user allows.
+        const {latitude, longitude}=position.coords
+        //console.log("latitude: ",latitude,"longitude: ",longitude);
+        setCurrentLocation({latitude,longitude})
+      }
+    )
 
     const sampleSpots = [
       {
@@ -93,7 +98,7 @@ export default function HomePage() {
 
     setSpots(sampleSpots)
     filterSpots(sampleSpots, [])
-  }, [router])
+  }, [router]) //[router] dependency is same as [].
 
   const filterSpots = (spotsToFilter, categories) => {
     if (categories.length === 0) {
@@ -119,7 +124,6 @@ export default function HomePage() {
     setSpots(updatedSpots)
     filterSpots(updatedSpots, selectedCategories)
     setShowAddModal(false)
-    setPickingLocation(false)
   }
 
   const handleToggleFavorite = (spotId) => {
@@ -143,7 +147,6 @@ export default function HomePage() {
   }
 
   const handleLocationPicked = (lat, lng) => {
-    console.log("Location picked:", lat, lng)
     setFormData(prev=>({
       ...prev,
       lat: lat,
@@ -153,6 +156,8 @@ export default function HomePage() {
   }
 
   if (!user) {
+    console.log("1. displaying loading");
+    
     return <div className="min-h-screen bg-sand flex items-center justify-center">Loading...</div>
   }
 
@@ -185,8 +190,8 @@ export default function HomePage() {
             spots={filteredSpots}
             onToggleFavorite={handleToggleFavorite}
             selectedSpot={selectedSpot}
-            pickingLocation={pickingLocation}
             onLocationPicked={handleLocationPicked}
+            currentLocation={currentLocation}
           />
         </div>
       </div>

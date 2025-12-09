@@ -1,14 +1,11 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-
-export default function MapComponent({onLocationPicked}) {
-  const mapContainer = useRef(null)
-  const map = useRef(null)
-
+export default function MapComponent({onLocationPicked, currentLocation}) {
+  const mapContainer = useRef(null) 
+  const map = useRef(null) 
   useEffect(() => {
     if (typeof window === "undefined") return
-
     if (window.L) {
       initMap()
       return
@@ -38,27 +35,43 @@ export default function MapComponent({onLocationPicked}) {
       }
     }
   }, [])
-
+  //console.log("4. map rendered");
+  
   const onMapClick=(lat,lng)=>{
     onLocationPicked(lat,lng)
   }
-
+  
   const initMap = () => {
     if (!mapContainer.current || map.current) return
-
     const L = window.L
-
-    map.current = L.map(mapContainer.current).setView([40.7128, -74.006], 10)
-
+    if (!L) return
+    if(currentLocation){
+      map.current = L.map(mapContainer.current).setView([currentLocation.latitude, currentLocation.longitude], 10)
+    }
+    else{
+      map.current = L.map(mapContainer.current).setView([70.32, -20.43], 10)
+    }
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "© OpenStreetMap contributors",
-      maxZoom: 19,
-    }).addTo(map.current)
-
-    map.current.on("click", (e) => {
-      onMapClick(e.latlng.lat,e.latlng.lng)
-    })
+      maxZoom: 20,
+    }).addTo(map.current) 
   }
+
+  useEffect(()=>{
+    if(!map.current || !mapContainer.current) return
+    map.current.setView([currentLocation.latitude, currentLocation.longitude], 10)
+  },[currentLocation])
+
+  useEffect(()=>{
+    if(!map.current){ 
+      return 
+    }
+    const handler= (e) => {
+      onMapClick(e.latlng.lat,e.latlng.lng)
+    }
+    map.current.on("click", handler) 
+    return () =>map.current.off("click",handler) 
+  },[map.current])
 
   return (
     <div
@@ -69,7 +82,8 @@ export default function MapComponent({onLocationPicked}) {
         border: "2px solid red",
         position: "relative",
         zIndex: 1,
-        cursor: "pointer"
+        cursor: "pointer",
+        borderRight: "5%"
       }}
     />
   )

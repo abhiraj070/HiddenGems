@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
+
 export default function LandingPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
