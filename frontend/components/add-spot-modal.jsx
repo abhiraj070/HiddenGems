@@ -14,10 +14,10 @@ export default function AddSpotModal({ onClose, onAddSpot,setShowAddModal, formD
   const [pickingOnMap, setPickingOnMap] = useState(false)
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target // eg: name: category, calue: sports
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }))
   }
 

@@ -52,7 +52,6 @@ export default function MapComponent({onLocationPicked, currentLocation}) {
       map.current = L.map(mapContainer.current).setView([70.32, -20.43], 10)
     }
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap contributors",
       maxZoom: 20,
     }).addTo(map.current) 
   }
@@ -71,7 +70,7 @@ export default function MapComponent({onLocationPicked, currentLocation}) {
     }
     map.current.on("click", handler) 
     return () =>map.current.off("click",handler) 
-  },[map.current])
+  },[map.current]) 
 
   return (
     <div

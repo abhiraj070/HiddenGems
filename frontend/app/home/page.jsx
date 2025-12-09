@@ -16,7 +16,6 @@ export default function HomePage() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [selectedSpot, setSelectedSpot] = useState(null)
   const [wishlist, setWishlist] = useState([])
-  const [locationPicked, setLocationPicked]= useState()
   const [currentLocation, setCurrentLocation]= useState()
   const [formData, setFormData] = useState({
         name: "",
@@ -113,19 +112,6 @@ export default function HomePage() {
     filterSpots(spots, categories)
   }
 
-  const handleAddSpot = (newSpot) => {
-    const addedSpot = {
-      ...newSpot,
-      id: Math.max(...spots.map((s) => s.id), 0) + 1,
-      isFavorite: false,
-    }
-
-    const updatedSpots = [...spots, addedSpot]
-    setSpots(updatedSpots)
-    filterSpots(updatedSpots, selectedCategories)
-    setShowAddModal(false)
-  }
-
   const handleToggleFavorite = (spotId) => {
     const updatedSpots = spots.map((spot) => {
       if (spot.id === spotId) {
@@ -153,6 +139,19 @@ export default function HomePage() {
       lng: lng,
     }))
     setShowAddModal(true)
+  }
+
+  const handleAddSpot = (newSpot) => {
+    const addedSpot = {
+      ...newSpot,
+      id: Math.max(...spots.map((s) => s.id), 0) + 1,
+      isFavorite: false,
+    }
+
+    const updatedSpots = [...spots, addedSpot]
+    setSpots(updatedSpots)
+    filterSpots(updatedSpots, selectedCategories)
+    setShowAddModal(false)
   }
 
   if (!user) {
