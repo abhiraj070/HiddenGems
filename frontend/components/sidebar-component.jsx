@@ -44,7 +44,7 @@ export default function SidebarComponent({
           onClick={() => setExpandedCategories(!expandedCategories)}
           className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-teal text-sand font-semibold hover:bg-teal/90 transition-colors cursor-pointer"
         >
-          <span>🔍 Filter Locations</span>
+          <span>Filter Locations</span>
           <span>{expandedCategories ? "▼" : "▶"}</span>
         </button>
 
@@ -83,7 +83,7 @@ export default function SidebarComponent({
             onClick={() => onShowFavorites("wishlist")}
             className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-teal/10 text-teal hover:bg-teal/20 transition-colors cursor-pointer font-medium"
           >
-            <span>♥️ favourite </span>
+            <span>♥️ Favourite </span>
             <span className="bg-teal text-white text-xs font-bold px-2 py-1 rounded-full">{wishlist.length}</span>
           </button>
         </div>

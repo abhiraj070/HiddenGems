@@ -7,8 +7,6 @@ import SidebarComponent from "@/components/sidebar-component"
 import TopNavComponent from "@/components/top-nav-component"
 import AddSpotModal from "@/components/add-spot-modal"
 import axios from "axios"
-import { useToast } from "@/hooks/use-toast";
-import { title } from "process"
 
 export default function HomePage() {
   const router = useRouter()
@@ -20,7 +18,6 @@ export default function HomePage() {
   const [selectedSpot, setSelectedSpot] = useState(null)
   const [wishlist, setWishlist] = useState([])
   const [currentLocation, setCurrentLocation]= useState()
-  const { toast }= useToast()
   const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -30,7 +27,6 @@ export default function HomePage() {
         lng: "",
     })
   useEffect(() => {
-    //getting user data from local storage
     const userdata= localStorage.getItem("user")
     //console.log("userdata:",userdata);
     if(!userdata){
@@ -90,6 +86,7 @@ export default function HomePage() {
       lat: lat,
       lng: lng,
     }))
+    
     setShowAddModal(true)
   }
 
@@ -105,7 +102,6 @@ export default function HomePage() {
     setSpots(updatedSpots)
     filterSpots(updatedSpots, selectedCategories)
     setShowAddModal(false)
-    toast({title: "Gem added", description: "Spot marked Successfully"})
     
     const res= await axios.post(
       "/api/v1/review/createReview",

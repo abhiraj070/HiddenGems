@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react"
 export default function MapComponent({onLocationPicked, currentLocation}) {
   const mapContainer = useRef(null) 
   const map = useRef(null) 
+  const markerRef= useRef(null)
   useEffect(() => {
     if (typeof window === "undefined") return
     if (window.L) {
@@ -66,7 +67,12 @@ export default function MapComponent({onLocationPicked, currentLocation}) {
       return 
     }
     const handler= (e) => {
-      onMapClick(e.latlng.lat,e.latlng.lng)
+      const lat=e.latlng.lat
+      const lng= e.latlng.lng
+      onMapClick(lat,lng)
+      if(!markerRef.current){
+        markerRef.current=L.marker([lat,lng]).addTo(map.current)
+      }
     }
     map.current.on("click", handler) 
     return () =>map.current.off("click",handler) 
