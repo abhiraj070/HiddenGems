@@ -6,6 +6,9 @@ import MapComponent from "@/components/map-component"
 import SidebarComponent from "@/components/sidebar-component"
 import TopNavComponent from "@/components/top-nav-component"
 import AddSpotModal from "@/components/add-spot-modal"
+import axios from "axios"
+import { useToast } from "@/hooks/use-toast";
+import { title } from "process"
 
 export default function HomePage() {
   const router = useRouter()
@@ -17,6 +20,7 @@ export default function HomePage() {
   const [selectedSpot, setSelectedSpot] = useState(null)
   const [wishlist, setWishlist] = useState([])
   const [currentLocation, setCurrentLocation]= useState()
+  const { toast }= useToast()
   const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -45,58 +49,6 @@ export default function HomePage() {
         setCurrentLocation({latitude,longitude})
       }
     )
-
-    const sampleSpots = [
-      {
-        id: 1,
-        name: "Mountain Viewpoint",
-        category: "viewpoint",
-        lat: 40.7128,
-        lng: -74.006,
-        description: "Beautiful mountain view with sunset views",
-        image: "/mountain-viewpoint.jpg",
-      },
-      {
-        id: 2,
-        name: "Local Cafe",
-        category: "cafe",
-        lat: 40.8088,
-        lng: -73.9391,
-        description: "Cozy coffee shop with great ambiance",
-        image: "/local-cafe.jpg",
-        //isFavorite
-      },
-      {
-        id: 3,
-        name: "Best Restaurant",
-        category: "restaurant",
-        lat: 40.7489,
-        lng: -73.968,
-        description: "Authentic cuisine with outdoor seating",
-        image: "/cozy-italian-restaurant.png",
-      },
-      {
-        id: 4,
-        name: "Heritage Library",
-        category: "library",
-        lat: 40.7505,
-        lng: -73.9972,
-        description: "Historic library with rare collections",
-        image: "/grand-library.png",
-      },
-      {
-        id: 5,
-        name: "Budget Hostel",
-        category: "hostel",
-        lat: 41.0534,
-        lng: -74.0127,
-        description: "Affordable stay with great facilities",
-        image: "/hostel.jpg",
-      },
-    ]
-
-    setSpots(sampleSpots)
-    filterSpots(sampleSpots, [])
   }, [router]) //[router] dependency is same as [].
 
   const filterSpots = (spotsToFilter, categories) => {
@@ -141,26 +93,38 @@ export default function HomePage() {
     setShowAddModal(true)
   }
 
-  const handleAddSpot = (newSpot) => {
+  const handleAddSpot = async (newSpot) => {
     const addedSpot = {
       ...newSpot,
+      lat: formData.lat,
+      lng: formData.lng,
       id: Math.max(...spots.map((s) => s.id), 0) + 1,
       isFavorite: false,
     }
-
     const updatedSpots = [...spots, addedSpot]
     setSpots(updatedSpots)
     filterSpots(updatedSpots, selectedCategories)
     setShowAddModal(false)
+    toast({title: "Gem added", description: "Spot marked Successfully"})
+    
+    const res= await axios.post(
+      "/api/v1/review/createReview",
+      {
+        spotName: formData.name,
+        content: formData.description,
+        tag: formData.category,
+        latitude: formData.lat,
+        longitude: formData.lng
+      }
+    )
+
   }
 
   if (!user) {
-    console.log("1. displaying loading");
-    
+    //console.log("1. displaying loading");
     return <div className="min-h-screen bg-sand flex items-center justify-center">Loading...</div>
   }
 
-  
 
   return (
     // a huge screen which will render all its components one by one
