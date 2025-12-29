@@ -1,5 +1,5 @@
 {
     "editor.hover.above": false,
-    "editor.hover.enabled": false,
+    "editor.hover.enabled": "off",
     "editor.hover.sticky": false
 }

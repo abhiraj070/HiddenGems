@@ -9,12 +9,12 @@ const CATEGORIES = [
   { id: "adventure", name: "Adventure" },
 ]
 
-export default function AddSpotModal({ onClose, onAddSpot,setShowAddModal, formData, setFormData }) {
+export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, formData, setFormData }) {
   
   const [pickingOnMap, setPickingOnMap] = useState(false)
 
   const handleChange = (e) => {
-    const { name, value } = e.target // eg: name: category, calue: sports
+    const { name, value } = e.target // eg: name: category, value: sports
     setFormData((prev) => ({
       ...prev,
       [name]: value
@@ -66,7 +66,7 @@ export default function AddSpotModal({ onClose, onAddSpot,setShowAddModal, formD
             <input
               type="text"
               name="name"
-              value={formData.name}
+              value={formData.name}//this value is not e.target.value, this is input.value. first name is updated in formdata from e.target then input.value is updated
               onChange={handleChange}
               className="w-full px-4 py-2 border border-stone rounded-lg focus:outline-none focus:ring-2 focus:ring-teal bg-cream cursor-text"
               placeholder="e.g., Secret Waterfall"
@@ -77,12 +77,13 @@ export default function AddSpotModal({ onClose, onAddSpot,setShowAddModal, formD
           <div>
             <label className="block text-sm font-medium text-dark-text mb-2">Description</label>
             <textarea
+              type="text"
               name="description"
               value={formData.description}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-stone rounded-lg focus:outline-none focus:ring-2 focus:ring-teal bg-cream resize-none cursor-text"
               rows="3"
-              placeholder="Describe this amazing place..."
+              placeholder="Describe this place..."
             />
           </div>
 

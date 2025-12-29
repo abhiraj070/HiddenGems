@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-export default function MapComponent({onLocationPicked, currentLocation}) {
+export default function MapComponent({onLocationPicked, currentLocation, dbspots, newspots}) {
   const mapContainer = useRef(null) 
   const map = useRef(null) 
-  const markerRef= useRef(null)
+  const marked= useRef([])
   useEffect(() => {
     if (typeof window === "undefined") return
     if (window.L) {
@@ -30,11 +30,6 @@ export default function MapComponent({onLocationPicked, currentLocation}) {
       loadScript()
     }
 
-    return () => {
-      if (map.current) {
-        map.current.remove()
-      }
-    }
   }, [])
   //console.log("4. map rendered");
   
@@ -43,23 +38,58 @@ export default function MapComponent({onLocationPicked, currentLocation}) {
   }
   
   const initMap = () => {
-    if (!mapContainer.current || map.current) return
+    if (map.current) return
     const L = window.L
     if (!L) return
     if(currentLocation){
       map.current = L.map(mapContainer.current).setView([currentLocation.latitude, currentLocation.longitude], 10)
     }
     else{
-      map.current = L.map(mapContainer.current).setView([70.32, -20.43], 10)
+      map.current = L.map(mapContainer.current).setView([25.6395, 85.1038], 10)
     }
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 20,
     }).addTo(map.current) 
   }
 
+  const setMarker=(val)=>{
+    
+  }
   useEffect(()=>{
-    if(!map.current || !mapContainer.current) return
-    map.current.setView([currentLocation.latitude, currentLocation.longitude], 10)
+    dbspots.map((val,idx)=>{
+      const lat=val.latitude
+      const lng=val.longitude
+      if(!marked.current.includes([lat,lng])){
+        L.marker([lat,lng]).addTo(map.current)
+        marked.current.push([lat,lng])
+      }
+    })
+  },[dbspots])
+
+  useEffect(()=>{
+    newspots.map((val,idx)=>{
+      const lat=val.lat
+      const lng=val.lng
+      if(!marked.current.includes([lat,lng])){
+        L.marker([lat,lng]).addTo(map.current)
+        marked.current.push([lat,lng])
+      }
+    })
+  },[newspots])
+
+  useEffect(()=>{
+    if(!map.current || !mapContainer.current || !currentLocation) return
+    const lat= currentLocation.latitude;
+    const lng= currentLocation.longitude;
+
+    const currIcon= L.icon({
+      iconUrl: "/curricon2.png",
+      iconSize: [55, 60],
+
+    })
+
+    map.current.setView([lat, lng], 10)
+    L.marker([lat,lng],{icon: currIcon}).addTo(map.current)
   },[currentLocation])
 
   useEffect(()=>{
@@ -70,9 +100,6 @@ export default function MapComponent({onLocationPicked, currentLocation}) {
       const lat=e.latlng.lat
       const lng= e.latlng.lng
       onMapClick(lat,lng)
-      if(!markerRef.current){
-        markerRef.current=L.marker([lat,lng]).addTo(map.current)
-      }
     }
     map.current.on("click", handler) 
     return () =>map.current.off("click",handler) 

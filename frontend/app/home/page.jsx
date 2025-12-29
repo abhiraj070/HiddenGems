@@ -11,7 +11,8 @@ import axios from "axios"
 export default function HomePage() {
   const router = useRouter()
   const [user, setUser] = useState(null)
-  const [spots, setSpots] = useState([])
+  const [newspots, setnewSpots] = useState([])
+  const [dbspots, setdbspots]= useState([])
   const [filteredSpots, setFilteredSpots] = useState([])
   const [selectedCategories, setSelectedCategories] = useState([])
   const [showAddModal, setShowAddModal] = useState(false)
@@ -34,7 +35,7 @@ export default function HomePage() {
       return
     }
     const parseduser= JSON.parse(userdata)
-    console.log("2. got parsed data and now going for re-render because of setUser");
+    //console.log("2. got parsed data and now going for re-render because of setUser");
     //console.log("parseduser:",parseduser)
     setUser(parseduser)
     //to get the current location of the user
@@ -57,7 +58,7 @@ export default function HomePage() {
 
   const handleCategoryChange = (categories) => {
     setSelectedCategories(categories)
-    filterSpots(spots, categories)
+    filterSpots(newspots, categories)
   }
 
   const handleToggleFavorite = (spotId) => {
@@ -68,7 +69,7 @@ export default function HomePage() {
       return spot
     })
 
-    setSpots(updatedSpots)
+    setnewSpots(updatedSpots)
     filterSpots(updatedSpots, selectedCategories)
 
     if (user) {
@@ -90,29 +91,51 @@ export default function HomePage() {
     setShowAddModal(true)
   }
 
+  useEffect(()=>{
+    const fetchReviews =async ()=>{
+    const user= JSON.parse(localStorage.getItem("user"))
+    const res= await axios.get(
+      `/api/v1/review/get/user/${user._id}`,
+      { withCredentials: true }
+    )
+    const reviewGot= res.data.data;
+    console.log("reviews: ",reviewGot);
+    console.log("res: ",res);
+    
+    setdbspots(reviewGot)
+  }
+  fetchReviews()
+  },[])
+
   const handleAddSpot = async (newSpot) => {
     const addedSpot = {
       ...newSpot,
       lat: formData.lat,
       lng: formData.lng,
-      id: Math.max(...spots.map((s) => s.id), 0) + 1,
+      id: Math.max(...newspots.map((s) => s.id), 0) + 1,
       isFavorite: false,
     }
-    const updatedSpots = [...spots, addedSpot]
-    setSpots(updatedSpots)
+    const updatedSpots = [...newspots, addedSpot]
+    setnewSpots(updatedSpots)
     filterSpots(updatedSpots, selectedCategories)
     setShowAddModal(false)
     
-    const res= await axios.post(
-      "/api/v1/review/createReview",
-      {
-        spotName: formData.name,
-        content: formData.description,
-        tag: formData.category,
-        latitude: formData.lat,
-        longitude: formData.lng
-      }
-    )
+    let res
+    try {
+       res= await axios.post(
+        "/api/v1/review/createReview",
+        {
+          spotName: formData.name,
+          content: formData.description,
+          tag: formData.category,
+          latitude: formData.lat,
+          longitude: formData.lng
+        },
+        { withCredentials: true }
+      )
+    } catch (error) {
+      router.push("/")
+    }
 
   }
 
@@ -146,11 +169,12 @@ export default function HomePage() {
 
         <div className="flex-1 ml-80">
           <MapComponent
-            spots={filteredSpots}
             onToggleFavorite={handleToggleFavorite}
             selectedSpot={selectedSpot}
             onLocationPicked={handleLocationPicked}
             currentLocation={currentLocation}
+            dbspots={dbspots}
+            newspots={newspots}
           />
         </div>
       </div>
