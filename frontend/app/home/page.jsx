@@ -6,19 +6,22 @@ import MapComponent from "@/components/map-component"
 import SidebarComponent from "@/components/sidebar-component"
 import TopNavComponent from "@/components/top-nav-component"
 import AddSpotModal from "@/components/add-spot-modal"
+import ListBox from "../../components/list-box-modal"
 import axios from "axios"
 
 export default function HomePage() {
   const router = useRouter()
   const [user, setUser] = useState(null)
-  const [newspots, setnewSpots] = useState([])
+  const [newspots, setnewSpots] = useState()
   const [dbspots, setdbspots]= useState([])
   const [filteredSpots, setFilteredSpots] = useState([])
   const [selectedCategories, setSelectedCategories] = useState([])
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showList, setShowList]= useState(false)
   const [selectedSpot, setSelectedSpot] = useState(null)
   const [wishlist, setWishlist] = useState([])
   const [currentLocation, setCurrentLocation]= useState()
+  const [allReviews, setAllReviews]= useState()
   const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -87,7 +90,6 @@ export default function HomePage() {
       lat: lat,
       lng: lng,
     }))
-    
     setShowAddModal(true)
   }
 
@@ -99,10 +101,9 @@ export default function HomePage() {
       { withCredentials: true }
     )
     const reviewGot= res.data.data;
-    console.log("reviews: ",reviewGot);
-    console.log("res: ",res);
-    
-    setdbspots(reviewGot)
+    //console.log("reviews: ",reviewGot);
+    //console.log("res: ",res);
+    setdbspots(reviewGot)    
   }
   fetchReviews()
   },[])
@@ -112,14 +113,12 @@ export default function HomePage() {
       ...newSpot,
       lat: formData.lat,
       lng: formData.lng,
-      id: Math.max(...newspots.map((s) => s.id), 0) + 1,
       isFavorite: false,
     }
-    const updatedSpots = [...newspots, addedSpot]
-    setnewSpots(updatedSpots)
-    filterSpots(updatedSpots, selectedCategories)
+    //console.log("addedSpot: ",addedSpot);
+    setnewSpots(addedSpot)
+    //filterSpots(updatedSpots, selectedCategories)
     setShowAddModal(false)
-    
     let res
     try {
        res= await axios.post(
@@ -175,6 +174,8 @@ export default function HomePage() {
             currentLocation={currentLocation}
             dbspots={dbspots}
             newspots={newspots}
+            ListBox={setShowList}
+            setAllReviews={setAllReviews}
           />
         </div>
       </div>
@@ -189,6 +190,14 @@ export default function HomePage() {
         setFormData={setFormData} 
         setShowAddModal={setShowAddModal}
       />}
+
+      {showList &&
+      <ListBox
+        onClose={()=>{setShowList(false)}}
+        allReviews={allReviews}
+      />}
+
     </div>
+
   )
 }

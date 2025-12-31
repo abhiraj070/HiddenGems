@@ -1,10 +1,14 @@
 "use client"
 
-import { useEffect, useRef } from "react"
-export default function MapComponent({onLocationPicked, currentLocation, dbspots, newspots}) {
+import { useEffect, useRef, useState } from "react"
+import axios from "axios"
+export default function MapComponent({onLocationPicked, currentLocation, dbspots, newspots, ListBox, setAllReviews}) {
   const mapContainer = useRef(null) 
   const map = useRef(null) 
-  const marked= useRef([])
+  const marked= useRef(new Set())
+  const dbMarkersRef = useRef([])
+  const [mapready, setMapReady]= useState(false)
+  const currentLocationMarkerRef = useRef(null)
   useEffect(() => {
     if (typeof window === "undefined") return
     if (window.L) {
@@ -31,7 +35,6 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
     }
 
   }, [])
-  //console.log("4. map rendered");
   
   const onMapClick=(lat,lng)=>{
     onLocationPicked(lat,lng)
@@ -50,60 +53,93 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 20,
     }).addTo(map.current) 
+    setMapReady(true)
   }
 
-  const setMarker=(val)=>{
-    
-  }
+  //onclick for addspots to open
   useEffect(()=>{
-    dbspots.map((val,idx)=>{
+      if(!map.current){ 
+        return 
+      }
+      const handler= (e) => {
+        const lat=e.latlng.lat
+        const lng= e.latlng.lng
+        onMapClick(lat,lng)
+      }
+      map.current.on("click", handler)
+    return () => {
+      map.current.off("click", handler)
+    }
+  },[mapready]) 
+
+  // database reviews marker and onclick for box adding 
+  useEffect(()=>{
+    if (!map.current || !window.L ) return
+    dbspots.forEach((val)=>{
       const lat=val.latitude
       const lng=val.longitude
-      if(!marked.current.includes([lat,lng])){
-        L.marker([lat,lng]).addTo(map.current)
-        marked.current.push([lat,lng])
-      }
+      const key=`${lat},${lng}`
+      const marker=L.marker([lat,lng]).addTo(map.current)
+      marker.on("click",async (e)=>{
+        L.DomEvent.stopPropagation(e)
+        //console.log("15");
+        ListBox(true)
+        const lati= e.latlng.lat
+        const lngi= e.latlng.lng
+        const res= await axios.get(
+          `/api/v1/spot/get/${lati}/${lngi}`,
+          { withCredentials: true }
+        )
+        const spotAllReviews= res.data.data.allCoordReviews
+        console.log("spotAllReviews: ",spotAllReviews)
+        
+        setAllReviews(spotAllReviews)
+      })
+      dbMarkersRef.current.push(marker)
+      marked.current.add(key)
     })
+    return () => {
+      dbMarkersRef.current.forEach((m) => m.remove())
+      dbMarkersRef.current = []
+      marked.current.clear()
+    }
   },[dbspots])
+  
+  // // new current reviews marker and onclick for box adding
+   useEffect(()=>{
+     if (!map.current || !window.L || !newspots) return
+     const addmarker=()=>{
+       const lat=newspots.lat
+       const lng=newspots.lng
+       const key= `${lat},${lng}`
+       if(!marked.current.has(key)){
+         const marker=L.marker([lat,lng]).addTo(map.current)
+         marker.on("click",(e)=>{
+            L.DomEvent.stop(e)
+            ListBox(true)
+         })
+         marked.current.add(key)
+       }
+     }
+     addmarker()
+   },[newspots])
 
-  useEffect(()=>{
-    newspots.map((val,idx)=>{
-      const lat=val.lat
-      const lng=val.lng
-      if(!marked.current.includes([lat,lng])){
-        L.marker([lat,lng]).addTo(map.current)
-        marked.current.push([lat,lng])
-      }
-    })
-  },[newspots])
-
+  //current location marker adding
   useEffect(()=>{
     if(!map.current || !mapContainer.current || !currentLocation) return
     const lat= currentLocation.latitude;
     const lng= currentLocation.longitude;
-
+    if(currentLocationMarkerRef.current){
+      currentLocationMarkerRef.current.remove()
+    }
     const currIcon= L.icon({
       iconUrl: "/curricon2.png",
       iconSize: [55, 60],
-
     })
 
     map.current.setView([lat, lng], 10)
-    L.marker([lat,lng],{icon: currIcon}).addTo(map.current)
+    currentLocationMarkerRef.current= L.marker([lat,lng],{icon: currIcon}).addTo(map.current)
   },[currentLocation])
-
-  useEffect(()=>{
-    if(!map.current){ 
-      return 
-    }
-    const handler= (e) => {
-      const lat=e.latlng.lat
-      const lng= e.latlng.lng
-      onMapClick(lat,lng)
-    }
-    map.current.on("click", handler) 
-    return () =>map.current.off("click",handler) 
-  },[map.current]) 
 
   return (
     <div

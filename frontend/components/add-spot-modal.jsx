@@ -9,10 +9,10 @@ const CATEGORIES = [
   { id: "adventure", name: "Adventure" },
 ]
 
-export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, formData, setFormData }) {
+export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, formData, setFormData}) {
   
-  const [pickingOnMap, setPickingOnMap] = useState(false)
-
+const [pickingOnMap, setPickingOnMap] = useState(false)
+  
   const handleChange = (e) => {
     const { name, value } = e.target // eg: name: category, value: sports
     setFormData((prev) => ({
@@ -28,7 +28,8 @@ export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, form
 
   const handleSubmit = (e) => {
     e.preventDefault()
-
+    console.log("reached handlesubmit");
+    
     if (!formData.name || !formData.category) {
       alert("Please fill in name and category")
       return
