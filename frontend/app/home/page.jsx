@@ -6,7 +6,8 @@ import MapComponent from "@/components/map-component"
 import SidebarComponent from "@/components/sidebar-component"
 import TopNavComponent from "@/components/top-nav-component"
 import AddSpotModal from "@/components/add-spot-modal"
-import ListBox from "../../components/list-box-modal"
+import ListBoxModal from "../../components/list-box-modal"
+import SpotDetailsModal from "../../components/spot-details-modal"
 import axios from "axios"
 
 export default function HomePage() {
@@ -22,6 +23,8 @@ export default function HomePage() {
   const [wishlist, setWishlist] = useState([])
   const [currentLocation, setCurrentLocation]= useState()
   const [allReviews, setAllReviews]= useState()
+  const [showDetails, setShowDetails]= useState(false)
+  const [transferSpecificReview, setTransferSpecificReview]= useState()
   const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -192,10 +195,19 @@ export default function HomePage() {
       />}
 
       {showList &&
-      <ListBox
+      <ListBoxModal
         onClose={()=>{setShowList(false)}}
         allReviews={allReviews}
+        setShowDetails={setShowDetails}
+        setTransferSpecificReview={setTransferSpecificReview}
       />}
+
+      {showDetails &&
+        <SpotDetailsModal
+          onClose={()=>{setShowDetails(false)}}
+          review={transferSpecificReview}
+        />
+      }
 
     </div>
 

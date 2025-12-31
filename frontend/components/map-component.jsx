@@ -44,12 +44,12 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
     if (map.current) return
     const L = window.L
     if (!L) return
-    if(currentLocation){
-      map.current = L.map(mapContainer.current).setView([currentLocation.latitude, currentLocation.longitude], 10)
-    }
-    else{
-      map.current = L.map(mapContainer.current).setView([25.6395, 85.1038], 10)
-    }
+    map.current = L.map(mapContainer.current).setView(
+      currentLocation
+        ? [currentLocation.latitude, currentLocation.longitude]
+        : [25.6395, 85.1038],
+      10
+    )
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 20,
     }).addTo(map.current) 
@@ -62,7 +62,7 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
         return 
       }
       const handler= (e) => {
-        const lat=e.latlng.lat
+        const lat= e.latlng.lat
         const lng= e.latlng.lng
         onMapClick(lat,lng)
       }
@@ -79,27 +79,31 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
       const lat=val.latitude
       const lng=val.longitude
       const key=`${lat},${lng}`
+      if (marked.current.has(key)) return
       const marker=L.marker([lat,lng]).addTo(map.current)
       marker.on("click",async (e)=>{
-        L.DomEvent.stopPropagation(e)
+        L.DomEvent.stop(e)
         //console.log("15");
-        ListBox(true)
-        const lati= e.latlng.lat
-        const lngi= e.latlng.lng
+        const lati= lat
+        const lngi= lng
+        //console.log("lat: ",lat,"lng: ",lng);
         const res= await axios.get(
           `/api/v1/spot/get/${lati}/${lngi}`,
           { withCredentials: true }
         )
         const spotAllReviews= res.data.data.allCoordReviews
-        console.log("spotAllReviews: ",spotAllReviews)
-        
+        //console.log("spotAllReviews: ",spotAllReviews)
         setAllReviews(spotAllReviews)
+        ListBox(true)
       })
       dbMarkersRef.current.push(marker)
       marked.current.add(key)
     })
     return () => {
-      dbMarkersRef.current.forEach((m) => m.remove())
+      dbMarkersRef.current.forEach((m) => {
+        m.off()
+        m.remove()
+      })
       dbMarkersRef.current = []
       marked.current.clear()
     }
@@ -139,7 +143,7 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
 
     map.current.setView([lat, lng], 10)
     currentLocationMarkerRef.current= L.marker([lat,lng],{icon: currIcon}).addTo(map.current)
-  },[currentLocation])
+  },[currentLocation, mapready])
 
   return (
     <div

@@ -7,6 +7,15 @@ const CATEGORIES = [
   { id: "food", name: "Food" },
   { id: "culture", name: "Culture" },
   { id: "adventure", name: "Adventure" },
+  { id: "restaurant", name: "Restaurant" },
+  { id: "hostel", name: "Hostel" },
+  { id: "dhaba", name: "Dhaba" },
+  { id: "viewpoint", name: "ViewPoint" },
+  { id: "library", name: "Library" },
+  { id: "homestay", name: "Homestay" },
+  { id: "hotel", name: "Hotel" },
+  { id: "cafe", name: "Cafe" },
+  { id: "others", name: "Others" }
 ]
 
 export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, formData, setFormData}) {
