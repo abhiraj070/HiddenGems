@@ -48,14 +48,13 @@ export default function TopNavComponent({ user, onAddSpot }) {
       "
     >
 
-      {/* Brand */}
       <Link
         href="/home"
         className="
           text-2xl font-bold text-gradient tracking-tight
           relative
           after:absolute after:-bottom-1 after:left-0
-          after:h-[2px] after:w-0 after:bg-teal
+          after:h-0.5 after:w-0 after:bg-teal
           after:transition-all after:duration-300
           hover:after:w-full
         "
@@ -63,7 +62,6 @@ export default function TopNavComponent({ user, onAddSpot }) {
         HiddenGems
       </Link>
 
-      {/* Search */}
       <div className="relative max-w-lg w-full mx-auto group">
         <input
           type="text"
@@ -84,7 +82,6 @@ export default function TopNavComponent({ user, onAddSpot }) {
           "
         />
 
-        {/* Ambient glow */}
         <div
           className="
             pointer-events-none
@@ -96,14 +93,13 @@ export default function TopNavComponent({ user, onAddSpot }) {
         />
       </div>
 
-      {/* Controls */}
       <div className="flex items-center gap-3">
         <button
           onClick={onAddSpot}
           className="
             px-4 py-2.5 rounded-xl
             bg-green-600 text-white hover:bg-green-700
-
+            font-semibold
             shadow-md
             transition-all duration-150
             hover:shadow-lg hover:scale-[1.03]
@@ -113,7 +109,6 @@ export default function TopNavComponent({ user, onAddSpot }) {
           + Add Gem
         </button>
 
-        {/* Profile */}
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => setShowProfileMenu((v) => !v)}
@@ -138,7 +133,7 @@ export default function TopNavComponent({ user, onAddSpot }) {
               />
             </div>
 
-            <span className="hidden sm:block text-sm font-medium text-dark-text">
+            <span className="hidden sm:block text-m font-medium text-dark-text">
               {user.fullname}
             </span>
           </button>
@@ -162,10 +157,10 @@ export default function TopNavComponent({ user, onAddSpot }) {
                 onClick={() => setShowProfileMenu(false)}
                 className="
                   block px-5 py-3 text-sm text-dark-text
-                  hover:bg-cream transition-colors
+                  hover:bg-cream transition-colors font-semibold
                 "
               >
-                Profile
+                PROFILE
               </Link>
 
               <button
@@ -173,10 +168,10 @@ export default function TopNavComponent({ user, onAddSpot }) {
                 className="
                   w-full text-left px-5 py-3 text-sm text-dark-text
                   hover:bg-cream transition-colors
-                  border-t border-stone/60
+                  border-t border-stone/60 font-semibold text-red-700 
                 "
               >
-                Logout
+                LOGOUT
               </button>
             </div>
           )}

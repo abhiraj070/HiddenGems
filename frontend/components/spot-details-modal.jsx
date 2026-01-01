@@ -30,29 +30,29 @@ export default function SpotDetailsModal({ onClose, review }) {
           "
         >
           <div className="flex justify-between items-start border-b border-gray-200 pb-4">
-            <p className="text-sm text-gray-500">Tag</p>
+            <p className="text-m text-gray-500">Tag: </p>
             <p className="px-3 py-1 rounded-full bg-gray-200 text-sm text-gray-700">
               {`${review.tag[0].toUpperCase()+review.tag.slice(1)}`}
             </p>
           </div>
 
           <div className="flex justify-between items-start border-b border-gray-200 pb-4">
-            <p className="text-sm text-gray-500">Spot Name</p>
-            <span className="text-sm font-medium text-gray-800">
+            <p className="text-m text-gray-500">Spot Name:</p>
+            <span className="text-m font-medium text-gray-800">
               {`${review.spotName[0].toUpperCase()+review.spotName.slice(1)}`}
             </span>
           </div>
 
           <div className="space-y-2 border-b border-gray-200 pb-4">
-            <p className="text-sm text-gray-500">Review</p>
+            <p className="text-m text-gray-500">Review:</p>
             <p className="text-gray-800 leading-relaxed">
               {`${review.content}`}
             </p>
           </div>
 
           <div className="flex items-center justify-between gap-4">
-            <p className="text-sm text-gray-500 whitespace-nowrap">
-                Review's Owner
+            <p className="text-m text-gray-500 whitespace-nowrap">
+                Review's Owner:
             </p>
 
             <div className="flex items-center gap-3">
@@ -73,13 +73,13 @@ export default function SpotDetailsModal({ onClose, review }) {
                         className="h-full w-full object-cover"
                     />
                     ) : (
-                    <span className="text-gray-600 text-sm font-medium">
+                    <span className="text-gray-600 text-m font-medium">
                         {review.owner.username?.[0]?.toUpperCase()}
                     </span>
                     )}
                 </div>
 
-                <p className="text-sm font-medium text-gray-800">
+                <p className="text-m font-medium text-gray-800">
                     {review.owner.username}
                 </p>
                 </div>
@@ -101,10 +101,10 @@ export default function SpotDetailsModal({ onClose, review }) {
         "
         >
         <div className="flex flex-col">
-            <p className="text-sm font-medium text-gray-800">
+            <p className="text-m font-medium text-gray-800">
             View Location
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-sm text-gray-500">
             Open this spot in Google Maps
             </p>
         </div>
@@ -112,7 +112,7 @@ export default function SpotDetailsModal({ onClose, review }) {
         <a
             href={`https://www.google.com/maps?q=${review.latitude},${review.longitude}`}
             className="
-            text-sm font-medium
+            text-m font-medium
             text-blue-600
             hover:text-blue-700
             underline

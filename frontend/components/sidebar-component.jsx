@@ -66,7 +66,7 @@ export default function SidebarComponent({
       <div className="mx-4 mb-4 bg-white rounded-xl shadow-lg overflow-hidden border border-stone-200">
         <button
           onClick={() => setExpandedCategories(!expandedCategories)}
-          className="w-full flex items-center justify-between px-5 py-4 text-sm font-semibold text-stone-800 hover:bg-stone-100 transition"
+          className="w-full flex items-center justify-between px-5 py-4 text-m font-semibold text-stone-800 hover:bg-stone-100 transition"
         >
           <span>Filter Locations</span>
           <span className="text-xs text-stone-500">

@@ -16,7 +16,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
       
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-3 border-b bg-linear-to-r from-gray-50 to-gray-100 rounded-t-xl">
-        <h3 className="text-sm font-semibold text-gray-800 tracking-wide">
+        <h3 className="text-lg font-semibold text-gray-800 tracking-wide">
           Reviews
         </h3>
 
@@ -40,7 +40,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
                        hover:border-gray-300 hover:bg-gray-50
                        transition cursor-pointer"
           >
-            <p className="text-sm font-medium text-gray-800">
+            <p className="text-m font-medium text-gray-800">
               {`${val.tag[0].toUpperCase()+val.tag.slice(1) }`}
             </p>
             <p className="text-xs text-gray-500">
