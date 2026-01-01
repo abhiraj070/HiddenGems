@@ -149,14 +149,25 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
     <div
       ref={mapContainer}
       style={{
-        height: "600px",
-        width: "100%",
-        border: "2px solid red",
+        height: "592px",
+        width: "calc(100% - 48px)",
+        marginLeft: "38px",
+        marginRight: "16px",
         position: "relative",
         zIndex: 1,
         cursor: "pointer",
-        borderRight: "5%"
+        borderRadius: "24px",
+        overflow: "hidden",
+        background: "linear-gradient(180deg, #ffffff, #f9fafb)",
+        border: "1px solid rgba(120,120,120,0.25)",
+        boxShadow: `
+          0 20px 40px -20px rgba(0,0,0,0.35),
+          inset 0 0 0 1px rgba(255,255,255,0.6)
+        `,
+        transition: "box-shadow 200ms ease, transform 200ms ease",
+        transform: "translateY(-18px)",
       }}
     />
+
   )
 }

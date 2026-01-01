@@ -10,14 +10,19 @@ export default function SidebarComponent({
   wishlist = [],
 }) {
   const categories = [
-    { id: "cafe", name: "Cafe", icon: "☕" },
-    { id: "hotel", name: "Hotel", icon: "🏨" },
-    { id: "restaurant", name: "Restaurant", icon: "🍽️" },
-    { id: "homestay", name: "Homestay", icon: "🏡" },
-    { id: "hostel", name: "Hostel", icon: "🛏️" },
-    { id: "library", name: "Library", icon: "📚" },
-    { id: "viewpoint", name: "Viewpoint", icon: "🏞️" },
-    { id: "dhaba", name: "Dhaba", icon: "🍜" },
+    { id: "cafe", name: "Cafe" },
+    { id: "hotel", name: "Hotel" },
+    { id: "restaurant", name: "Restaurant"},
+    { id: "homestay", name: "Homestay"},
+    { id: "hostel", name: "Hostel" },
+    { id: "library", name: "Library"},
+    { id: "viewpoint", name: "Viewpoint" },
+    { id: "dhaba", name: "Dhaba" },
+    { id: "nature", name: "Nature" },
+    { id: "food", name: "Food" },
+    { id: "culture", name: "Culture" },
+    { id: "adventure", name: "Adventure" },
+    { id: "others", name: "Others" }
   ]
 
   const [expandedCategories, setExpandedCategories] = useState(false)
@@ -36,58 +41,107 @@ export default function SidebarComponent({
 
   return (
     <div
-      className="fixed left-0 top-20 bottom-0 w-80 bg-cream border-r border-stone flex flex-col z-10 overflow-hidden"
-      style={{ height: "calc(100vh - 80px)", fontFamily: "Arial, sans-serif" }}
+      className="
+        fixed left-2 top-23 bottom-3 w-85 z-20
+        rounded-3xl
+        bg-white/85 backdrop-blur
+        border border-stone-300/60
+        shadow-[0_25px_60px_-30px_rgba(0,0,0,0.45)]
+        flex flex-col
+      "
+      style={{
+        fontFamily: "Inter, Arial, sans-serif"
+      }}
     >
-      <div className="p-6 border-b border-stone">
+
+      <div className="px-6 py-6">
+        <h2 className="text-xl font-semibold text-stone-800 tracking-tight">
+          Discover
+        </h2>
+        <p className="text-sm text-stone-500 mt-1">
+          Explore places around you
+        </p>
+      </div>
+
+      <div className="mx-4 mb-4 bg-white rounded-xl shadow-lg overflow-hidden border border-stone-200">
         <button
           onClick={() => setExpandedCategories(!expandedCategories)}
-          className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-teal text-sand font-semibold hover:bg-teal/90 transition-colors cursor-pointer"
+          className="w-full flex items-center justify-between px-5 py-4 text-sm font-semibold text-stone-800 hover:bg-stone-100 transition"
         >
           <span>Filter Locations</span>
-          <span>{expandedCategories ? "▼" : "▶"}</span>
+          <span className="text-xs text-stone-500">
+            {expandedCategories ? "▲" : "▼"}
+          </span>
         </button>
 
         {expandedCategories && (
-          <div className="mt-4 space-y-2 max-h-48 overflow-y-auto">
+          <div className="px-3 pb-3 max-h-56 overflow-y-auto">
             {categories.map((category) => (
               <label
                 key={category.id}
-                className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-stone/30 cursor-pointer transition-colors"
+                className="flex items-center gap-4 px-3 py-2.5 rounded-lg hover:bg-stone-100 cursor-pointer transition"
               >
                 <input
                   type="checkbox"
                   checked={isSelected(category.id)}
                   onChange={() => handleCategoryToggle(category.id)}
-                  className="w-4 h-4 cursor-pointer"
+                  className="w-4 h-4 accent-stone-700"
                 />
-                <span className="text-xl">{category.icon}</span>
-                <span className="text-dark-text font-medium">{category.name}</span>
+
+                <div className="w-9 h-9 rounded-lg bg-stone-200 flex items-center justify-center shrink-0">
+                  {/* image / svg here */}
+                </div>
+
+                <span className="text-sm font-medium text-stone-800">
+                  {category.name}
+                </span>
               </label>
             ))}
           </div>
         )}
       </div>
 
-      <div className="flex-1 p-6 overflow-y-auto flex flex-col justify-end">
-        <div className="space-y-3">
-          <button
-            onClick={() => onShowFavorites("favorites")}
-            className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-coral/10 text-coral hover:bg-coral/20 transition-colors cursor-pointer font-medium"
-          >
-            <span>🔖 Saved</span>
-            {/* {<span className="bg-coral text-white text-xs font-bold px-2 py-1 rounded-full">{favorites.length}</span>} */}
-          </button>
+      <div className="flex-1" />
+      <div className="mx-4 mb-6 space-y-3">
+        <button
+          onClick={() => onShowFavorites("favorites")}
+          className="w-full flex items-center gap-4 px-5 py-4 rounded-xl bg-white hover:bg-stone-100 transition shadow-lg border border-stone-200"
+        >
+          <div className="w-10 h-10 rounded-lg bg-stone-200 flex items-center justify-center">
+            {/* image here */}
+          </div>
 
-          <button
-            onClick={() => onShowFavorites("wishlist")}
-            className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-teal/10 text-teal hover:bg-teal/20 transition-colors cursor-pointer font-medium"
-          >
-            <span>♥️ Favourite </span>
-            <span className="bg-teal text-white text-xs font-bold px-2 py-1 rounded-full">{wishlist.length}</span>
-          </button>
-        </div>
+          <div className="flex-1 text-left">
+            <p className="text-sm font-semibold text-stone-800">
+              Saved
+            </p>
+            <p className="text-xs text-stone-500">
+              Places you bookmarked
+            </p>
+          </div>
+        </button>
+
+        <button
+          onClick={() => onShowFavorites("wishlist")}
+          className="w-full flex items-center gap-4 px-5 py-4 rounded-xl bg-white hover:bg-stone-100 transition shadow-lg border border-stone-200"
+        >
+          <div className="w-10 h-10 rounded-lg bg-stone-200 flex items-center justify-center">
+            {/* image here */}
+          </div>
+
+          <div className="flex-1 text-left">
+            <p className="text-sm font-semibold text-stone-800">
+              Favourite
+            </p>
+            <p className="text-xs text-stone-500">
+              Places you love
+            </p>
+          </div>
+
+          <span className="text-xs font-semibold text-stone-700 bg-stone-200 px-2 py-1 rounded-full">
+            {wishlist.length}
+          </span>
+        </button>
       </div>
     </div>
-  )
-}
+)}

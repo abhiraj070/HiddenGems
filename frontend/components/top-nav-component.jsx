@@ -32,62 +32,161 @@ export default function TopNavComponent({ user, onAddSpot }) {
   }
 
   return (
-    <nav className="flex items-center justify-between px-6 py-4 bg-sand border-b border-stone shadow-sm z-50 relative">
-      <Link href="/home" className="text-3xl font-bold text-gradient hover:opacity-80 cursor-pointer">
+    <nav className="sticky top-0 z-50 bg-sand">
+  <div className="w-full py-4">
+    <div
+      className="
+        mx-2 sm:mx-2
+        -translate-y-2
+        grid grid-cols-[auto_1fr_auto]
+        items-center gap-6
+        rounded-2xl
+        bg-white/80 backdrop-blur
+        border border-stone/70
+        shadow-[0_6px_18px_-10px_rgba(0,0,0,0.18)]
+        px-6 py-3
+      "
+    >
+
+      {/* Brand */}
+      <Link
+        href="/home"
+        className="
+          text-2xl font-bold text-gradient tracking-tight
+          relative
+          after:absolute after:-bottom-1 after:left-0
+          after:h-[2px] after:w-0 after:bg-teal
+          after:transition-all after:duration-300
+          hover:after:w-full
+        "
+      >
         HiddenGems
       </Link>
 
-      <div className="flex-1 max-w-xs mx-8">
+      {/* Search */}
+      <div className="relative max-w-lg w-full mx-auto group">
         <input
           type="text"
           placeholder="Search gems..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-4 py-2 rounded-lg border border-stone bg-white text-dark-text placeholder-dark-text/50 focus:outline-none focus:ring-2 focus:ring-teal"
+          className="
+            w-full px-5 py-3 rounded-xl
+            bg-cream/70
+            border border-stone/60
+            text-dark-text
+            placeholder-dark-text/50
+            focus:outline-none
+            focus:bg-white
+            transition-all duration-200
+            shadow-inner
+            focus:shadow-[0_0_0_2px_rgba(20,184,166,0.35)]
+          "
+        />
+
+        {/* Ambient glow */}
+        <div
+          className="
+            pointer-events-none
+            absolute inset-0 rounded-xl
+            opacity-0 group-focus-within:opacity-100
+            transition-opacity
+            bg-[radial-gradient(circle_at_center,rgba(20,184,166,0.15),transparent_70%)]
+          "
         />
       </div>
 
-      <div className="flex items-center gap-4">
-        <button onClick={onAddSpot} className="btn-primary cursor-pointer">
+      {/* Controls */}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onAddSpot}
+          className="
+            px-4 py-2.5 rounded-xl
+            bg-green-600 text-white hover:bg-green-700
+
+            shadow-md
+            transition-all duration-150
+            hover:shadow-lg hover:scale-[1.03]
+            active:scale-100
+          "
+        >
           + Add Gem
         </button>
 
-        <div className="relative z-50" ref={menuRef}>
+        {/* Profile */}
+        <div className="relative" ref={menuRef}>
           <button
-            onClick={() => setShowProfileMenu(!showProfileMenu)}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-stone/30 transition-colors cursor-pointer"
+            onClick={() => setShowProfileMenu((v) => !v)}
+            className="
+              flex items-center gap-2
+              px-2 py-2 rounded-xl
+              bg-cream/70
+              border border-stone/60
+              transition-all duration-150
+              hover:bg-white hover:shadow-md hover:scale-[1.02]
+              focus:outline-none
+              focus:shadow-[0_0_0_2px_rgba(20,184,166,0.35)]
+            "
           >
-            <div className="w-10 h-10 rounded-full bg-teal flex items-center justify-center overflow-hidden">
+            <div className="w-9 h-9 rounded-full overflow-hidden bg-teal ring-2 ring-teal/30">
               <Image
                 src={user.profilepicture}
                 alt="Profile"
-                width={32}
-                height={32}
+                width={36}
+                height={36}
                 className="w-full h-full object-cover"
               />
             </div>
-            {<span className="text-dark-text font-medium hidden sm:inline">{user.fullname}</span>}
+
+            <span className="hidden sm:block text-sm font-medium text-dark-text">
+              {user.fullname}
+            </span>
           </button>
 
+          {/* Dropdown */}
           {showProfileMenu && (
-            <div className="absolute right-0 mt-2 w-48 bg-white border border-stone rounded-lg shadow-lg overflow-hidden z-50">
+            <div
+              className="
+                absolute right-0 mt-3 w-52
+                bg-white
+                border border-stone/60
+                rounded-xl
+                shadow-xl
+                overflow-hidden
+                origin-top-right
+                animate-in fade-in zoom-in-95
+              "
+            >
               <Link
                 href="/profile"
-                className="block w-full text-left px-4 py-3 hover:bg-cream text-dark-text transition-colors cursor-pointer"
                 onClick={() => setShowProfileMenu(false)}
+                className="
+                  block px-5 py-3 text-sm text-dark-text
+                  hover:bg-cream transition-colors
+                "
               >
-                👤 Profile
+                Profile
               </Link>
+
               <button
                 onClick={handleLogout}
-                className="w-full text-left px-4 py-3 hover:bg-cream text-dark-text transition-colors border-t border-stone cursor-pointer"
+                className="
+                  w-full text-left px-5 py-3 text-sm text-dark-text
+                  hover:bg-cream transition-colors
+                  border-t border-stone/60
+                "
               >
-                🚪 Logout
+                Logout
               </button>
             </div>
           )}
         </div>
       </div>
-    </nav>
+    </div>
+  </div>
+</nav>
+
+
+
   )
 }
