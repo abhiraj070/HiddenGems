@@ -39,10 +39,10 @@ const registerUser= asynchandler(async(req,res)=>{
         password,
         profilepicture: isUploaded.url || ""
     })
-
-    const userreturn= await User.findById(user._id).select(
-        "-password -refreshToken"
-    )
+    const userreturn= await User.findById(user._id)
+    .select("-password -refreshToken")
+    .populate("reviewHistory")
+    
     return res
     .status(200)
     .json(new ApiResponse(200, userreturn, "User registered Successfully"))
@@ -78,7 +78,8 @@ const loginUser= asynchandler(async(req,res)=>{
 
     user.refreshToken=refreshToken
 
-    const loggedInUser= await User.findById(user._id).select("-password -refreshToken")
+    
+    const loggedInUser= await User.findById(user._id).select("-password -refreshToken").populate("reviewHistory")
 
     user.save({validatebeforesave: false})
     const options={

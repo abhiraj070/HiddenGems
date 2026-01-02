@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import {useRouter} from "next/navigation"
 
 export default function SidebarComponent({
   selectedCategories = [],
@@ -24,7 +25,7 @@ export default function SidebarComponent({
     { id: "adventure", name: "Adventure" },
     { id: "others", name: "Others" }
   ]
-
+  const router= useRouter()
   const [expandedCategories, setExpandedCategories] = useState(false)
 
   const handleCategoryToggle = (categoryId) => {
@@ -33,6 +34,10 @@ export default function SidebarComponent({
       : [...selectedCategories, categoryId]
 
     onCategoryChange(updated.length === 0 ? [] : updated)
+  }
+
+  const onShowSaved=()=>{
+    router.push("/profile")
   }
 
   const isSelected = (categoryId) => {
@@ -104,7 +109,7 @@ export default function SidebarComponent({
       <div className="flex-1" />
       <div className="mx-4 mb-6 space-y-3">
         <button
-          onClick={() => onShowFavorites("favorites")}
+          onClick={onShowSaved}
           className="w-full flex items-center gap-4 px-5 py-4 rounded-xl bg-white hover:bg-stone-100 transition shadow-lg border border-stone-200"
         >
           <div className="w-10 h-10 rounded-lg bg-stone-200 flex items-center justify-center">

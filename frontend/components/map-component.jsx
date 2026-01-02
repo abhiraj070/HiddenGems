@@ -117,9 +117,17 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
        const lng=newspots.lng
        const key= `${lat},${lng}`
        if(!marked.current.has(key)){
-         const marker=L.marker([lat,lng]).addTo(map.current)
-         marker.on("click",(e)=>{
+          const marker=L.marker([lat,lng]).addTo(map.current)
+          console.log("marked");
+          marker.on("click",async (e)=>{
             L.DomEvent.stop(e)
+            const lati=lat
+            const lngi=lng
+            const res= await axios.get(
+              `/api/v1/spot/get/${lati}/${lngi}`
+            )
+            const spotAllReviews= res.data.data.allCoordReviews
+            setAllReviews(spotAllReviews)
             ListBox(true)
          })
          marked.current.add(key)

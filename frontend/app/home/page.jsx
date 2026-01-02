@@ -98,14 +98,13 @@ export default function HomePage() {
 
   useEffect(()=>{
     const fetchReviews =async ()=>{
-    const user= JSON.parse(localStorage.getItem("user"))
     const res= await axios.get(
-      `/api/v1/review/get/user/${user._id}`,
+      `/api/v1/spot/get/spots`,
       { withCredentials: true }
     )
     const reviewGot= res.data.data;
     //console.log("reviews: ",reviewGot);
-    //console.log("res: ",res);
+    console.log("res: ",res);
     setdbspots(reviewGot)    
   }
   fetchReviews()

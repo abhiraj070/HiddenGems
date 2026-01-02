@@ -44,6 +44,8 @@ export default function AuthPage() {
           { withCredentials: true }
         )
         const user= res.data.data.user
+        //console.log("User: ",user );
+        
         localStorage.setItem("user",JSON.stringify(user))
         router.push("/home")
       } else {
@@ -58,8 +60,8 @@ export default function AuthPage() {
           "/api/v1/users/register", formData
         )
         const user= res.data.data
-        console.log("userstr:",res);
-        console.log("user1:",user);
+        //console.log("userstr:",res);
+        //console.log("user1:",user);
         
         localStorage.setItem("user",JSON.stringify(user))
         //(another method)localStorage.setItem("user",JSON.stringify({name, username, profilepicture}))  //local storage only stores strings so by using json.stringify we convert each element in the object into a valid string which can be stored in the local storage.
