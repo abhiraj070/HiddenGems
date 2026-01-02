@@ -1,8 +1,10 @@
 import { User } from "../models/user.model.js"
+import { Spot } from "../models/spot.model.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { asynchandler } from "../utils/asynchandler.js"
+
 import JWT from "jsonwebtoken"
 
 
@@ -216,15 +218,39 @@ const changePassword= asynchandler(async(req,res)=>{
 })
 
 const saveASpot= asynchandler(async (req,res) => {
-    const spot_id= req.params.id
+    const lat= req.params.lat
+    const lng= req.params.lng
+    const spot= await Spot.find({latitude: lat, longitude: lng})
+    //console.log("spot: ",spot)
+    if(spot.length===0){
+        throw new ApiError(500,"Error while fetching spot")
+    }
     const user_id= req.user._id
     const user= await User.findById(user_id)
-    user.savedPlaces.push(spot_id)
+    user.savedPlaces.push(spot[0]._id)
     await user.save()
     await user.populate("savedPlaces")
     return res
     .status(200)
     .json(new ApiResponse(200,user.savedPlaces,"Spot saved successfully"))
+})
+
+const removeSavedSpot= asynchandler(async (req,res)=>{
+    const lat= req.params.lat
+    const lng= req.params.lng
+    const spot= await Spot.find({latitude: lat,longitude: lng})
+    if(!spot){
+        throw new ApiError(500,"Error while fetching Spot")
+    }
+    const spot_id= spot._id
+    const user_id= req.user._id
+    const updatedUser= await User.findByIdAndUpdate(user_id,
+        {$pull:{savedPlaces:{spot_id}}},
+        {new: true}
+    )
+    return res
+    .status(200)
+    .json(new ApiResponse(200,updatedUser,"Spot deleted successfully"))
 })
 
 const favSpot= asynchandler(async (req,res) => {
@@ -249,5 +275,6 @@ export {
     refreshAccessToken,
     changePassword,
     saveASpot,
-    favSpot
+    favSpot,
+    removeSavedSpot
 }

@@ -124,6 +124,18 @@ export default function SidebarComponent({
               Places you bookmarked
             </p>
           </div>
+          <span className="text-lg"><svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="w-4 h-4"
+          >
+            <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" />
+          </svg>
+          </span>
         </button>
 
         <button
@@ -136,16 +148,16 @@ export default function SidebarComponent({
 
           <div className="flex-1 text-left">
             <p className="text-sm font-semibold text-stone-800">
-              Favourite
+              Liked
             </p>
             <p className="text-xs text-stone-500">
               Places you love
             </p>
           </div>
-
           <span className="text-xs font-semibold text-stone-700 bg-stone-200 px-2 py-1 rounded-full">
             {wishlist.length}
           </span>
+          <span className="text-2xl leading-none">♡</span>
         </button>
       </div>
     </div>

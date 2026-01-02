@@ -25,6 +25,8 @@ export default function HomePage() {
   const [allReviews, setAllReviews]= useState()
   const [showDetails, setShowDetails]= useState(false)
   const [transferSpecificReview, setTransferSpecificReview]= useState()
+  const [error, setError]= useState(null)
+  const [coordOfSpot, setCoordOfSpot]= useState()
   const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -45,13 +47,22 @@ export default function HomePage() {
     //console.log("parseduser:",parseduser)
     setUser(parseduser)
     //to get the current location of the user
-    navigator.geolocation.getCurrentPosition(
-      async (position)=>{  //browser runs this callback function when user allows.
-        const {latitude, longitude}=position.coords
-        //console.log("latitude: ",latitude,"longitude: ",longitude);
-        setCurrentLocation({latitude,longitude})
-      }
-    )
+      navigator.geolocation.getCurrentPosition(
+        async (position)=>{  //browser runs this callback function when user allows.
+          const {latitude, longitude}=position.coords
+          //console.log("latitude: ",latitude,"longitude: ",longitude);
+          setCurrentLocation({latitude,longitude})
+        },
+        (error)=>{
+          setError(error.message)
+        },
+        {
+          enableHighAccuracy: true, // critical
+          timeout: 10000,           // wait up to 10s
+          maximumAge: 0             // do NOT use cached location
+        }
+      )
+    
   }, [router]) //[router] dependency is same as [].
 
   const filterSpots = (spotsToFilter, categories) => {
@@ -104,7 +115,7 @@ export default function HomePage() {
     )
     const reviewGot= res.data.data;
     //console.log("reviews: ",reviewGot);
-    console.log("res: ",res);
+    //console.log("res: ",res);
     setdbspots(reviewGot)    
   }
   fetchReviews()
@@ -178,6 +189,7 @@ export default function HomePage() {
             newspots={newspots}
             ListBox={setShowList}
             setAllReviews={setAllReviews}
+            setCoordOfSpot={setCoordOfSpot}
           />
         </div>
       </div>
@@ -199,6 +211,7 @@ export default function HomePage() {
         allReviews={allReviews}
         setShowDetails={setShowDetails}
         setTransferSpecificReview={setTransferSpecificReview}
+        coordOfSpot={coordOfSpot}
       />}
 
       {showDetails &&

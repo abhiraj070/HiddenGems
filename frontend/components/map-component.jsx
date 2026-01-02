@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import axios from "axios"
-export default function MapComponent({onLocationPicked, currentLocation, dbspots, newspots, ListBox, setAllReviews}) {
+export default function MapComponent({onLocationPicked, currentLocation, dbspots, newspots, ListBox, setAllReviews, setCoordOfSpot}) {
   const mapContainer = useRef(null) 
   const map = useRef(null) 
   const marked= useRef(new Set())
@@ -95,6 +95,7 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
         //console.log("spotAllReviews: ",spotAllReviews)
         setAllReviews(spotAllReviews)
         ListBox(true)
+        setCoordOfSpot({lat: lati,lng: lngi})
       })
       dbMarkersRef.current.push(marker)
       marked.current.add(key)
@@ -118,7 +119,7 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
        const key= `${lat},${lng}`
        if(!marked.current.has(key)){
           const marker=L.marker([lat,lng]).addTo(map.current)
-          console.log("marked");
+          //console.log("marked");
           marker.on("click",async (e)=>{
             L.DomEvent.stop(e)
             const lati=lat
@@ -128,7 +129,8 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
             )
             const spotAllReviews= res.data.data.allCoordReviews
             setAllReviews(spotAllReviews)
-            ListBox(true)
+            ListBox(true)            
+            setCoordOfSpot({lat: lati,lng: lngi})
          })
          marked.current.add(key)
        }

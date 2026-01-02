@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser, loginUser, logout, changeUserDetails, changePhoto, refreshAccessToken, changePassword, saveASpot, favSpot } from "../controllers/user.controller.js";
+import { registerUser, loginUser, logout, changeUserDetails, changePhoto, refreshAccessToken, changePassword, saveASpot, favSpot, removeSavedSpot } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
@@ -19,7 +19,8 @@ router.route("/updatePhoto").post(
 )
 router.route("/refreshtoken").post(refreshAccessToken)
 router.route("/changePassword").post(verifyJWT,changePassword)
-router.route("/saveSpot").post(verifyJWT,saveASpot)
+router.route("/saveSpot/:lat/:lng").post(verifyJWT,saveASpot)
 router.route("/favSpot").post(verifyJWT,favSpot)
+router.route("/deletespot/:lat/:lng").post(verifyJWT,removeSavedSpot)
 
 export default router
