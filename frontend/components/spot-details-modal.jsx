@@ -87,7 +87,6 @@ export default function SpotDetailsModal({ onClose, review }) {
             </div>
             
         </div>
-        {/* View on Google Maps */}
         <div
         className="
             mt-6
@@ -102,10 +101,10 @@ export default function SpotDetailsModal({ onClose, review }) {
         >
         <div className="flex flex-col">
             <p className="text-m font-medium text-gray-800">
-            View Location
+              View Location
             </p>
             <p className="text-sm text-gray-500">
-            Open this spot in Google Maps
+              Open this spot in Google Maps
             </p>
         </div>
 

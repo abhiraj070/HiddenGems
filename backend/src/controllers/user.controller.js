@@ -6,6 +6,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { asynchandler } from "../utils/asynchandler.js"
 
 import JWT from "jsonwebtoken"
+import { Review } from "../models/review.model.js"
 
 
 const registerUser= asynchandler(async(req,res)=>{
@@ -81,7 +82,7 @@ const loginUser= asynchandler(async(req,res)=>{
     user.refreshToken=refreshToken
 
     
-    const loggedInUser= await User.findById(user._id).select("-password -refreshToken").populate("reviewHistory")
+    const loggedInUser= await User.findById(user._id).select("-password -refreshToken")
 
     user.save({validatebeforesave: false})
     const options={
@@ -287,7 +288,7 @@ const checkIfSaved= asynchandler(async (req,res) => {
     if(!spot){
         throw new ApiError(200,"Error while fetching spot")
     }
-    const user= await User.exists({
+    const user= await User.exists({  //exists always returns false or the user id
         _id: user_id,
         savedPlaces: spot_id
     })
@@ -303,6 +304,47 @@ const checkIfSaved= asynchandler(async (req,res) => {
     .json(new ApiResponse(200,result,"Successfull checked if spot exists in savedPlaces"))
 })
 
+const getUserDetails= asynchandler(async (req,res) => {
+    const user_id= req.user._id
+    const user= await User.findById(user_id).select("-password -refreshToken").populate("savedPlaces reviewHistory")
+    if(!user){
+        throw ApiError(400,"User Not Found")
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200,{user: user},"User fetched successfully"))
+})
+
+const deleteReview= asynchandler(async (req,res) => {
+    const id= req.params.id
+    const user_id= req.user._id
+    const userdocument= await User.findByIdAndUpdate(
+        user_id,
+        {$pull:{reviewHistory: id}},
+        {new: true}
+    )
+    if(!userdocument){
+        throw ApiError(400,"User not found")
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200,userdocument,"Successfully deleted detail by review using ID"))
+})
+const deleteSavedPlaceById= asynchandler(async (req,res) => {
+    const id= req.params.id
+    const user_id= req.user._id
+    const userdocument= await User.findByIdAndUpdate(
+        user_id,
+        {$pull:{savedPlaces: id}},
+        {new: true}
+    )
+    if(!userdocument){
+        throw ApiError(400,"User not found")
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200,userdocument,"Successfully deleted detail by saved place using ID"))
+})
 
 export {
     registerUser,
@@ -315,5 +357,8 @@ export {
     saveASpot,
     favSpot,
     removeSavedSpot,
-    checkIfSaved
+    checkIfSaved,
+    getUserDetails,
+    deleteReview,
+    deleteSavedPlaceById
 }

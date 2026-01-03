@@ -30,13 +30,13 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
       const res= await axios.post(
         `/api/v1/users/saveSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
       )
-      console.log("res save: ",res);
+      //console.log("res save: ",res);
     } 
     else{
       const res= await axios.post(
         `/api/v1/users/deletespot/${coordOfSpot.lat}/${coordOfSpot.lng}`
       )
-      console.log("res unsave: ",res);
+      //console.log("res unsave: ",res);
     }
     setTurenBlue(!turnblue)
   }
@@ -56,6 +56,13 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
         >
           ✕
         </button>
+      </div>
+      <div className="flex items-center justify-between px-5 py-3 border-b
+                      bg-linear-to-r from-gray-50 to-gray-100 ">
+        <h3 className="text-m font-semibold text-gray-800 tracking-wide">
+          {allReviews[0].spotName[0].toUpperCase()+allReviews[0].spotName.slice(1)}
+        </h3>
+          
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">

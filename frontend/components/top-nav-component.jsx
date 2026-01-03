@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState, useRef, useEffect } from "react"
+import axios from "axios"
 import Image from "next/image"
 
 export default function TopNavComponent({ user, onAddSpot }) {
@@ -26,8 +27,11 @@ export default function TopNavComponent({ user, onAddSpot }) {
   //console.log("user: ",user);
   
 
-  const handleLogout = () => {
+  const handleLogout = async() => {
     localStorage.removeItem("user")
+    const res= await axios.post(
+      "/api/v1/users/logout"
+    )
     router.push("/")
   }
 

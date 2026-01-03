@@ -17,12 +17,12 @@ const verifyJWT=asynchandler (async (req,res,next)=>{
             "-password -refreshToken"
         )
         if(!user){
-            throw new ApiError(400,"Unauthorized request")
+            throw new ApiError(401,"Unauthorized request")
         }
-        req.user=user
+        req.user= user
         return next()
     } catch (error) {
-        throw new ApiError(401,error?.message,"Expired or invalid access token")
+        throw new ApiError(401,"Expired or invalid access token")
     }
 })
 

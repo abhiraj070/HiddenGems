@@ -15,12 +15,10 @@ export default function HomePage() {
   const [user, setUser] = useState(null)
   const [newspots, setnewSpots] = useState()
   const [dbspots, setdbspots]= useState([])
-  const [filteredSpots, setFilteredSpots] = useState([])
   const [selectedCategories, setSelectedCategories] = useState([])
   const [showAddModal, setShowAddModal] = useState(false)
   const [showList, setShowList]= useState(false)
   const [selectedSpot, setSelectedSpot] = useState(null)
-  const [wishlist, setWishlist] = useState([])
   const [currentLocation, setCurrentLocation]= useState()
   const [allReviews, setAllReviews]= useState()
   const [showDetails, setShowDetails]= useState(false)
@@ -64,14 +62,6 @@ export default function HomePage() {
       )
     
   }, [router]) //[router] dependency is same as [].
-
-  const filterSpots = (spotsToFilter, categories) => {
-    if (categories.length === 0) {
-      setFilteredSpots(spotsToFilter)
-    } else {
-      setFilteredSpots(spotsToFilter.filter((spot) => categories.includes(spot.category)))
-    }
-  }
 
   const handleCategoryChange = (categories) => {
     setSelectedCategories(categories)
@@ -132,9 +122,8 @@ export default function HomePage() {
     setnewSpots(addedSpot)
     //filterSpots(updatedSpots, selectedCategories)
     setShowAddModal(false)
-    let res
     try {
-       res= await axios.post(
+       await axios.post(
         "/api/v1/review/createReview",
         {
           spotName: formData.name,
@@ -173,9 +162,6 @@ export default function HomePage() {
         <SidebarComponent
           selectedCategories={selectedCategories}
           onCategoryChange={handleCategoryChange}
-          spots={filteredSpots}
-          //favorites={user.favorites || []}
-          wishlist={wishlist}
           onSelectSpot={setSelectedSpot}
         />
 

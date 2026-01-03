@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import axios from "axios"
+import DeleteComponent from "../../components/delete-component"
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -11,7 +13,10 @@ export default function ProfilePage() {
   const [editedName, setEditedName] = useState("")
   const [loading, setLoading] = useState(true)
   const [followers, setFollowers] = useState(0) 
-
+  const [showPopUp, setShowPopUp]= useState(false)
+  const [confirmDelete, setConfirmDelete]= useState(false)
+  const [deleteReviewId, setDeleteReviewId]= useState(null)
+  const [deleteSavedId, setDeleteSavedId]= useState(null)
 
   useEffect(() => {
     const userData = localStorage.getItem("user")
@@ -19,11 +24,45 @@ export default function ProfilePage() {
       router.push("/auth?mode=login")
       return
     }
-    const parsedUser = JSON.parse(userData)
-    setUser(parsedUser)
-    setEditedName(parsedUser.fullname)
+    const fetchUser= async ()=>{
+      const res= await axios.get(
+        "/api/v1/users/get/user"
+      )
+      setUser(res.data.data.user)
+      //console.log("user: ",res.data.data);
+    }
+    fetchUser()
     setLoading(false)
   }, [router])
+
+  const handleReviewDelete=(id)=>{
+    setShowPopUp(true)
+    setDeleteReviewId(id)
+  }
+  const handleSavedDelete=(id)=>{
+    setShowPopUp(true)
+    setDeleteSavedId(id)
+  }
+
+
+  useEffect(()=>{
+    if(confirmDelete){
+      const fetchUser= async ()=>{
+      const res= await axios.get(
+        "/api/v1/users/get/user"
+      )
+      setUser(res.data.data.user)
+    }
+    fetchUser()
+    setConfirmDelete(false)
+    setDeleteReviewId(null)
+    setDeleteSavedId(null)
+    }
+  },[confirmDelete])
+
+  const handleSpotClick=()=>{
+    router.push("/home")
+  }
 
   const handleSaveProfile = () => {
     if (user && editedName.trim()) {
@@ -34,21 +73,11 @@ export default function ProfilePage() {
     }
   }
 
-  // const handleRemoveFavorite = (spotId) => {
-  //   const updatedFavorites = favorites.filter((fav) => fav.id !== spotId)
-  //   setFavorites(updatedFavorites)
-  //   if (user) {
-  //     const updatedUser = {
-  //       ...user,
-  //       favorites: updatedFavorites.map((f) => f.id),
-  //     }
-  //     setUser(updatedUser)
-  //     localStorage.setItem("user", JSON.stringify(updatedUser))
-  //   }
-  //}
-
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem("user")
+    const res= await axios.post(
+      "/api/v1/users/logout"
+    )
     router.push("/")
   }
 
@@ -57,11 +86,11 @@ export default function ProfilePage() {
   }
 
   if (!user) {
-    return null
+    return <div className="min-h-screen bg-sand flex items-center justify-center">:)</div>
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-sand via-cream to-stone">
+<div className="min-h-screen bg-linear-to-br from-sand via-cream to-stone">
   <nav className="sticky top-0 z-50 backdrop-blur bg-white/70 border-b border-stone">
     <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
       <Link
@@ -176,7 +205,7 @@ export default function ProfilePage() {
   <section className="max-w-7xl mx-auto px-6 pb-20 space-y-20">
     <div>
       <h2 className="text-3xl font-bold mb-6">Saved Gems</h2>
-      {/* {favorites.length === 0 ? ( */}
+      {user.savedPlaces.length === 0 ? ( 
         <div className="bg-white border border-stone rounded-2xl p-12 text-center">
           <p className="text-dark-text/60 text-lg mb-4">
             No saved gems yet
@@ -188,46 +217,46 @@ export default function ProfilePage() {
             Explore Gems
           </Link>
         </div>
-      {/* ) : ( */}
-        {/* <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {favorites.map((spot) => (
+       ) : ( 
+         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {user.savedPlaces.map((spot) => (
             <div
-              key={spot.id}
+              key={spot._id}
               className="bg-white border border-stone rounded-2xl overflow-hidden hover:shadow-xl transition"
             >
-              <div className="h-44 overflow-hidden">
-                <img
-                  src={spot.image || "/placeholder.svg"}
-                  alt={spot.name}
-                  className="w-full h-full object-cover hover:scale-110 transition-transform"
-                />
-              </div>
-
-              <div className="p-5">
+              <div className="p-5 cursor-pointer" 
+                onClick={()=>{handleSpotClick()}}
+              >
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-semibold text-lg">
-                    {spot.name}
+                    {spot.spotName[0].toUpperCase()+spot.spotName.slice(1)}
                   </h3>
-                  <button
-                    onClick={() => handleRemoveFavorite(spot.id)}
-                    className="text-red-500 hover:scale-110 transition"
-                  >
-                    ♥
-                  </button>
+                  <div className="flex items-center justify-end p-4">
+                    <button
+                      onClick={(e)=>{
+                          e.stopPropagation();
+                          handleSavedDelete(spot._id)
+                        }
+                      }
+                      className="
+                        px-4 py-2
+                        bg-green-500 text-white text-lg font-medium
+                        rounded-lg
+                        hover:bg-red-600
+                        active:scale-95
+                        transition
+                      "
+                    >
+                      🗑
+                    </button>
+                  </div>
                 </div>
-
-                <p className="text-sm text-dark-text/60 mb-2 line-clamp-2">
-                  {spot.description}
-                </p>
-
-                <span className="text-xs text-dark-text/40 capitalize">
-                  {spot.category}
-                </span>
               </div>
             </div>
+            
           ))}
-        </div> */}
-      {/* )} */}
+        </div> 
+      )} 
     </div>
 
       <div>
@@ -254,7 +283,7 @@ export default function ProfilePage() {
             >
               <div className="mb-3">
                 <h3 className="text-base font-semibold text-stone-900 leading-snug">
-                  {review.spotName}
+                  {review.spotName[0].toUpperCase()+review.spotName.slice(1)}
                 </h3>
               </div>
 
@@ -267,12 +296,36 @@ export default function ProfilePage() {
                   {review.tag}
                 </span>
               </div>
+              <div className="flex items-center justify-end p-4">
+                <button
+                  onClick={()=>{handleReviewDelete(review._id)}}
+                  className="
+                    px-4 py-2
+                    bg-green-500 text-white text-xl font-medium
+                    rounded-lg
+                    hover:bg-red-600
+                    active:scale-95
+                    transition
+                  "
+                >
+                  🗑
+                </button>
+              </div>
             </div>
+            
           ))}
         </div>
       )}
     </div>
   </section>
+  {showPopUp&&
+    <DeleteComponent
+      setConfirmDelete={setConfirmDelete}
+      setShowPopUp={setShowPopUp}
+      deleteReviewId={deleteReviewId}
+      deleteSavedId={deleteSavedId}
+    />
+  }
 </div>
   )
 }
