@@ -112,10 +112,6 @@ export default function SidebarComponent({
           onClick={onShowSaved}
           className="w-full flex items-center gap-4 px-5 py-4 rounded-xl bg-white hover:bg-stone-100 transition shadow-lg border border-stone-200"
         >
-          <div className="w-10 h-10 rounded-lg bg-stone-200 flex items-center justify-center">
-            {/* image here */}
-          </div>
-
           <div className="flex-1 text-left">
             <p className="text-sm font-semibold text-stone-800">
               Saved
@@ -142,10 +138,6 @@ export default function SidebarComponent({
           onClick={() => onShowFavorites("wishlist")}
           className="w-full flex items-center gap-4 px-5 py-4 rounded-xl bg-white hover:bg-stone-100 transition shadow-lg border border-stone-200"
         >
-          <div className="w-10 h-10 rounded-lg bg-stone-200 flex items-center justify-center">
-            {/* image here */}
-          </div>
-
           <div className="flex-1 text-left">
             <p className="text-sm font-semibold text-stone-800">
               Liked

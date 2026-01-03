@@ -346,6 +346,21 @@ const deleteSavedPlaceById= asynchandler(async (req,res) => {
     .json(new ApiResponse(200,userdocument,"Successfully deleted detail by saved place using ID"))
 })
 
+const addBio= asynchandler(async (req,res) => {
+    const user_id= req.user._id
+    const bio= req.body.bio
+    const userdocument= await User.findByIdAndUpdate(
+        user_id,
+        {bio: bio}
+    )
+    if(!userdocument){
+        throw new ApiError(404,"User not found")
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200,userdocument,"Bio successfully updated"))
+})
+
 export {
     registerUser,
     loginUser,
@@ -360,5 +375,6 @@ export {
     checkIfSaved,
     getUserDetails,
     deleteReview,
-    deleteSavedPlaceById
+    deleteSavedPlaceById,
+    addBio
 }

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser, loginUser, logout, changeUserDetails, changePhoto, refreshAccessToken, changePassword, saveASpot, favSpot, removeSavedSpot, checkIfSaved, getUserDetails, deleteReview, deleteSavedPlaceById } from "../controllers/user.controller.js";
+import { registerUser, loginUser, logout, changeUserDetails, changePhoto, refreshAccessToken, changePassword, saveASpot, favSpot, removeSavedSpot, checkIfSaved, getUserDetails, deleteReview, deleteSavedPlaceById, addBio } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
@@ -26,5 +26,5 @@ router.route("/check/:lat/:lng").get(verifyJWT,checkIfSaved)
 router.route("/get/user").get(verifyJWT,getUserDetails)
 router.route("/delete/review/:id").post(verifyJWT,deleteReview)
 router.route("/delete/saved/:id").post(verifyJWT,deleteSavedPlaceById)
-
+router.route("/addbio").post(verifyJWT,addBio)
 export default router

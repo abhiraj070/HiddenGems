@@ -8,6 +8,9 @@ const userschema = Schema({
         required: true,
         trim: true
     },
+    bio:{
+        type: String,
+    },
     username:{
         type: String,
         required: true,
