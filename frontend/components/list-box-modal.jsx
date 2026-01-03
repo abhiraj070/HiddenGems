@@ -5,25 +5,40 @@ import axios from "axios"
 export default function ListBoxModal({ onClose, allReviews, setShowDetails, setTransferSpecificReview, coordOfSpot }) {
   //console.log("allReviews: ",allReviews);
   //console.log(("set: ",allReviews[0].reviews));
-
+  const [turnblue, setTurenBlue]= useState(false)
+  const [turnred, setTurnRed]= useState(false)
   useEffect(()=>{
-    const fetchIsSaved=async ()=>{
+    const fetchIsSavedLiked=async ()=>{
       const res= await axios.get(
         `/api/v1/users/check/${coordOfSpot.lat}/${coordOfSpot.lng}`
       )
+      const res2= await axios.get(
+        `/api/v1/users/check/liked/${coordOfSpot.lat}/${coordOfSpot.lng}`
+      )
       //console.log("res: ",res.data.data);
+      setTurnRed(res2.data.data)
       setTurenBlue(res.data.data)
     }
-    fetchIsSaved()
+    fetchIsSavedLiked()
   },[])
 
-  const [turnblue, setTurenBlue]= useState(false)
   const handleReviewClick= (val)=>{
     setShowDetails(true)
     setTransferSpecificReview(val)
   }
-  const handleLike=()=>{
-
+  const handleLike=async(id)=>{
+    if(!turnred){
+      const res= await axios.post(
+        `/api/v1/users/favSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
+      )
+    }
+    else{
+      const res2= await axios.post(
+        `/api/v1/users/removeliked/${coordOfSpot.lat}/${coordOfSpot.lng}`
+      )
+    }
+    
+    setTurnRed(!turnred)
   }
   const handleSave= async ()=>{
     if(!turnblue){
@@ -87,12 +102,14 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
       <div className="flex items-center justify-between px-5 py-3 border-t bg-gray-50 rounded-b-xl">
         <button
           onClick={handleLike}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg
-                    border border-gray-300 text-gray-700
-                    hover:bg-red-50 hover:border-red-300 hover:text-red-600
-                    transition"
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg
+                    ${turnred? "border bg-red-50 border-red-400 text-red-600":
+                    "border border-gray-300 text-gray-700 hover:bg-red-50 hover:border-red-300 hover:text-red-600"}`}
         >
           <span className="text-2xl leading-none">♡</span>
+          <span className="text-xs font-semibold text-stone-700  px-2 py-1 rounded-full">
+            {/* {val.favourite.length} */}
+          </span>
         </button>
 
         <button

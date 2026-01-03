@@ -268,9 +268,25 @@ const removeSavedSpot= asynchandler(async (req,res)=>{
 })
 
 const favSpot= asynchandler(async (req,res) => {
-    const spot_id= req.params.id
+    const lat= req.params.lat
+    const lng= req.params.lng
+    const spot= await Spot.findOne({latitude:lat, longitude: lng})
+    if(!spot){
+        throw new ApiError(404,"No spot on this coordinate")
+    }
+    const spot_id= spot._id
     const user_id= req.user._id
     const user= await User.findById(user_id)
+    const exist= await User.exists({
+        _id: user_id,
+        favourite: spot_id
+    })
+
+    if(exist){
+        return res
+        .status(200)
+        .json(new ApiResponse(200,user.savedPlaces,"Spot already marked favourite"))
+    }
     user.favourite.push(spot_id)
     await user.save()
     await user.populate("favourite")
@@ -361,6 +377,48 @@ const addBio= asynchandler(async (req,res) => {
     .json(new ApiResponse(200,userdocument,"Bio successfully updated"))
 })
 
+const checkIsLiked= asynchandler(async(req,res)=>{
+    const lat= req.params.lat
+    const lng= req.params.lng
+    const user_id= req.user._id
+    const spot= await Spot.findOne({latitude: lat, longitude: lng})
+    if(!spot){
+        throw new ApiError(404,"No Spot on this coordinate")
+    }
+    const userdocument= await User.exists({
+        _id: user_id,
+        favourite: spot._id
+    })
+    let result
+    if(userdocument){
+        result=true
+    }
+    else{
+        result=false
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200,result,"Successfully checked Liked or not"))
+})
+
+const removefavspot=asynchandler(async (req,res) => {
+    const lat= req.params.lat
+    const lng= req.params.lng
+    const user_id= req.user._id
+    const spot= await Spot.findOne({latitude: lat, longitude: lng})
+    if(!spot){
+        throw new ApiError(404,"No spot found on this coordinate")
+    }
+    const updateduser= await User.findByIdAndUpdate(
+        user_id,
+        {$pull:{favourite: spot._id}},
+        {new: true}
+    )
+    return res
+    .status(200)
+    .json(new ApiResponse(200,updateduser,"Spot removed form favourites successfully"))
+})
+
 export {
     registerUser,
     loginUser,
@@ -376,5 +434,7 @@ export {
     getUserDetails,
     deleteReview,
     deleteSavedPlaceById,
-    addBio
+    addBio,
+    checkIsLiked,
+    removefavspot
 }
