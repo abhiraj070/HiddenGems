@@ -64,7 +64,7 @@ const loginUser= asynchandler(async(req,res)=>{
     if(!user){
         throw new ApiError(400,"User not Registered")
     }
-    console.log(user);
+    //console.log(user);
     
     const isPassCorrect= await user.isPasswordCorrect(password)
     if(!isPassCorrect){
@@ -137,7 +137,7 @@ const changeUserDetails= asynchandler(async (req,res)=>{
         },
         {new: true}
     )
-    console.log(updated_details);
+    //console.log(updated_details);
     
     if(!updated_details){
         throw new ApiError(500,"Error while updating user details")
@@ -220,14 +220,27 @@ const changePassword= asynchandler(async(req,res)=>{
 const saveASpot= asynchandler(async (req,res) => {
     const lat= req.params.lat
     const lng= req.params.lng
-    const spot= await Spot.find({latitude: lat, longitude: lng})
+    const spot= await Spot.findOne({latitude: lat, longitude: lng})
     //console.log("spot: ",spot)
     if(spot.length===0){
-        throw new ApiError(500,"Error while fetching spot")
+        throw new ApiError(404,"Error while fetching spot")
     }
     const user_id= req.user._id
+    //console.log("user_id: ",user_id)
+
+    const isAlreadySaved= await User.exists({
+        _id: user_id,
+        savedPlaces: spot._id
+    })
+    //console.log("isAlreadySaved: ",isAlreadySaved);
+    
+    if(isAlreadySaved){
+        return res
+        .status(200)
+        .json(new ApiResponse(200,req.user.savedPlaces,"Spot is already saved"))
+    }
     const user= await User.findById(user_id)
-    user.savedPlaces.push(spot[0]._id)
+    user.savedPlaces.push(spot._id)
     await user.save()
     await user.populate("savedPlaces")
     return res
@@ -239,13 +252,13 @@ const removeSavedSpot= asynchandler(async (req,res)=>{
     const lat= req.params.lat
     const lng= req.params.lng
     const spot= await Spot.find({latitude: lat,longitude: lng})
-    if(!spot){
-        throw new ApiError(500,"Error while fetching Spot")
+    if(spot.length===0){
+        throw new ApiError(404,"Error while fetching Spot")
     }
-    const spot_id= spot._id
+    const spot_id= spot[0]._id
     const user_id= req.user._id
     const updatedUser= await User.findByIdAndUpdate(user_id,
-        {$pull:{savedPlaces:{spot_id}}},
+        {$pull: {savedPlaces: spot_id}},
         {new: true}
     )
     return res
@@ -265,6 +278,31 @@ const favSpot= asynchandler(async (req,res) => {
     .json(new ApiResponse(200,user.savedPlaces,"Spot marked favourite successfully"))
 })
 
+const checkIfSaved= asynchandler(async (req,res) => {
+    const lat= req.params.lat
+    const lng= req.params.lng
+    const user_id= req.user._id
+    const spot= await Spot.findOne({latitude:lat,longitude: lng })
+    const spot_id= spot._id
+    if(!spot){
+        throw new ApiError(200,"Error while fetching spot")
+    }
+    const user= await User.exists({
+        _id: user_id,
+        savedPlaces: spot_id
+    })
+    let result
+    if(!user){
+        result= false
+    }
+    else{
+        result= true
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200,result,"Successfull checked if spot exists in savedPlaces"))
+})
+
 
 export {
     registerUser,
@@ -276,5 +314,6 @@ export {
     changePassword,
     saveASpot,
     favSpot,
-    removeSavedSpot
+    removeSavedSpot,
+    checkIfSaved
 }

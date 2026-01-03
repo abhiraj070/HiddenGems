@@ -1,10 +1,21 @@
 "use client"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 
 export default function ListBoxModal({ onClose, allReviews, setShowDetails, setTransferSpecificReview, coordOfSpot }) {
   //console.log("allReviews: ",allReviews);
   //console.log(("set: ",allReviews[0].reviews));
+
+  useEffect(()=>{
+    const fetchIsSaved=async ()=>{
+      const res= await axios.get(
+        `/api/v1/users/check/${coordOfSpot.lat}/${coordOfSpot.lng}`
+      )
+      //console.log("res: ",res.data.data);
+      setTurenBlue(res.data.data)
+    }
+    fetchIsSaved()
+  },[])
 
   const [turnblue, setTurenBlue]= useState(false)
   const handleReviewClick= (val)=>{
@@ -15,20 +26,19 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
 
   }
   const handleSave= async ()=>{
-    setTurenBlue(!turnblue)
     if(!turnblue){
       const res= await axios.post(
         `/api/v1/users/saveSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
       )
-      //console.log("res save: ",res);
+      console.log("res save: ",res);
     } 
     else{
       const res= await axios.post(
         `/api/v1/users/deletespot/${coordOfSpot.lat}/${coordOfSpot.lng}`
       )
-      //console.log("res unsave: ",res);
+      console.log("res unsave: ",res);
     }
-
+    setTurenBlue(!turnblue)
   }
   return (
     <div className="fixed top-50 right-50 z-50 w-80 rounded-xl bg-white shadow-2xl border border-gray-200 flex flex-col">
