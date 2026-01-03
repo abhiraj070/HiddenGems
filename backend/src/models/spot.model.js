@@ -26,6 +26,9 @@ const spotSchema= Schema({
             if (Number.isNaN(num)) return undefined;
             return Number(num.toFixed(3));
         }
+    },
+    likes:{
+        type: Number
     }
 })
 

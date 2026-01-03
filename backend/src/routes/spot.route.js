@@ -5,5 +5,4 @@ const router= Router()
 
 router.route("/get/:lat/:lng").get(getSpotBox)
 router.route("/get/spots").get(getAllSpots)
-
 export default router

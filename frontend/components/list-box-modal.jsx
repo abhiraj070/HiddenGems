@@ -7,6 +7,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
   //console.log(("set: ",allReviews[0].reviews));
   const [turnblue, setTurenBlue]= useState(false)
   const [turnred, setTurnRed]= useState(false)
+  const [likenumber, setlikenumber]= useState(0)
   useEffect(()=>{
     const fetchIsSavedLiked=async ()=>{
       const res= await axios.get(
@@ -16,7 +17,8 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
         `/api/v1/users/check/liked/${coordOfSpot.lat}/${coordOfSpot.lng}`
       )
       //console.log("res: ",res.data.data);
-      setTurnRed(res2.data.data)
+      setlikenumber(res2.data.data.spot.likes)
+      setTurnRed(res2.data.data.result)
       setTurenBlue(res.data.data)
     }
     fetchIsSavedLiked()
@@ -31,13 +33,16 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
       const res= await axios.post(
         `/api/v1/users/favSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
       )
+      console.log("res:",res);
+      
+      setlikenumber(res.data.data.spot.likes)
     }
     else{
-      const res2= await axios.post(
+      const res= await axios.post(
         `/api/v1/users/removeliked/${coordOfSpot.lat}/${coordOfSpot.lng}`
       )
+      setlikenumber(res.data.data.spot.likes)
     }
-    
     setTurnRed(!turnred)
   }
   const handleSave= async ()=>{
@@ -107,14 +112,13 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
                     "border border-gray-300 text-gray-700 hover:bg-red-50 hover:border-red-300 hover:text-red-600"}`}
         >
           <span className="text-2xl leading-none">♡</span>
-          <span className="text-xs font-semibold text-stone-700  px-2 py-1 rounded-full">
-            {/* {val.favourite.length} */}
+          <span className="text-sm font-semibold text-stone-700  px-2 py-1 rounded-full">
+            {likenumber || 0 }
           </span>
         </button>
 
         <button
           onClick={handleSave}
-
           className={`flex items-center gap-2 px-4 py-2 rounded-lg
                     border
                     ${turnblue? 
@@ -128,7 +132,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="w-4 h-4 text-current"
+            className="w-6 h-5 text-current"
           >
             <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" />
           </svg>

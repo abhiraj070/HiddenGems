@@ -285,14 +285,19 @@ const favSpot= asynchandler(async (req,res) => {
     if(exist){
         return res
         .status(200)
-        .json(new ApiResponse(200,user.savedPlaces,"Spot already marked favourite"))
+        .json(new ApiResponse(200,{spot: spot},"Spot already marked favourite"))
     }
+    const spotdec= await Spot.findOneAndUpdate(
+        {latitude: lat, longitude: lng},
+        {$inc:{likes: 1}},
+        {new: true}
+    )
     user.favourite.push(spot_id)
     await user.save()
     await user.populate("favourite")
     return res
     .status(200)
-    .json(new ApiResponse(200,user.savedPlaces,"Spot marked favourite successfully"))
+    .json(new ApiResponse(200,{user:user, spot:spotdec},"Spot marked favourite successfully"))
 })
 
 const checkIfSaved= asynchandler(async (req,res) => {
@@ -398,7 +403,7 @@ const checkIsLiked= asynchandler(async(req,res)=>{
     }
     return res
     .status(200)
-    .json(new ApiResponse(200,result,"Successfully checked Liked or not"))
+    .json(new ApiResponse(200,{result: result, spot: spot},"Successfully checked Liked or not"))
 })
 
 const removefavspot=asynchandler(async (req,res) => {
@@ -414,9 +419,14 @@ const removefavspot=asynchandler(async (req,res) => {
         {$pull:{favourite: spot._id}},
         {new: true}
     )
+    const spotdec= await Spot.findOneAndUpdate(
+        {latitude: lat, longitude: lng},
+        {$inc:{likes: 1}},
+        {new: true}
+    )
     return res
     .status(200)
-    .json(new ApiResponse(200,updateduser,"Spot removed form favourites successfully"))
+    .json(new ApiResponse(200,{user: updateduser, spot: spotdec},"Spot removed form favourites successfully"))
 })
 
 export {
