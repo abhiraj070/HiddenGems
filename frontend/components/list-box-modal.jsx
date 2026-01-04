@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 
-export default function ListBoxModal({ onClose, allReviews, setShowDetails, setTransferSpecificReview, coordOfSpot }) {
+export default function ListBoxModal({ onClose, allReviews, setShowDetails, setTransferSpecificReview, coordOfSpot, setIsSpotLiked }) {
   //console.log("allReviews: ",allReviews);
   //console.log(("set: ",allReviews[0].reviews));
   const [turnblue, setTurenBlue]= useState(false)
@@ -22,25 +22,26 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
       setTurenBlue(res.data.data)
     }
     fetchIsSavedLiked()
-  },[])
+  },[allReviews])
 
   const handleReviewClick= (val)=>{
     setShowDetails(true)
     setTransferSpecificReview(val)
   }
-  const handleLike=async(id)=>{
+  const handleLike=async()=>{
     if(!turnred){
       const res= await axios.post(
         `/api/v1/users/favSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
       )
-      console.log("res:",res);
-      
+      //console.log("res:",res);
+      setIsSpotLiked(true)
       setlikenumber(res.data.data.spot.likes)
     }
     else{
       const res= await axios.post(
         `/api/v1/users/removeliked/${coordOfSpot.lat}/${coordOfSpot.lng}`
       )
+      setIsSpotLiked(false)
       setlikenumber(res.data.data.spot.likes)
     }
     setTurnRed(!turnred)

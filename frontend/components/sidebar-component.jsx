@@ -1,14 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {useRouter} from "next/navigation"
+import axios from "axios"
 
 export default function SidebarComponent({
-  selectedCategories = [],
-  onCategoryChange,
-  favorites,
-  onShowFavorites,
-  wishlist = [],
+  setDisplayFavBox,
+  setAllLikedSpots,
+  isSpotLiked,
+  displayFavBox
 }) {
   const categories = [
     { id: "cafe", name: "Cafe" },
@@ -23,10 +23,12 @@ export default function SidebarComponent({
     { id: "food", name: "Food" },
     { id: "culture", name: "Culture" },
     { id: "adventure", name: "Adventure" },
+    { id: "city", name: "City"},
     { id: "others", name: "Others" }
   ]
   const router= useRouter()
   const [expandedCategories, setExpandedCategories] = useState(false)
+  const [likedlength, setLikedLength]= useState(0)
 
   const handleCategoryToggle = (categoryId) => {
     const updated = selectedCategories.includes(categoryId)
@@ -42,6 +44,28 @@ export default function SidebarComponent({
 
   const isSelected = (categoryId) => {
     return selectedCategories.includes(categoryId)
+  }
+
+  useEffect(()=>{
+    const fetchlikes= async()=>{
+      const res= await axios.get(
+      "/api/v1/users/get/likes"
+    )
+    setLikedLength(res.data.data.length)
+    }
+    fetchlikes()
+  },[isSpotLiked])
+
+  const onShowFavorites=async ()=>{
+    if(!displayFavBox){
+      const res= await axios.get(
+        "/api/v1/users/get/likes"
+      )
+      console.log(res.data.data)
+      setLikedLength(res.data.data.length)
+      setAllLikedSpots(res.data.data)
+      }
+      setDisplayFavBox(!displayFavBox)
   }
 
   return (
@@ -135,7 +159,7 @@ export default function SidebarComponent({
         </button>
 
         <button
-          onClick={() => onShowFavorites("wishlist")}
+          onClick={() => onShowFavorites()}
           className="w-full flex items-center gap-4 px-5 py-4 rounded-xl bg-white hover:bg-stone-100 transition shadow-lg border border-stone-200"
         >
           <div className="flex-1 text-left">
@@ -147,7 +171,7 @@ export default function SidebarComponent({
             </p>
           </div>
           <span className="text-xs font-semibold text-stone-700 bg-stone-200 px-2 py-1 rounded-full">
-            {wishlist.length}
+            {likedlength}
           </span>
           <span className="text-2xl leading-none">♡</span>
         </button>

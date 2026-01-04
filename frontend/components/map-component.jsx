@@ -175,7 +175,7 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
           inset 0 0 0 1px rgba(255,255,255,0.6)
         `,
         transition: "box-shadow 200ms ease, transform 200ms ease",
-        transform: "translateY(-18px)",
+        marginTop: "-18px",
       }}
     />
 

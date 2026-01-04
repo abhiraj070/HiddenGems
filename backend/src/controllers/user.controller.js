@@ -421,12 +421,24 @@ const removefavspot=asynchandler(async (req,res) => {
     )
     const spotdec= await Spot.findOneAndUpdate(
         {latitude: lat, longitude: lng},
-        {$inc:{likes: 1}},
+        {$inc:{likes: -1}},
         {new: true}
     )
     return res
     .status(200)
     .json(new ApiResponse(200,{user: updateduser, spot: spotdec},"Spot removed form favourites successfully"))
+})
+
+const getUserFavSpots= asynchandler(async (req,res) => {
+    const user_id= req.user.id
+    const user= await User.findById(user_id).select("-password -refreshToken").populate("favourite")
+    const likedSpots= user.favourite
+    if(!likedSpots){
+        throw new ApiError(404,"User not found")
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200,likedSpots,"Successfully fetched user's liked spots"))
 })
 
 export {
@@ -446,5 +458,6 @@ export {
     deleteSavedPlaceById,
     addBio,
     checkIsLiked,
-    removefavspot
+    removefavspot,
+    getUserFavSpots
 }

@@ -2,7 +2,8 @@ import { Router } from "express";
 import { registerUser, loginUser, logout, changeUserDetails, 
     changePhoto, refreshAccessToken, changePassword, saveASpot, 
     favSpot, removeSavedSpot, checkIfSaved, getUserDetails, 
-    deleteReview, deleteSavedPlaceById, addBio, checkIsLiked, removefavspot } from "../controllers/user.controller.js";
+    deleteReview, deleteSavedPlaceById, addBio, checkIsLiked,
+    removefavspot, getUserFavSpots } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
@@ -32,4 +33,5 @@ router.route("/delete/saved/:id").post(verifyJWT,deleteSavedPlaceById)
 router.route("/addbio").post(verifyJWT,addBio)
 router.route("/check/liked/:lat/:lng").get(verifyJWT,checkIsLiked)
 router.route("/removeliked/:lat/:lng").post(verifyJWT,removefavspot)
+router.route("/get/likes").get(verifyJWT,getUserFavSpots)
 export default router

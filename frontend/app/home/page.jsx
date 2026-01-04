@@ -8,12 +8,13 @@ import TopNavComponent from "@/components/top-nav-component"
 import AddSpotModal from "@/components/add-spot-modal"
 import ListBoxModal from "../../components/list-box-modal"
 import SpotDetailsModal from "../../components/spot-details-modal"
+import LikeBoxComponent from "../../components/like-box-component"
 import axios from "axios"
 
 export default function HomePage() {
   const router = useRouter()
   const [user, setUser] = useState(null)
-  const [newspots, setnewSpots] = useState()
+  const [newspots, setnewSpots] = useState(null)
   const [dbspots, setdbspots]= useState([])
   const [selectedCategories, setSelectedCategories] = useState([])
   const [showAddModal, setShowAddModal] = useState(false)
@@ -25,6 +26,9 @@ export default function HomePage() {
   const [transferSpecificReview, setTransferSpecificReview]= useState()
   const [error, setError]= useState(null)
   const [coordOfSpot, setCoordOfSpot]= useState()
+  const [displayFavBox, setDisplayFavBox]= useState(false)
+  const [allLikedSpots, setAllLikedSpots]= useState(null)
+  const [isSpotLiked, setIsSpotLiked]= useState(false)
   const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -148,7 +152,7 @@ export default function HomePage() {
 
   return (
     // a huge screen which will render all its components one by one
-    <div className="min-h-screen bg-background">
+    <div className="h-screen overflow-hidden bg-background">
 
       {/* all these green texts are components which will render when i run the program */}
       {/* all the things inside the component tag are its props. they will be transfered to the component and do the desired work, like getting some value. */}
@@ -163,9 +167,13 @@ export default function HomePage() {
           selectedCategories={selectedCategories}
           onCategoryChange={handleCategoryChange}
           onSelectSpot={setSelectedSpot}
+          setDisplayFavBox={setDisplayFavBox}
+          setAllLikedSpots={setAllLikedSpots}
+          isSpotLiked={isSpotLiked}
+          displayFavBox={displayFavBox}
         />
 
-        <div className="flex-1 ml-80">
+        <div className="flex-1 ml-80 ">
           <MapComponent
             onToggleFavorite={handleToggleFavorite}
             selectedSpot={selectedSpot}
@@ -198,6 +206,7 @@ export default function HomePage() {
         setShowDetails={setShowDetails}
         setTransferSpecificReview={setTransferSpecificReview}
         coordOfSpot={coordOfSpot}
+        setIsSpotLiked={setIsSpotLiked}
       />}
 
       {showDetails &&
@@ -207,6 +216,12 @@ export default function HomePage() {
         />
       }
 
+      {displayFavBox &&
+        <LikeBoxComponent
+          allLikedSpots={allLikedSpots}
+          onClose={()=>{setDisplayFavBox(false)}}
+        />
+      }
     </div>
 
   )
