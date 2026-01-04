@@ -14,7 +14,7 @@ export default function UserProfilePage(){
 
     useEffect(()=>{
         const fectchUserDetails= async()=>{
-            const res= await axios.get(
+            const res= await axios.get( //try to fetch whole user
                 `/api/v1/users/get/user/${userId}`
             )
             const res2= await axios.get(
@@ -114,7 +114,7 @@ export default function UserProfilePage(){
 
                                 <div className="group text-center">
                                     <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
-                                        {user.savedPlaces.length}
+                                        {user?.savedPlaces?.length ?? 0}
                                     </p>
                                     <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
                                         Saved Gems
@@ -123,7 +123,7 @@ export default function UserProfilePage(){
 
                                 <div className="group text-center cursor-pointer">
                                     <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
-                                        {followers?.length || 0}
+                                        {followers?.length ?? 0}
                                     </p>
                                     <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
                                         Followers
@@ -132,7 +132,7 @@ export default function UserProfilePage(){
 
                                 <div className="group text-center cursor-pointer">
                                     <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
-                                        {following?.length||0}
+                                        {following?.length ?? 0}
                                     </p>
                                     <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
                                         Following

@@ -324,7 +324,7 @@ const checkIfSaved= asynchandler(async (req,res) => {
 
 const getUserDetails= asynchandler(async (req,res) => {
     const user_id= req.user._id
-    const user= await User.findById(user_id).select("-password -refreshToken").populate("savedPlaces reviewHistory")
+    const user= await User.findById(user_id).select("-password -refreshToken").populate("savedPlaces reviewHistory followers following")
     if(!user){
         throw ApiError(400,"User Not Found")
     }
@@ -452,8 +452,17 @@ const getanotherUserDetails=asynchandler(async (req,res) => {
 
 const getFollowers=asynchandler(async (req,res) => {
     const user_id= req.params.id
-    const curruser_id= req.user._id
-    const user= await User.findById(user_id).populate("followers")
+    const curruser_id= req.user?._id
+    if(!user_id){
+        throw new ApiError(404,"Secondary user not found")
+    }
+    if(!curruser_id){
+        throw new ApiError(404,"Primary user not found")
+    }
+    const user= await User.findById(user_id).populate("followers following")
+    if(!user){
+        throw ApiError(404,"User not found")
+    }
     const userdocument= await User.exists({
         _id: curruser_id,
         following: user_id
@@ -466,7 +475,7 @@ const getFollowers=asynchandler(async (req,res) => {
         result= false
     }
     if(!user){
-        throw new ApiError(200,"User not found")
+        throw new ApiError(404,"User not found")
     }
     return res
     .status(200)
@@ -483,7 +492,7 @@ const addAFollowerFollowing= asynchandler(async (req,res) => {
     )
     const user2= await User.findByIdAndUpdate(
         userfolloweing_id,
-        {$push:{following: usertobefollowed_id}},
+        {$addTOSet:{following: usertobefollowed_id}},
         {new: true}
     )
     return res
@@ -508,6 +517,7 @@ const removeAFollowerFollowing= asynchandler(async (req,res) => {
     .status(200)
     .json(new ApiResponse(200,{user: user1, unfollower: user2},"Successfully handled unfollow system"))
 })
+
 export {
     registerUser,
     loginUser,

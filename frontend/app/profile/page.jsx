@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import axios from "axios"
 import DeleteComponent from "../../components/delete-component"
+import FollowerBox from "../../components/follower-modal"
+import FollowingBox from "../../components/following-modal"
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -12,12 +14,13 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const [editedName, setEditedName] = useState("")
   const [loading, setLoading] = useState(true)
-  const [followers, setFollowers] = useState(0) 
   const [showPopUp, setShowPopUp]= useState(false)
   const [confirmDelete, setConfirmDelete]= useState(false)
   const [deleteReviewId, setDeleteReviewId]= useState(null)
   const [deleteSavedId, setDeleteSavedId]= useState(null)
   const [editedBio, setEditedBio]= useState("")
+  const [showFollowers, setShowFollowers]= useState(false)
+  const [showFollowing, setShowFollowing]= useState(false)
 
   useEffect(() => {
     const userData = localStorage.getItem("user")
@@ -80,6 +83,16 @@ export default function ProfilePage() {
     setIsEditing(true)
   }
 
+  const handleFollowerClick= ()=>{
+    setShowFollowing(false)
+    setShowFollowers(!showFollowers)
+  }
+
+  const handleFollowingClick=()=>{
+    setShowFollowers(false)    
+    setShowFollowing(!showFollowing)
+  }
+
   const handleSaveProfile = () => {
     if (user && editedName.trim()) {
       const updatedUser = { ...user, fullname: editedName }
@@ -118,7 +131,7 @@ export default function ProfilePage() {
 
       <button
         onClick={handleLogout}
-        className="px-5 py-2 rounded-full border border-stone text-m font-medium hover:bg-stone-100 transition"
+        className="px-5 py-2 rounded-full border border-stone text-m font-medium transition hover:bg-green-400"
       >
         Logout
       </button>
@@ -183,11 +196,10 @@ export default function ProfilePage() {
               )}
             </div>
 
-            {/* Stats (no components, no pills) */}
             <div className="mt-6 flex flex-wrap justify-center md:justify-start gap-8">
               <div className="group text-center">
                 <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
-                  {user.reviewHistory.length}
+                  {user.reviewHistory.length ?? 0}
                 </p>
                 <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
                   Reviews
@@ -196,25 +208,36 @@ export default function ProfilePage() {
 
               <div className="group text-center">
                 <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
-                  {user.savedPlaces.length}
+                  {user.savedPlaces.length ?? 0}
                 </p>
                 <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
                   Saved Gems
                 </p>
               </div>
 
-              <div className="group text-center cursor-pointer">
+              <button className="group text-center cursor-pointer"
+              onClick={()=>{handleFollowerClick()}}
+              >
                 <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
-                  {followers}
+                  {user.followers.length ?? 0}
                 </p>
                 <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
                   Followers
                 </p>
-              </div>
+              </button>
+              <button className="group text-center cursor-pointer"
+              onClick={()=>{handleFollowingClick()}}
+              >
+                <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
+                  {user.following.length ?? 0}
+                </p>
+                <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
+                  Following
+                </p>
+              </button>
             </div>
           </div>
 
-          {/* Action */}
           <div className="self-center md:self-start">
             <button
               onClick={() =>
@@ -363,6 +386,19 @@ export default function ProfilePage() {
       setShowPopUp={setShowPopUp}
       deleteReviewId={deleteReviewId}
       deleteSavedId={deleteSavedId}
+    />
+  }
+
+  {showFollowers && 
+    <FollowerBox
+      onClose={()=>{setShowFollowers(false)}}
+      followers={user.followers}
+    />
+  }
+  {showFollowing &&
+    <FollowingBox
+      onClose={()=>{setShowFollowing(false)}}
+      following={user.following}
     />
   }
 </div>
