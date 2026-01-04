@@ -7,7 +7,9 @@ import Link from "next/link"
 
 export default function UserProfilePage(){
     const [user, setUser]= useState(null)
-    const [followers, setFollowers] = useState(0)
+    const [followers, setFollowers] = useState(null)
+    const [following, setFollowing] = useState(null)
+    const [isFollowed, setIsFollowed]= useState(false)
     const {userId}= useParams()
 
     useEffect(()=>{
@@ -15,11 +17,31 @@ export default function UserProfilePage(){
             const res= await axios.get(
                 `/api/v1/users/get/user/${userId}`
             )
-            console.log("res: ",res);
+            const res2= await axios.get(
+                `/api/v1/users/get/user/follower/${userId}`
+            )
+            setIsFollowed(res2.data.data.result)
+            setFollowers(res2.data.data.followers)
+            setFollowing(res2.data.data.following)
+            //console.log("res: ",res);
             setUser(res.data.data)
         }
         fectchUserDetails()
-    },[userId])
+    },[userId, isFollowed])
+
+    const handleFollowClick=async()=>{
+        if(!isFollowed){
+            const res= await axios.post(
+                `/api/v1/users/follow/user/${userId}`
+            )
+        }
+        else{
+            const res= await axios.post(
+                `/api/v1/users/unfollow/user/${userId}`
+            )
+        }
+        setIsFollowed(!isFollowed)
+    }
 
     if(!user){
         return (<div className="min-h-screen bg-sand flex items-center justify-center">Loading...</div>)
@@ -40,64 +62,97 @@ export default function UserProfilePage(){
 
         <section className="max-w-7xl mx-auto px-6 pt-12 pb-10">
             <div className="relative bg-white rounded-3xl border border-stone shadow-xl p-8 md:p-10">
-            <div className="flex flex-col md:flex-row md:items-start gap-8">
-                <div className="shrink-0">
-                <div className="h-28 w-28 rounded-full overflow-hidden bg-linear-to-br from-teal to-green-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg">
-                    {user.profilepicture ? (
-                    <img
-                        src={user.profilepicture}
-                        className="h-full w-full object-cover"
-                        loading="lazy"
-                    />
-                    ) : (
-                    user.fullname?.[0]?.toUpperCase()
-                    )}
-                </div>
-                </div>
+                <div className="relative w-full">
+                    <div
+                    className="
+                        flex flex-col md:flex-row items-center md:items-start
+                        gap-8
+                        p-8
+                        rounded-3xl
+                        bg-white/85 backdrop-blur
+                        border border-stone-200
+                        shadow-[0_25px_50px_-25px_rgba(0,0,0,0.35)]
+                    "
+                    >
+                        <div className="relative shrink-0">
+                            <div className="relative h-32 w-32 rounded-full overflow-hidden flex items-center justify-center text-white text-4xl font-bold ring-4 ring-white shadow-xl">
+                            {user.profilepicture ? (
+                                <img
+                                src={user.profilepicture}
+                                className="h-full w-full object-cover"
+                                loading="lazy"
+                                />
+                            ) : (
+                                user.fullname?.[0]?.toUpperCase()
+                            )}
+                            </div>
+                        </div>
 
-                <div className="flex-1">
-                <h1 className="text-3xl font-bold text-dark-text mb-1">
-                    {user.fullname}
-                </h1>
+                        <div className="flex-1 text-center md:text-left">
+                            <h1 className="text-4xl font-extrabold text-dark-text tracking-tight">
+                                {user.fullname}
+                            </h1>
 
-                <div className="text-base text-dark-text/70 mb-1">
-                    {user.bio|| "No bio added yet"}
-                </div>
+                            <p className="text-m text-stone-600 mt-1">
+                                @{user.username}
+                            </p>
 
-                <p className="text-xl text-dark-text/40 mb-4">
-                    @{user.username}
-                </p>
+                            <div className="mt-4 max-w-xl mx-auto md:mx-0 text-dark-text/70 text-lg">
+                                {user.bio || "Exploring and saving hidden gems 🌍"}
+                            </div>
 
-                <div className="flex gap-10">
-                    <div>
-                    <p className="text-lg font-bold">{user.reviewHistory.length}</p>
-                    <p className="text-sm text-dark-text/50 uppercase">Reviews</p>
+                            {/* Stats (no components, no pills) */}
+                            <div className="mt-6 flex flex-wrap justify-center md:justify-start gap-8">
+                                <div className="group text-center">
+                                    <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
+                                        {user.reviewHistory.length}
+                                    </p>
+                                    <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
+                                        Reviews
+                                    </p>
+                                </div>
+
+                                <div className="group text-center">
+                                    <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
+                                        {user.savedPlaces.length}
+                                    </p>
+                                    <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
+                                        Saved Gems
+                                    </p>
+                                </div>
+
+                                <div className="group text-center cursor-pointer">
+                                    <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
+                                        {followers?.length || 0}
+                                    </p>
+                                    <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
+                                        Followers
+                                    </p>
+                                </div>
+
+                                <div className="group text-center cursor-pointer">
+                                    <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
+                                        {following?.length||0}
+                                    </p>
+                                    <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
+                                        Following
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex gap-3 mt-4 md:mt-0">
+                            <button
+                                className={`px-6 py-2 rounded-full 
+                                    ${ isFollowed ? "border border-green-700 text-black bg-white":
+                                    "bg-green-600 text-white font-medium hover:bg-green-700 transition shadow"}`}
+                                onClick={()=>{handleFollowClick()}}
+                            >
+                                {isFollowed? "Unfollow" : "Follow"}
+                            </button>
+                        </div>
+                        
                     </div>
-
-                    <div>
-                    <p className="text-lg font-bold">{user.savedPlaces.length}</p>
-                    <p className="text-sm text-dark-text/50 uppercase">Saved Gems</p>
-                    </div>
-
-                    <button className="text-left group">
-                    <p className="text-lg font-bold group-hover:text-green-600 transition">
-                        {followers}
-                    </p>
-                    <p className="text-sm text-dark-text/50 uppercase group-hover:text-green-600 transition">
-                        Followers
-                    </p>
-                    </button>
                 </div>
-                </div>
-
-                <div className="flex gap-3 mt-4 md:mt-0">
-                <button
-                    className="px-6 py-2 rounded-full bg-green-600 text-white font-medium hover:bg-green-700 transition shadow"
-                >
-                    Follow
-                </button>
-                </div>
-            </div>
             </div>
         </section>
 
@@ -139,7 +194,7 @@ export default function UserProfilePage(){
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-3xl font-bold">{`${user.username}`}'s Reviews</h2>
                 <span className="text-sm text-stone-500">
-                {user.reviewHistory.length} locations
+                    {user.reviewHistory.length} locations
                 </span>
             </div>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

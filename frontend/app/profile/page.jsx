@@ -127,84 +127,117 @@ export default function ProfilePage() {
 
   <section className="max-w-7xl mx-auto px-6 pt-12 pb-10">
     <div className="relative bg-white rounded-3xl border border-stone shadow-xl p-8 md:p-10">
-      <div className="flex flex-col md:flex-row md:items-start gap-8">
-        <div className="shrink-0">
-          <div className="h-28 w-28 rounded-full overflow-hidden bg-linear-to-br from-teal to-green-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg">
-            {user.profilepicture ? (
-              <img
-                src={user.profilepicture}
-                className="h-full w-full object-cover"
-                loading="lazy"
-              />
-            ) : (
-              user.fullname?.[0]?.toUpperCase()
-            )}
-          </div>
-        </div>
-
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold text-dark-text mb-1">
-            {isEditing ? (
-              <input
-                value={editedName}
-                onChange={(e) => setEditedName(e.target.value)}
-                className="w-full border-b-2 border-teal focus:outline-none text-3xl font-bold"
-              />
-            ) : (
-              user.fullname
-            )}
-          </h1>
-
-          <div className="text-base text-dark-text/70 mb-1">
-            {isEditing ? (
-              <input
-                value={editedBio}
-                onChange={(e) => handleEditBio(e.target.value)}
-                className="w-full border-b-2 border-teal focus:outline-none text-base"
-                placeholder="Add a short bio"
-              />
-            ) : (
-              editedBio || user.bio|| "No bio added yet"
-            )}
+      <div className="relative w-full">
+        <div
+          className="
+            flex flex-col md:flex-row items-center md:items-start
+            gap-8
+            p-8
+            rounded-3xl
+            bg-white/85 backdrop-blur
+            border border-stone-200
+            shadow-[0_25px_50px_-25px_rgba(0,0,0,0.35)]
+          "
+        >
+          <div className="relative shrink-0">
+            <div className="relative h-32 w-32 rounded-full overflow-hidden flex items-center justify-center text-white text-4xl font-bold ring-4 ring-white shadow-xl">
+              {user.profilepicture ? (
+                <img
+                  src={user.profilepicture}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                user.fullname?.[0]?.toUpperCase()
+              )}
+            </div>
           </div>
 
-          <p className="text-xl text-dark-text/40 mb-4">
-            @{user.username}
-          </p>
+          <div className="flex-1 text-center md:text-left">
+            <h1 className="text-4xl font-extrabold text-dark-text tracking-tight">
+              {isEditing ? (
+                <input
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                  className="w-full bg-transparent border-b-2 border-green-500 focus:outline-none"
+                />
+              ) : (
+                user.fullname
+              )}
+            </h1>
 
-          <div className="flex gap-10">
-            <div>
-              <p className="text-lg font-bold">{user.reviewHistory.length}</p>
-              <p className="text-sm text-dark-text/50 uppercase">Reviews</p>
+            <p className="text-m text-stone-600 mt-1">
+              @{user.username}
+            </p>
+
+            <div className="mt-4 max-w-xl mx-auto md:mx-0 text-dark-text/70 text-lg">
+              {isEditing ? (
+                <input
+                  value={editedBio}
+                  onChange={(e) => handleEditBio(e.target.value)}
+                  className="w-full bg-transparent border-b-2 border-green-500 focus:outline-none"
+                  placeholder="Write something about yourself"
+                />
+              ) : (
+                editedBio || user.bio || "Exploring and saving hidden gems 🌍"
+              )}
             </div>
 
-            <div>
-              <p className="text-lg font-bold">{user.savedPlaces.length}</p>
-              <p className="text-sm text-dark-text/50 uppercase">Saved Gems</p>
-            </div>
+            {/* Stats (no components, no pills) */}
+            <div className="mt-6 flex flex-wrap justify-center md:justify-start gap-8">
+              <div className="group text-center">
+                <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
+                  {user.reviewHistory.length}
+                </p>
+                <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
+                  Reviews
+                </p>
+              </div>
 
-            <button className="text-left group">
-              <p className="text-lg font-bold group-hover:text-green-600 transition">
-                {followers}
-              </p>
-              <p className="text-sm text-dark-text/50 uppercase group-hover:text-green-600 transition">
-                Followers
-              </p>
+              <div className="group text-center">
+                <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
+                  {user.savedPlaces.length}
+                </p>
+                <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
+                  Saved Gems
+                </p>
+              </div>
+
+              <div className="group text-center cursor-pointer">
+                <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
+                  {followers}
+                </p>
+                <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
+                  Followers
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Action */}
+          <div className="self-center md:self-start">
+            <button
+              onClick={() =>
+                isEditing ? handleSaveProfile() : handleEditClick()
+              }
+              className="
+                px-7 py-2.5
+                rounded-full
+                bg-linear-to-r from-green-500 to-teal-500
+                text-white font-semibold
+                shadow-lg
+                hover:shadow-xl
+                hover:scale-105
+                active:scale-95
+                transition
+              "
+            >
+              {isEditing ? "Save Profile" : "Edit Profile"}
             </button>
           </div>
         </div>
-
-        <div className="flex gap-3 mt-4 md:mt-0">
-          <button
-            onClick={() =>
-              isEditing ? handleSaveProfile() : handleEditClick()
-            }
-            className="px-6 py-2 rounded-full border border-stone font-medium hover:bg-stone-100 transition"
-          >
-            {isEditing ? "Save" : "Edit"}
-          </button>
-        </div>
       </div>
+
 
       {isEditing && (
         <button

@@ -3,7 +3,8 @@ import { registerUser, loginUser, logout, changeUserDetails,
     changePhoto, refreshAccessToken, changePassword, saveASpot, 
     favSpot, removeSavedSpot, checkIfSaved, getUserDetails, 
     deleteReview, deleteSavedPlaceById, addBio, checkIsLiked,
-    removefavspot, getUserFavSpots, getanotherUserDetails } from "../controllers/user.controller.js";
+    removefavspot, getUserFavSpots, getanotherUserDetails,
+    getFollowers, addAFollowerFollowing, removeAFollowerFollowing } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
@@ -35,4 +36,7 @@ router.route("/check/liked/:lat/:lng").get(verifyJWT,checkIsLiked)
 router.route("/removeliked/:lat/:lng").post(verifyJWT,removefavspot)
 router.route("/get/likes").get(verifyJWT,getUserFavSpots)
 router.route("/get/user/:Id").get(getanotherUserDetails)
+router.route("/get/user/follower/:id").get(verifyJWT,getFollowers)
+router.route("/follow/user/:id").post(verifyJWT,addAFollowerFollowing)
+router.route("/unfollow/user/:id").post(verifyJWT,removeAFollowerFollowing)
 export default router

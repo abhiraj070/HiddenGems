@@ -306,7 +306,7 @@ const checkIfSaved= asynchandler(async (req,res) => {
     if(!spot){
         throw new ApiError(200,"Error while fetching spot")
     }
-    const user= await User.exists({  //exists always returns false or the user id
+    const user= await User.exists({  //exists always returns null or the user id
         _id: user_id,
         savedPlaces: spot_id
     })
@@ -348,6 +348,7 @@ const deleteReview= asynchandler(async (req,res) => {
     .status(200)
     .json(new ApiResponse(200,userdocument,"Successfully deleted detail by review using ID"))
 })
+
 const deleteSavedPlaceById= asynchandler(async (req,res) => {
     const id= req.params.id
     const user_id= req.user._id
@@ -449,6 +450,64 @@ const getanotherUserDetails=asynchandler(async (req,res) => {
     .json(new ApiResponse(200,user,"Fetched user details successfully"))
 })
 
+const getFollowers=asynchandler(async (req,res) => {
+    const user_id= req.params.id
+    const curruser_id= req.user._id
+    const user= await User.findById(user_id).populate("followers")
+    const userdocument= await User.exists({
+        _id: curruser_id,
+        following: user_id
+    })
+    let result
+    if(userdocument){
+        result=true
+    }
+    else{
+        result= false
+    }
+    if(!user){
+        throw new ApiError(200,"User not found")
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200,{followers: user.followers, following: user.following, result: result},"User's followers fetched successfully"))
+})
+
+const addAFollowerFollowing= asynchandler(async (req,res) => {
+    const usertobefollowed_id= req.params.id
+    const userfolloweing_id= req.user._id
+    const user1= await User.findByIdAndUpdate(
+        usertobefollowed_id,
+        {$push: {followers: userfolloweing_id}},
+        {new: true}
+    )
+    const user2= await User.findByIdAndUpdate(
+        userfolloweing_id,
+        {$push:{following: usertobefollowed_id}},
+        {new: true}
+    )
+    return res
+    .status(200)
+    .json(new ApiResponse(200,{user: user1, follower: user2},"Successfully handled follow system"))
+})
+
+const removeAFollowerFollowing= asynchandler(async (req,res) => {
+    const usertobeunfollowed_id= req.params.id
+    const userunfolloweing_id= req.user._id
+    const user1= await User.findByIdAndUpdate(
+        usertobeunfollowed_id,
+        {$pull: {followers: userunfolloweing_id}},
+        {new: true}
+    )
+    const user2= await User.findByIdAndUpdate(
+        userunfolloweing_id,
+        {$pull:{following: usertobeunfollowed_id}},
+        {new: true}
+    )
+    return res
+    .status(200)
+    .json(new ApiResponse(200,{user: user1, unfollower: user2},"Successfully handled unfollow system"))
+})
 export {
     registerUser,
     loginUser,
@@ -468,5 +527,8 @@ export {
     checkIsLiked,
     removefavspot,
     getUserFavSpots,
-    getanotherUserDetails
+    getanotherUserDetails,
+    getFollowers,
+    addAFollowerFollowing,
+    removeAFollowerFollowing
 }

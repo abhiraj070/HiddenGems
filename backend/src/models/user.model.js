@@ -11,6 +11,14 @@ const userschema = Schema({
     bio:{
         type: String,
     },
+    followers:[{
+        type: Schema.Types.ObjectId,
+        ref: "User"
+    }],
+    following:[{
+        type: Schema.Types.ObjectId,
+        ref: "User"
+    }],
     username:{
         type: String,
         required: true,
