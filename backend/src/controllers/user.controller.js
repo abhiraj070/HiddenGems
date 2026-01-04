@@ -4,10 +4,7 @@ import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { asynchandler } from "../utils/asynchandler.js"
-
 import JWT from "jsonwebtoken"
-import { Review } from "../models/review.model.js"
-
 
 const registerUser= asynchandler(async(req,res)=>{
     const  {fullname, username, password, email}= req.body
@@ -441,6 +438,17 @@ const getUserFavSpots= asynchandler(async (req,res) => {
     .json(new ApiResponse(200,likedSpots,"Successfully fetched user's liked spots"))
 })
 
+const getanotherUserDetails=asynchandler(async (req,res) => {
+    const userId=req.params.Id
+    const user= await User.findById(userId).populate("reviewHistory savedPlaces").select("-refreshToken -password")
+    if(!user){
+        throw new ApiError(404,"User not found")
+    } 
+    return res
+    .status(200)
+    .json(new ApiResponse(200,user,"Fetched user details successfully"))
+})
+
 export {
     registerUser,
     loginUser,
@@ -459,5 +467,6 @@ export {
     addBio,
     checkIsLiked,
     removefavspot,
-    getUserFavSpots
+    getUserFavSpots,
+    getanotherUserDetails
 }

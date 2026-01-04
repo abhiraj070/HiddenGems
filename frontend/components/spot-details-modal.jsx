@@ -1,7 +1,15 @@
 "use client"
 
+import { useRouter } from "next/navigation"
+
 export default function SpotDetailsModal({ onClose, review }) {
+  const router= useRouter()
   //console.log("creating detail box")
+  const handleProfileClick=(Id)=>{
+    router.push(`/profile/${Id}`)
+  }
+
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="relative w-[90%] max-w-2xl rounded-2xl bg-white shadow-2xl p-8">
@@ -54,7 +62,9 @@ export default function SpotDetailsModal({ onClose, review }) {
                 Review's Owner:
             </p>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 cursor-pointer"
+            onClick={()=>{handleProfileClick(review.owner._id)}}
+            >
                 <div
                     className="
                     h-10 w-10
