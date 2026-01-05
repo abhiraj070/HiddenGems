@@ -35,10 +35,15 @@ const userschema = Schema({
     },
     password:{
         type: String,
-        required: true
+        required: function () {
+            return !this.googleId
+        }
     },
     refreshToken:{
         type: String,
+    },
+    googleId:{
+        type: String
     },
     reviewHistory:[{
         type: Schema.Types.ObjectId,

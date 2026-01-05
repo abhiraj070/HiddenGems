@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { registerUser, loginUser, logout, updateName,
     changePhoto, refreshAccessToken, changePassword, saveASpot, 
-    favSpot, removeSavedSpot, getUserDetails, 
+    favSpot, removeSavedSpot, getUserDetails, googleSignIn, 
     deleteReview, deleteSavedPlaceById, addBio, checkIsLikedSaved,
     removefavspot, getUserFavSpots, getanotherUserDetails,
     isFollowing, addAFollowerFollowing, removeAFollowerFollowing } from "../controllers/user.controller.js";
@@ -38,4 +38,5 @@ router.route("/get/check/:id").get(verifyJWT,isFollowing)
 router.route("/follow/user/:id").post(verifyJWT,addAFollowerFollowing)
 router.route("/unfollow/user/:id").post(verifyJWT,removeAFollowerFollowing)
 router.route("/edit/name").post(verifyJWT,updateName)
+router.route("/google-login").post(googleSignIn)
 export default router

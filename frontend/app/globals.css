@@ -4,7 +4,6 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Warm earthy theme - HiddenGems custom colors */
   --background: #f7f4ef;
   --foreground: #1a1a1a;
   --sand: #f7f4ef;
@@ -32,7 +31,6 @@
   --input: #faf8f3;
   --ring: #0f766e;
 
-  /* shadcn/ui defaults */
   --chart-1: #f97316;
   --chart-2: #0ea5e9;
   --chart-3: #8b5cf6;
@@ -70,7 +68,6 @@
   --input: #2d2d2d;
   --ring: #14b8a6;
 
-  /* shadcn/ui dark mode defaults */
   --chart-1: #fb923c;
   --chart-2: #06b6d4;
   --chart-3: #a78bfa;
@@ -136,7 +133,6 @@
   }
 }
 
-/* Utility classes */
 .glass {
   @apply backdrop-blur-md bg-white/10 border border-white/20;
 }
@@ -167,7 +163,6 @@ select {
   @apply cursor-pointer;
 }
 
-/* Multicolor gradient for HiddenGems logo */
 .text-gradient {
   background: linear-gradient(90deg, #0f766e 0%, #fb7185 25%, #f97316 50%, #8b5cf6 75%, #0ea5e9 100%);
   -webkit-background-clip: text;

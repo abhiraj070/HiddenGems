@@ -1,7 +1,7 @@
 "use client"
 
 import { useSearchParams, useRouter } from "next/navigation"
-import { useState, useRef } from "react"
+import { useState,useEffect, useRef } from "react"
 import Link from "next/link"
 import axios from "axios"
 
@@ -19,6 +19,65 @@ export default function AuthPage() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const [username, setUsername] =useState("")
+
+  useEffect(() => {
+    const script = document.createElement("script")
+    script.src = "https://accounts.google.com/gsi/client"
+    script.async = true
+    script.defer = true
+    document.body.appendChild(script)
+  }, [])
+
+  const handleGoogleLogin = async (credential) => {
+    setError("")
+    setLoading(true)
+    try {
+      const res = await axios.post(
+        "/api/v1/users/google-login",
+        { token: credential },
+        { withCredentials: true }
+      )
+
+      const user = res.data.data.user
+      localStorage.setItem("user", JSON.stringify(user))
+      router.push("/home")
+    } catch (err) {
+      setError(err.response?.data?.message || "Google login failed")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+  const script = document.createElement("script")
+  script.src = "https://accounts.google.com/gsi/client"
+  script.async = true
+  script.defer = true
+
+  script.onload = () => {
+    if (!window.google) {
+      return
+    }
+    window.google.accounts.id.initialize({
+      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+      callback: (response) => {
+        handleGoogleLogin(response.credential)
+      }
+    })
+    window.google.accounts.id.renderButton(
+    document.getElementById("google-auth-btn"),
+    {
+      theme: "outline",
+      size: "large",
+      shape: "circle",
+      logo_alignment: "center"
+    }
+  )
+  }
+  document.body.appendChild(script)
+}, [])
+
+
 
   const handleprofilepictureChange = (e) => {
     const file = e.target.files?.[0]
@@ -40,7 +99,7 @@ export default function AuthPage() {
         // Login      
         const res= await axios.post(
           "/api/v1/users/login",
-          {email, username, password},
+          {email, password},
           { withCredentials: true }
         )
         const user= res.data.data.user
@@ -77,21 +136,25 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-sand via-cream to-stone flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        {/* Header */}
         <Link href="/" className="inline-flex items-center mb-8 gap-2 hover:opacity-80 transition-opacity">
           <div className="text-3xl font-bold text-gradient">HiddenGems</div>
         </Link>
 
-        {/* Form Card */}
         <div className="bg-white rounded-lg border border-stone p-8 shadow-lg">
           <h1 className="text-3xl font-bold text-dark-text mb-2">{isLogin ? "Welcome Back" : "Create Account"}</h1>
-          <p className="text-dark-text/60 mb-6">
-            {isLogin ? "Login to access your discoveries" : "Join HiddenGems to start exploring"}
-          </p>
-
           {error && (
             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>
           )}
+
+          <div className="mb-6 flex flex-col items-center">
+            <div id="google-auth-btn"></div> 
+            <div className="flex items-center w-full my-4">
+              <div className="flex-1 h-px bg-stone-200"></div>
+              <span className="px-3 text-sm text-dark-text/50">OR</span>
+              <div className="flex-1 h-px bg-stone-200"></div>
+            </div>
+          </div>
+
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
@@ -105,6 +168,18 @@ export default function AuthPage() {
                     required={!isLogin}
                     className="w-full px-4 py-2 border border-stone rounded-lg focus:outline-none focus:ring-2 focus:ring-teal bg-cream"
                     placeholder="Your Full Name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-dark-text mb-2">Username</label>
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                    className="w-full px-4 py-2 border border-stone rounded-lg focus:outline-none focus:ring-2 focus:ring-teal bg-cream"
+                    placeholder=""
                   />
                 </div>
 
@@ -129,18 +204,6 @@ export default function AuthPage() {
                 </div>
               </>
             )}
-
-            <div>
-                  <label className="block text-sm font-medium text-dark-text mb-2">Username</label>
-                  <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                    className="w-full px-4 py-2 border border-stone rounded-lg focus:outline-none focus:ring-2 focus:ring-teal bg-cream"
-                    placeholder=""
-                  />
-                </div>
                 
             <div>
               <label className="block text-sm font-medium text-dark-text mb-2">Email</label>
@@ -187,8 +250,6 @@ export default function AuthPage() {
             </p>
           </div>
         </div>
-
-        {/* Back Link */}
         <p className="text-center mt-6 text-dark-text/60">
           <Link href="/" className="hover:text-teal transition-colors">
             ← Back to Home

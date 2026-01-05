@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { asynchandler } from "../utils/asynchandler.js"
 import JWT from "jsonwebtoken"
-
+import { OAuth2Client } from "google-auth-library"
 const registerUser= asynchandler(async(req,res)=>{
     const  {fullname, username, password, email}= req.body
 
@@ -48,15 +48,14 @@ const registerUser= asynchandler(async(req,res)=>{
 })
 
 const loginUser= asynchandler(async(req,res)=>{
-    const {username, email, password}= req.body
+    const {email, password}= req.body
 
-    if(!username || !email){
+    if(!email){
         throw new ApiError(400,"All the fields are required")
     }
 
     const user=await User.findOne({
-        username,
-        email,
+        email
     })
     if(!user){
         throw new ApiError(400,"User not Registered")
@@ -97,6 +96,63 @@ const loginUser= asynchandler(async(req,res)=>{
         accessToken,
         refreshToken
     },"User logged in successfully"))
+})
+
+const googleSignIn=asynchandler(async (req,res) => {
+    const {token}= req.body
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+    const ticket= await client.verifyIdToken({
+        idToken: token,
+        audience: process.env.GOOGLE_CLIENT_ID
+    })
+    const payload= ticket.getPayload()
+    const user= await User.findOne({email: payload.email})
+    const option={
+        secure: false,
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/"
+    }
+    if(user){
+        const accessToken= user.generateAccessToken()
+        const refreshToken= user.generateRefreshToken()
+        if(!accessToken || !refreshToken){
+            throw new ApiError(500,"Error while creating Tokens")
+        }
+        user.refreshToken= refreshToken
+        await user.save({validatebeforesave: false})
+        const userdocument= await User.findById(user._id).select("-refreshToken -password")
+        return res
+        .status(200)
+        .cookie("accessToken",accessToken,option)
+        .cookie("refreshToken",refreshToken,option)
+        .json(new ApiResponse(200,{accessToken: accessToken, refreshToken: refreshToken, user: userdocument},"Successfully loggined"))
+    }
+    else{
+        const createUser= await User.create({
+            email: payload.email,
+            fullname: payload.name,
+            profilepicture: payload.picture,
+            username: payload.email.split("@")[0],
+            googleId: payload.sub
+        })
+        if(!createUser){
+            throw new ApiError(500,"Error in creating User account")
+        }
+        const accessToken= createUser.generateAccessToken()
+        const refreshToken= createUser.generateRefreshToken()
+        createUser.refreshToken= refreshToken
+        await createUser.save({validatebeforesave: false})
+        if(!accessToken || !refreshToken){
+            throw new ApiError(500,"Error while creating tokens")
+        }
+        const userdocument= await User.findById(createUser._id).select("-refreshtoken -password")
+        return res
+        .status(200)
+        .cookie("accessToken",accessToken,option)
+        .cookie("refreshToken",refreshToken,option)
+        .json(new ApiResponse(200,{user: userdocument},"Successfully created the user"))
+    }
 })
 
 const logout= asynchandler(async(req,res)=>{
@@ -516,5 +572,6 @@ export {
     isFollowing,
     addAFollowerFollowing,
     removeAFollowerFollowing,
-    updateName
+    updateName,
+    googleSignIn
 }

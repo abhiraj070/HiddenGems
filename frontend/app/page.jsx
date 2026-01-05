@@ -14,13 +14,11 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-sand via-cream to-stone">
-      {/* Navigation */}
       <nav className="flex items-center justify-between px-6 py-4 bg-sand/80 backdrop-blur-sm border-b border-stone">
         <div className="text-3xl font-bold text-gradient">HiddenGems</div>
         
       </nav>
 
-      {/* Hero Section */}
       <section className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6">
         <div className="text-center max-w-3xl">
           <h1 className="text-5xl md:text-6xl font-bold text-dark-text mb-6 leading-tight text-balance">
@@ -50,7 +48,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="bg-cream/50 py-20 px-6">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-4xl font-bold text-center text-dark-text mb-16">Why HiddenGems?</h2>
