@@ -1,9 +1,13 @@
 "use client"
 
 export default function FollowerBox({onClose, followers}){
+    console.log("followers: ",followers);
+    console.log(followers[0].username,followers[0].fullname);
+    
     return(
     <div className=" fixed
-            left-200 bottom-104.5
+            left-[800px]
+            top-[162.5px]
             z-1000
             w-[400px]
             max-h-[60vh]
@@ -28,11 +32,13 @@ export default function FollowerBox({onClose, followers}){
         <div className="flex-1 overflow-y-auto pr-1">
             <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2">
                 {
-                    followers.map((follower)=>{
+                    followers.map((follower)=>(
                         <div
                         key={follower._id}
                         className="
+                        flex items-center gap-4
                         group
+                        w-[360px]
                         rounded-2xl
                         border border-stone-200
                         bg-white/70 backdrop-blur
@@ -51,14 +57,16 @@ export default function FollowerBox({onClose, followers}){
                             className="h-full w-full object-cover"
                         />
                         </div>
-                        <h3 className="text-lg font-semibold text-stone-800 group-hover:text-green-700 transition">
+                        <div className="leading-tight">
+                            <p className="font-semibold text-stone-800 group-hover:text-green-700">
                             {follower.username}
-                        </h3>
-                        <h3 className="text-lg font-semibold text-stone-800 group-hover:text-green-700 transition">
+                            </p>
+                            <p className="text-sm text-stone-500">
                             {follower.fullname}
-                        </h3>
+                            </p>
+                        </div>
                     </div>
-                    })
+                    ))
                 }
             </div>
         </div>

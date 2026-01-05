@@ -4,12 +4,16 @@ import axios from "axios"
 import { useParams } from "next/navigation"
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import FollowerBox from "../../../components/follower-modal"
+import FollowingBox from "../../../components/following-modal"
 
 export default function UserProfilePage(){
     const [user, setUser]= useState(null)
     const [followers, setFollowers] = useState(null)
     const [following, setFollowing] = useState(null)
     const [isFollowed, setIsFollowed]= useState(false)
+    const [showFollowers, setShowFollowers]= useState(false)
+    const [showFollowing, setShowFollowing]= useState(false)
     const {userId}= useParams()
 
     useEffect(()=>{
@@ -21,6 +25,7 @@ export default function UserProfilePage(){
                 `/api/v1/users/get/user/follower/${userId}`
             )
             setIsFollowed(res2.data.data.result)
+            //console.log(res2.data.data)
             setFollowers(res2.data.data.followers)
             setFollowing(res2.data.data.following)
             //console.log("res: ",res);
@@ -28,6 +33,16 @@ export default function UserProfilePage(){
         }
         fectchUserDetails()
     },[userId, isFollowed])
+
+    const handleFollowerClick=()=>{
+        setShowFollowing(false)
+        setShowFollowers(!showFollowers)
+    }
+
+    const handleFollowingClick=()=>{
+        setShowFollowers(false)
+        setShowFollowing(!showFollowing)
+    }
 
     const handleFollowClick=async()=>{
         if(!isFollowed){
@@ -121,23 +136,27 @@ export default function UserProfilePage(){
                                     </p>
                                 </div>
 
-                                <div className="group text-center cursor-pointer">
+                                <button className="group text-center cursor-pointer"
+                                    onClick={()=>{handleFollowerClick()}}
+                                    >
                                     <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
                                         {followers?.length ?? 0}
                                     </p>
                                     <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
                                         Followers
                                     </p>
-                                </div>
+                                </button>
 
-                                <div className="group text-center cursor-pointer">
+                                <button className="group text-center cursor-pointer"
+                                    onClick={()=>{handleFollowingClick()}}
+                                >
                                     <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
                                         {following?.length ?? 0}
                                     </p>
                                     <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
                                         Following
                                     </p>
-                                </div>
+                                </button>
                             </div>
                         </div>
                         <div className="flex gap-3 mt-4 md:mt-0">
@@ -227,6 +246,18 @@ export default function UserProfilePage(){
             ))}
             </div>
         </section>
+        {showFollowers&&
+        <FollowerBox
+            onClose={()=>{setShowFollowers(false)}}
+            followers={followers}
+        />
+        }
+        {showFollowing&&
+        <FollowingBox
+            onClose={()=>{setShowFollowing(false)}}
+            following={following}
+        />
+        }
         </div>
     )
 

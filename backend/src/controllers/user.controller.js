@@ -460,6 +460,9 @@ const getFollowers=asynchandler(async (req,res) => {
         throw new ApiError(404,"Primary user not found")
     }
     const user= await User.findById(user_id).populate("followers following")
+    //console.log(user);
+    console.log("followers: ",user.followers);
+    
     if(!user){
         throw ApiError(404,"User not found")
     }
@@ -474,9 +477,7 @@ const getFollowers=asynchandler(async (req,res) => {
     else{
         result= false
     }
-    if(!user){
-        throw new ApiError(404,"User not found")
-    }
+    console.log("followers2: ",user.followers);
     return res
     .status(200)
     .json(new ApiResponse(200,{followers: user.followers, following: user.following, result: result},"User's followers fetched successfully"))

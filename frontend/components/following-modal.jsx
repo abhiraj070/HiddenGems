@@ -1,6 +1,8 @@
 "use client"
 
 export default function FollowingBox({onClose, following}){
+    console.log("following: ",following);
+    
     return(
         <div className=" fixed
             left-[800px]
