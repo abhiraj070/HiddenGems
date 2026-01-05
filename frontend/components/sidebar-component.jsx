@@ -5,6 +5,7 @@ import {useRouter} from "next/navigation"
 import axios from "axios"
 
 export default function SidebarComponent({
+  selectedCategories,
   setDisplayFavBox,
   setAllLikedSpots,
   isSpotLiked,
@@ -29,6 +30,7 @@ export default function SidebarComponent({
   const router= useRouter()
   const [expandedCategories, setExpandedCategories] = useState(false)
   const [likedlength, setLikedLength]= useState(0)
+  const [error, setError]= useState(null)
 
   const handleCategoryToggle = (categoryId) => {
     const updated = selectedCategories.includes(categoryId)
@@ -48,22 +50,33 @@ export default function SidebarComponent({
 
   useEffect(()=>{
     const fetchlikes= async()=>{
-      const res= await axios.get(
-      "/api/v1/users/get/likes"
-    )
-    setLikedLength(res.data.data.length)
+      try {
+        const res= await axios.get(
+        "/api/v1/users/get/likes"
+      )
+        setError(null)
+        setLikedLength(res.data.data.length)
+      } catch (error) {
+        setError(error.message)
+      }
+    
     }
     fetchlikes()
   },[isSpotLiked])
 
   const onShowFavorites=async ()=>{
     if(!displayFavBox){
-      const res= await axios.get(
-        "/api/v1/users/get/likes"
-      )
-      console.log(res.data.data)
-      setLikedLength(res.data.data.length)
-      setAllLikedSpots(res.data.data)
+      try {
+        const res= await axios.get(
+          "/api/v1/users/get/likes"
+        )
+        //console.log(res.data.data)
+        setError(null)
+        setLikedLength(res.data.data.length)
+        setAllLikedSpots(res.data.data)
+      } catch (error) {
+        setError(error.message)
+      }
       }
       setDisplayFavBox(!displayFavBox)
   }

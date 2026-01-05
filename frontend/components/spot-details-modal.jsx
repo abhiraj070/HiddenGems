@@ -8,8 +8,9 @@ export default function SpotDetailsModal({ onClose, review }) {
   const handleProfileClick=(Id)=>{
     router.push(`/profile/${Id}`)
   }
-
-
+  if(!review){
+    return null
+  }
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="relative w-[90%] max-w-2xl rounded-2xl bg-white shadow-2xl p-8">

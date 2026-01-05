@@ -19,9 +19,8 @@ const CATEGORIES = [
 ]
 
 export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, formData, setFormData}) {
-  
-const [pickingOnMap, setPickingOnMap] = useState(false)
-  
+  const [pickingOnMap, setPickingOnMap] = useState(false)
+
   const handleChange = (e) => {
     const { name, value } = e.target // eg: name: category, value: sports
     setFormData((prev) => ({
@@ -37,23 +36,19 @@ const [pickingOnMap, setPickingOnMap] = useState(false)
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    console.log("reached handlesubmit");
-    
+    //console.log("reached handlesubmit");
     if (!formData.name || !formData.category) {
       alert("Please fill in name and category")
       return
     }
-
     if (!formData.lat || !formData.lng) {
       alert("Please set location on map or enter coordinates")
       return
     }
-
     onAddSpot({
       name: formData.name,
       description: formData.description,
       category: formData.category,
-      image: formData.photoUrl || "/new-gem.jpg",
     })
   }
 
@@ -72,7 +67,7 @@ const [pickingOnMap, setPickingOnMap] = useState(false)
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-dark-text mb-2">Gem Name *</label>
+            <label className="block text-sm font-medium text-dark-text mb-2">Gem Name*</label>
             <input
               type="text"
               name="name"
@@ -98,7 +93,7 @@ const [pickingOnMap, setPickingOnMap] = useState(false)
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-dark-text mb-2">Category *</label>
+            <label className="block text-sm font-medium text-dark-text mb-2">Category*</label>
             <select
               name="category"
               value={formData.category}
@@ -112,18 +107,6 @@ const [pickingOnMap, setPickingOnMap] = useState(false)
                 </option>
               ))}
             </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-dark-text mb-2">Photo URL (optional)</label>
-            <input
-              type="url"
-              name="photoUrl"
-              value={formData.photoUrl}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-stone rounded-lg focus:outline-none focus:ring-2 focus:ring-teal bg-cream cursor-text"
-              placeholder="https://example.com/image.jpg"
-            />
           </div>
 
           <div className="border-t border-stone pt-4">

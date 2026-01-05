@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import axios from "axios"
 
 export default function ListBoxModal({ onClose, allReviews, setShowDetails, setTransferSpecificReview, coordOfSpot, setIsSpotLiked }) {
@@ -8,18 +8,22 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
   const [turnblue, setTurenBlue]= useState(false)
   const [turnred, setTurnRed]= useState(false)
   const [likenumber, setlikenumber]= useState(0)
+  const [error, setError]= useState(null)
+
   useEffect(()=>{
     const fetchIsSavedLiked=async ()=>{
-      const res= await axios.get(
-        `/api/v1/users/check/${coordOfSpot.lat}/${coordOfSpot.lng}`
-      )
-      const res2= await axios.get(
-        `/api/v1/users/check/liked/${coordOfSpot.lat}/${coordOfSpot.lng}`
-      )
-      //console.log("res: ",res.data.data);
-      setlikenumber(res2.data.data.spot.likes)
-      setTurnRed(res2.data.data.result)
-      setTurenBlue(res.data.data)
+      try {
+        const res= await axios.get(
+          `/api/v1/users/check/${coordOfSpot.lat}/${coordOfSpot.lng}`
+        )
+        //console.log("res: ",res.data.data);
+        setlikenumber(res.data.data.spot.likes)
+        setTurnRed(res.data.data.likeresult)
+        setTurenBlue(res.data.data.savedresult)
+        setError(null)
+      } catch (error) {
+        setError(error.message)
+      }
     }
     fetchIsSavedLiked()
   },[allReviews])
@@ -30,36 +34,62 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
   }
   const handleLike=async()=>{
     if(!turnred){
-      const res= await axios.post(
-        `/api/v1/users/favSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
-      )
-      //console.log("res:",res);
-      setIsSpotLiked(true)
-      setlikenumber(res.data.data.spot.likes)
+      try {
+        const res= await axios.post(
+          `/api/v1/users/favSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
+        )
+        //console.log("res:",res);
+        setError(null)
+        setIsSpotLiked(true)
+        setlikenumber(res.data.data.spot.likes)
+        setTurnRed(!turnred)
+      } catch (error) {
+        setError(error.message)
+      }
     }
     else{
-      const res= await axios.post(
-        `/api/v1/users/removeliked/${coordOfSpot.lat}/${coordOfSpot.lng}`
-      )
+      try {
+        const res= await axios.post(
+          `/api/v1/users/removeliked/${coordOfSpot.lat}/${coordOfSpot.lng}`
+        )
+        setlikenumber(res.data.data.spot.likes)
+        setError(null)
+        setTurnRed(!turnred)
+      } catch (error) {
+        setError(error.message)
+      }
       setIsSpotLiked(false)
-      setlikenumber(res.data.data.spot.likes)
     }
-    setTurnRed(!turnred)
   }
   const handleSave= async ()=>{
     if(!turnblue){
-      const res= await axios.post(
-        `/api/v1/users/saveSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
-      )
-      //console.log("res save: ",res);
+      try {
+        const res= await axios.post(
+          `/api/v1/users/saveSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
+        )
+        setError(null)
+        setTurenBlue(!turnblue)
+        //console.log("res save: ",res);
+      } catch (error) {
+        setError(error.message)
+      }
     } 
     else{
-      const res= await axios.post(
-        `/api/v1/users/deletespot/${coordOfSpot.lat}/${coordOfSpot.lng}`
-      )
-      //console.log("res unsave: ",res);
+      try {
+        const res= await axios.post(
+          `/api/v1/users/deletespot/${coordOfSpot.lat}/${coordOfSpot.lng}`
+        )
+        setError(null)
+        setTurenBlue(!turnblue)
+        //console.log("res unsave: ",res);
+      } catch (error) {
+        setError(error.message)
+      }
     }
-    setTurenBlue(!turnblue)
+  }
+
+  if(!allReviews){ //due to this, if we didn't recive allreviews the box will be blank
+    return null
   }
   return (
     <div className="fixed top-50 right-50 z-50 w-80 rounded-xl bg-white shadow-2xl border border-gray-200 flex flex-col">
@@ -140,6 +170,11 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
         </span>
         </button>
       </div>
+      {error && (
+        <div className="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded">
+          {error}
+        </div>
+      )}
     </div>
   );
 }

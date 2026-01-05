@@ -27,7 +27,6 @@ const userschema = Schema({
     },
     profilepicture:{
         type: String,
-        required: true
     },
     email:{
         type: String,

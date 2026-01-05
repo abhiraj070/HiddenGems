@@ -2,60 +2,47 @@
 
 import { useEffect, useRef, useState } from "react"
 import axios from "axios"
+import "leaflet/dist/leaflet.css"
 export default function MapComponent({onLocationPicked, currentLocation, dbspots, newspots, ListBox, setAllReviews, setCoordOfSpot}) {
   const mapContainer = useRef(null) 
   const map = useRef(null) 
-  const marked= useRef(new Set())
+  const marked= useRef(new Set())// created a set here to avoid storing duplicates while storing
   const dbMarkersRef = useRef([])
   const [mapready, setMapReady]= useState(false)
+  const [error, setError]= useState(null)
   const currentLocationMarkerRef = useRef(null)
   useEffect(() => {
-    if (typeof window === "undefined") return
-    if (window.L) {
-      initMap()
-      return
-    }
+    const initMap = async() => {
+      const L = (await import("leaflet")).default //dynamic import of leaflet because at the beginning window is not present
 
-    const loadScript = () => {
-      const script = document.createElement("script")
-      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      script.async = true
-      script.onload = initMap
-      document.body.appendChild(script)
+      delete L.Icon.Default.prototype._getIconUrl //default code in order to make the marker visible
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl:
+          "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+        iconUrl:
+          "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+        shadowUrl:
+          "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      })
+      if (map.current) return
+      map.current = L.map(mapContainer.current).setView(
+        currentLocation
+          ? [currentLocation.latitude, currentLocation.longitude]
+          : [28.626, 77.213],
+        10
+      )
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 20,
+      }).addTo(map.current) 
+      setMapReady(true)
     }
-
-    if (!document.querySelector('link[href*="leaflet.css"]')) {
-      const link = document.createElement("link")
-      link.rel = "stylesheet"
-      link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      link.onload = loadScript
-      document.head.appendChild(link)
-    } else {
-      loadScript()
-    }
-
+    initMap()
   }, [])
   
   const onMapClick=(lat,lng)=>{
     onLocationPicked(lat,lng)
   }
   
-  const initMap = () => {
-    if (map.current) return
-    const L = window.L
-    if (!L) return
-    map.current = L.map(mapContainer.current).setView(
-      currentLocation
-        ? [currentLocation.latitude, currentLocation.longitude]
-        : [25.6395, 85.1038],
-      10
-    )
-    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 20,
-    }).addTo(map.current) 
-    setMapReady(true)
-  }
-
   //onclick for addspots to open
   useEffect(()=>{
       if(!map.current){ 
@@ -87,15 +74,19 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
         const lati= lat
         const lngi= lng
         //console.log("lat: ",lat,"lng: ",lng);
-        const res= await axios.get(
-          `/api/v1/spot/get/${lati}/${lngi}`,
-          { withCredentials: true }
-        )
-        const spotAllReviews= res.data.data.allCoordReviews
-        //console.log("spotAllReviews: ",spotAllReviews)
-        setAllReviews(spotAllReviews)
-        ListBox(true)
+        try {
+          const res= await axios.get(
+            `/api/v1/spot/get/${lati}/${lngi}`,
+            { withCredentials: true }
+          )
+          //console.log("spotAllReviews: ",res.data.data.allCoordReviews)
+          setError(null)
+          setAllReviews(res.data.data.allCoordReviews)
+        } catch (error) {
+          setError(error.message)
+        }
         setCoordOfSpot({lat: lati,lng: lngi})
+        ListBox(true)
       })
       dbMarkersRef.current.push(marker)
       marked.current.add(key)
@@ -124,11 +115,16 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
             L.DomEvent.stop(e)
             const lati=lat
             const lngi=lng
-            const res= await axios.get(
-              `/api/v1/spot/get/${lati}/${lngi}`
-            )
-            const spotAllReviews= res.data.data.allCoordReviews
-            setAllReviews(spotAllReviews)
+            try {
+              const res= await axios.get(
+                `/api/v1/spot/get/${lati}/${lngi}`
+              )
+              const spotAllReviews= res.data.data.allCoordReviews
+              setAllReviews(spotAllReviews)
+              setError(null)
+            } catch (error) {
+              setError(error.message)
+            }
             ListBox(true)            
             setCoordOfSpot({lat: lati,lng: lngi})
          })
@@ -150,7 +146,6 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
       iconUrl: "/curricon2.png",
       iconSize: [55, 60],
     })
-
     map.current.setView([lat, lng], 10)
     currentLocationMarkerRef.current= L.marker([lat,lng],{icon: currIcon}).addTo(map.current)
   },[currentLocation, mapready])
@@ -177,7 +172,12 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
         transition: "box-shadow 200ms ease, transform 200ms ease",
         marginTop: "-18px",
       }}
-    />
-
+      >
+        {error && (
+        <div className="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded">
+          {error}
+        </div>
+      )}
+      </div>
   )
 }

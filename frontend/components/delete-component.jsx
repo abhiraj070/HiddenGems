@@ -1,22 +1,36 @@
 "use client"
 
 import axios from "axios"
+import {useState} from "react"
 
 export default function DeleteComponent({setConfirmDelete, setShowPopUp, deleteReviewId, deleteSavedId}){
+    const [error, setError]= useState(null)
+
     const onConfirm=async ()=>{
         if(deleteReviewId){
-            const res= await axios.post(
-                `/api/v1/users/delete/review/${deleteReviewId}`
-            )
-            
+            try {
+                await axios.post(
+                    `/api/v1/users/delete/review/${deleteReviewId}`
+                )
+                setConfirmDelete(true)
+                setShowPopUp(false)
+                setError(null)
+            } catch (error) {
+                setError(error.response?.data?.message)
+            }
         }
         else if(deleteSavedId){
-            const res= await axios.post(
-                `/api/v1/users/delete/saved/${deleteSavedId}`
-            )
+            try {
+                await axios.post(
+                    `/api/v1/users/delete/saved/${deleteSavedId}`
+                )
+                setConfirmDelete(true)
+                setShowPopUp(false)
+                setError(null)
+            } catch (error) {
+                setError(error.response?.data?.message)
+            }
         }
-        setConfirmDelete(true)
-        setShowPopUp(false)
     }
     const onCancel=()=>{
         setConfirmDelete(false)

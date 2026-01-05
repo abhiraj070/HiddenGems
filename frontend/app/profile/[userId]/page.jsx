@@ -14,29 +14,37 @@ export default function UserProfilePage(){
     const [isFollowed, setIsFollowed]= useState(false)
     const [showFollowers, setShowFollowers]= useState(false)
     const [showFollowing, setShowFollowing]= useState(false)
+    const [error, setError]= useState(null)
     const {userId}= useParams()
 
-
     useEffect(()=>{
-        const fetchDetails= async()=>{
-            const res2= await axios.get(
-                `/api/v1/users/get/user/follower/${userId}`
-            )
-            //console.log(res2.data.data)
-            setIsFollowed(res2.data.data.result)
-            setFollowers(res2.data.data.followers)
-            setFollowing(res2.data.data.following)
-            //console.log("res: ",res);
+        const fetchisFollowing= async()=>{
+            try {
+                const res= await axios.get(
+                    `/api/v1/users/get/check/${userId}`
+                )
+                setIsFollowed(res.data.data.isFollowing)
+                setError(null)
+            } catch (error) {
+                setError(error.response?.data?.message)
+            }
         }
-        fetchDetails()
-    },[])
+        fetchisFollowing()
+    })
 
     useEffect(()=>{
         const fectchUserDetails= async()=>{
-            const res= await axios.get( //try to fetch whole user
-                `/api/v1/users/get/user/${userId}`
-            )
-            setUser(res.data.data)
+            try {
+                const res= await axios.get( 
+                    `/api/v1/users/get/user/${userId}`
+                )
+                setUser(res.data.data.user)
+                setFollowers(res.data.data.user.followers)
+                setFollowing(res.data.data.user.following)
+                setError(null)
+            } catch (error) {
+                setError(error.response?.data?.message)
+            }
         }
         fectchUserDetails()
     },[userId, isFollowed])
@@ -53,16 +61,27 @@ export default function UserProfilePage(){
 
     const handleFollowClick=async()=>{
         if(!isFollowed){
-            const res= await axios.post(
-                `/api/v1/users/follow/user/${userId}`
-            )
+            try {
+                await axios.post(
+                    `/api/v1/users/follow/user/${userId}`
+                )
+                setIsFollowed(!isFollowed)
+                setError(null)
+            } catch (error) {
+                setError(error.response?.data?.message)
+            }
         }
         else{
-            const res= await axios.post(
-                `/api/v1/users/unfollow/user/${userId}`
-            )
+            try {
+                await axios.post(
+                    `/api/v1/users/unfollow/user/${userId}`
+                )
+                setIsFollowed(!isFollowed)
+                setError(null)
+            } catch (error) {
+                setError(error.response?.data?.message)
+            }
         }
-        setIsFollowed(!isFollowed)
     }
 
     if(!user){
@@ -265,6 +284,11 @@ export default function UserProfilePage(){
             following={following}
         />
         }
+        {error && (
+            <div className="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded">
+            {error}
+            </div>
+        )}
         </div>
     )
 

@@ -1,6 +1,9 @@
 "use client"
 
 export default function LikeBoxComponent({allLikedSpots, onClose}){
+    if(!allLikedSpots){
+        return null
+    }
     return(
     <div className=" fixed
             left-92 bottom-6

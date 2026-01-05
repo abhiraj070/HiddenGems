@@ -13,7 +13,6 @@ export default function TopNavComponent({ user, onAddSpot }) {
   const menuRef = useRef(null)
 
   useEffect(() => {
-    
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setShowProfileMenu(false)
@@ -23,17 +22,16 @@ export default function TopNavComponent({ user, onAddSpot }) {
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
-  console.log("3. top nav component loaded");
+  //console.log("3. top nav component loaded");
   //console.log("user: ",user);
-  
-
   const handleLogout = async() => {
     localStorage.removeItem("user")
-    const res= await axios.post(
+    await axios.post(
       "/api/v1/users/logout"
     )
     router.push("/")
   }
+  const handleSearch=()=>{}
 
   return (
     <nav className="sticky top-0 z-50 bg-sand">
@@ -52,8 +50,8 @@ export default function TopNavComponent({ user, onAddSpot }) {
       "
     >
 
-      <Link
-        href="/home"
+      <Link //like in react there is <a> tag for redirecting without the whole tab reload. we do not need onclick here
+        href="/"
         className="
           text-2xl font-bold text-gradient tracking-tight
           relative
@@ -69,11 +67,11 @@ export default function TopNavComponent({ user, onAddSpot }) {
       <div className="relative max-w-lg w-full mx-auto group">
         <input
           type="text"
-          placeholder="Search gems..."
+          placeholder="Search a tag..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="
-            w-full px-5 py-3 rounded-xl
+            w-full px-5 py-3 pr-14 rounded-xl
             bg-cream/70
             border border-stone/60
             text-dark-text
@@ -86,6 +84,39 @@ export default function TopNavComponent({ user, onAddSpot }) {
           "
         />
 
+        <button
+          onClick={handleSearch}
+          className="
+            absolute right-2 top-1/2 -translate-y-1/2
+            h-10 w-10
+            rounded-lg
+            bg-linear-to-br from-teal-500 bg-green-600
+            text-white
+            flex items-center justify-center
+            hover:shadow-lg
+            hover:scale-105
+            transition
+            focus:outline-none
+            focus:ring-2 focus:ring-teal-400/50
+          "
+          aria-label="Search"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m21 21-4.35-4.35m0 0A7.5 7.5 0 1 0 3 10.5a7.5 7.5 0 0 0 13.65 6.15Z"
+            />
+          </svg>
+        </button>
+
         <div
           className="
             pointer-events-none
@@ -96,6 +127,7 @@ export default function TopNavComponent({ user, onAddSpot }) {
           "
         />
       </div>
+
 
       <div className="flex items-center gap-3">
         <button
@@ -128,13 +160,15 @@ export default function TopNavComponent({ user, onAddSpot }) {
             "
           >
             <div className="w-9 h-9 rounded-full overflow-hidden bg-teal ring-2 ring-teal/30">
-              <Image
+              {user.profilepicture? (<Image
                 src={user.profilepicture}
                 alt="Profile"
                 width={36}
                 height={36}
                 className="w-full h-full object-cover"
-              />
+              />):
+              (user.username[0].toUpperCase())
+            }
             </div>
 
             <span className="hidden sm:block text-m font-medium text-dark-text">
@@ -142,7 +176,6 @@ export default function TopNavComponent({ user, onAddSpot }) {
             </span>
           </button>
 
-          {/* Dropdown */}
           {showProfileMenu && (
             <div
               className="
@@ -184,8 +217,5 @@ export default function TopNavComponent({ user, onAddSpot }) {
     </div>
   </div>
 </nav>
-
-
-
   )
 }

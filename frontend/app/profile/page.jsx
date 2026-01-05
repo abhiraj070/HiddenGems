@@ -21,6 +21,7 @@ export default function ProfilePage() {
   const [editedBio, setEditedBio]= useState("")
   const [showFollowers, setShowFollowers]= useState(false)
   const [showFollowing, setShowFollowing]= useState(false)
+  const [error, setError]= useState()
 
   useEffect(() => {
     const userData = localStorage.getItem("user")
@@ -29,23 +30,35 @@ export default function ProfilePage() {
       return
     }
     const fetchUser= async ()=>{
-      const res= await axios.get(
-        "/api/v1/users/get/user"
-      )
-      setUser(res.data.data.user)
-      //console.log("user: ",res.data.data);
+      try {
+        const res= await axios.get(
+          "/api/v1/users/get/user"
+        )
+        setUser(res.data.data.user)
+        setError(null)
+        //console.log("user: ",res.data.data);
+      } catch (error) {
+        setError(error.response?.data?.message)
+      }finally{  
+        setLoading(false) //loading is implemented to cover the time taken by the async function. after that no matter the result the loading should be removed
+      }
     }
     fetchUser()
-    setLoading(false)
-  }, [router])
+  }, [])
 
   const handleEditBio=async(bio)=>{
-    setEditedBio(bio)
-    const res= await axios.post(
-      "/api/v1/users/addbio",
-      {bio: bio},
-
-    )
+    try {
+      const res=await axios.post(
+        "/api/v1/users/addbio",
+        {bio: bio},
+      )
+      setUser(res.data.data)
+      setEditedBio(bio)
+      setError(null)
+      setIsEditing(false)
+    } catch (error) {
+      setError(error.response?.data?.message)
+    }
   }
 
   const handleReviewDelete=(id)=>{
@@ -61,15 +74,23 @@ export default function ProfilePage() {
   useEffect(()=>{
     if(confirmDelete){
       const fetchUser= async ()=>{
-      const res= await axios.get(
-        "/api/v1/users/get/user"
-      )
-      setUser(res.data.data.user)
-    }
-    fetchUser()
-    setConfirmDelete(false)
-    setDeleteReviewId(null)
-    setDeleteSavedId(null)
+        try {
+          setLoading(true)
+          const res= await axios.get(
+            "/api/v1/users/get/user"
+          )
+          setUser(res.data.data.user)
+          setError(null)
+          setConfirmDelete(false)
+          setDeleteReviewId(null)
+          setDeleteSavedId(null)
+        } catch (error) {
+          setError(error.response?.data?.message)
+        }finally{
+          setLoading(false)
+        }
+      }
+      fetchUser()
     }
   },[confirmDelete])
 
@@ -93,29 +114,38 @@ export default function ProfilePage() {
     setShowFollowing(!showFollowing)
   }
 
-  const handleSaveProfile = () => {
-    if (user && editedName.trim()) {
-      const updatedUser = { ...user, fullname: editedName }
-      setUser(updatedUser)
-      localStorage.setItem("user", JSON.stringify(updatedUser))
+  const handleSaveProfile = async() => {
+    if (editedName.trim()) {
+      try {
+        await axios.post(
+          "/api/v1/users/edit/name",
+          {name: editedName}
+        )
+        const updatedUser = { ...user, fullname: editedName }
+        setUser(updatedUser)
+      } catch (error) {
+        setError(error.response?.data?.message)
+      }
       setIsEditing(false)
     }
   }
 
   const handleLogout = async () => {
-    localStorage.removeItem("user")
-    const res= await axios.post(
-      "/api/v1/users/logout"
-    )
-    router.push("/")
+    try {
+      await axios.post(
+        "/api/v1/users/logout"
+      )
+      setError(null)
+    } catch (error) {
+      setError(error.response?.data?.message)
+    } finally{
+      localStorage.removeItem("user")
+      router.push("/")
+    }
   }
 
   if (loading) {
     return <div className="min-h-screen bg-sand flex items-center justify-center">Loading...</div>
-  }
-
-  if (!user) {
-    return <div className="min-h-screen bg-sand flex items-center justify-center">:)</div>
   }
 
   return (
@@ -131,7 +161,7 @@ export default function ProfilePage() {
 
       <button
         onClick={handleLogout}
-        className="px-5 py-2 rounded-full border border-stone text-m font-medium transition hover:bg-green-400"
+        className="px-5 py-2 rounded-full border border-stone text-m font-medium transition hover:bg-green-4 00"
       >
         Logout
       </button>
@@ -401,6 +431,12 @@ export default function ProfilePage() {
       following={user.following}
     />
   }
+
+  {error && (
+    <div className="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded">
+      {error}
+    </div>
+  )}
 </div>
   )
 }

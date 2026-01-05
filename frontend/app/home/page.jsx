@@ -49,7 +49,7 @@ export default function HomePage() {
     //console.log("parseduser:",parseduser)
     setUser(parseduser)
     //to get the current location of the user
-      navigator.geolocation.getCurrentPosition(
+      navigator.geolocation.getCurrentPosition( //navigator represents information about user's browser and device and provide access to certain capabilities
         async (position)=>{  //browser runs this callback function when user allows.
           const {latitude, longitude}=position.coords
           //console.log("latitude: ",latitude,"longitude: ",longitude);
@@ -65,35 +65,10 @@ export default function HomePage() {
         }
       )
     
-  }, [router]) //[router] dependency is same as [].
-
-  const handleCategoryChange = (categories) => {
-    setSelectedCategories(categories)
-    filterSpots(newspots, categories)
-  }
-
-  const handleToggleFavorite = (spotId) => {
-    const updatedSpots = spots.map((spot) => {
-      if (spot.id === spotId) {
-        return { ...spot, isFavorite: !spot.isFavorite }
-      }
-      return spot
-    })
-
-    setnewSpots(updatedSpots)
-    filterSpots(updatedSpots, selectedCategories)
-
-    if (user) {
-      const updatedFavorites = updatedSpots.filter((s) => s.isFavorite).map((s) => s.id)
-
-      const updatedUser = { ...user, favorites: updatedFavorites }
-      localStorage.setItem("user", JSON.stringify(updatedUser))
-      setUser(updatedUser)
-    }
-  }
+  }, []) 
 
   const handleLocationPicked = (lat, lng) => {
-    setFormData(prev=>({
+    setFormData(prev=>({ // prev denotes previous value in FormData
       ...prev,
       lat: lat,
       lng: lng,
@@ -103,24 +78,29 @@ export default function HomePage() {
 
   useEffect(()=>{
     const fetchReviews =async ()=>{
-    const res= await axios.get(
-      `/api/v1/spot/get/spots`,
-      { withCredentials: true }
-    )
-    const reviewGot= res.data.data;
-    //console.log("reviews: ",reviewGot);
-    //console.log("res: ",res);
-    setdbspots(reviewGot)    
-  }
-  fetchReviews()
+      try {
+        const res= await axios.get(
+          `/api/v1/spot/get/spots`
+        )
+        const reviewGot= res.data.data
+        //console.log("reviews: ",reviewGot);
+        //console.log("res: ",res);
+        setdbspots(reviewGot)
+        setError(null)
+      } catch (error) {
+        setError(error.message)
+      }    
+    }
+    fetchReviews()
   },[])
+
+  const handleCategoryChange=()=>{}
 
   const handleAddSpot = async (newSpot) => {
     const addedSpot = {
       ...newSpot,
       lat: formData.lat,
       lng: formData.lng,
-      isFavorite: false,
     }
     //console.log("addedSpot: ",addedSpot);
     setnewSpots(addedSpot)
@@ -135,13 +115,13 @@ export default function HomePage() {
           tag: formData.category,
           latitude: formData.lat,
           longitude: formData.lng
-        },
-        { withCredentials: true }
+        }
       )
+      setError(null)
     } catch (error) {
-      router.push("/")
+        setError(error.message)
+        setnewSpots(null)
     }
-
   }
 
   if (!user) {
@@ -153,7 +133,6 @@ export default function HomePage() {
   return (
     // a huge screen which will render all its components one by one
     <div className="h-screen overflow-hidden bg-background">
-
       {/* all these green texts are components which will render when i run the program */}
       {/* all the things inside the component tag are its props. they will be transfered to the component and do the desired work, like getting some value. */}
       {/* when any of these props update value. the whole home page gets re-rendered */}
@@ -164,7 +143,6 @@ export default function HomePage() {
 
       <div className="flex h-[calc(100vh-80px)]">
         <SidebarComponent
-          selectedCategories={selectedCategories}
           onCategoryChange={handleCategoryChange}
           onSelectSpot={setSelectedSpot}
           setDisplayFavBox={setDisplayFavBox}
@@ -175,7 +153,6 @@ export default function HomePage() {
 
         <div className="flex-1 ml-80 ">
           <MapComponent
-            onToggleFavorite={handleToggleFavorite}
             selectedSpot={selectedSpot}
             onLocationPicked={handleLocationPicked}
             currentLocation={currentLocation}
@@ -222,6 +199,12 @@ export default function HomePage() {
           onClose={()=>{setDisplayFavBox(false)}}
         />
       }
+
+      {error && (
+        <div className="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded">
+          {error}
+        </div>
+      )}
     </div>
 
   )

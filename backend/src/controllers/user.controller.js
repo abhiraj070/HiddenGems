@@ -27,17 +27,16 @@ const registerUser= asynchandler(async(req,res)=>{
     }
 
     const photoLocalPath= req.file?.path
-    if(!photoLocalPath){
-        throw new ApiError(400,"Profile picture is required")
+    let isUploaded
+    if(photoLocalPath){
+        isUploaded= await uploadOnCloudinary(photoLocalPath)
     }
-    const isUploaded= await uploadOnCloudinary(photoLocalPath)
-
     const user= await User.create({
         fullname,
         email,
         username: username.toLowerCase(),
         password,
-        profilepicture: isUploaded.url || ""
+        profilepicture: isUploaded?.url || ""
     })
     const userreturn= await User.findById(user._id)
     .select("-password -refreshToken")
@@ -121,30 +120,27 @@ const logout= asynchandler(async(req,res)=>{
    .json(new ApiResponse(200, delete_rt, "User logged out successfully"))
 })
 
-const changeUserDetails= asynchandler(async (req,res)=>{
-    const {username, fullname, email}= req.body
-    
-    const user_id= req.user._id
-    
-    const updated_details= await User.findByIdAndUpdate(
-        user_id,
-        {
-            username: username ?? undefined, //by this if the user has entered a new field then only it will be updated.
-            fullname: fullname ?? undefined,
-            email: email ?? undefined
-        },
-        {new: true}
-    )
-    //console.log(updated_details);
-    
-    if(!updated_details){
-        throw new ApiError(500,"Error while updating user details")
-    }
+// const changeUserDetails= asynchandler(async (req,res)=>{ no use of this controller kyuki mujjhe different handlers use karne padenge different details edit karane ke liye because of onChange(it will trigger the callback function on every key hit)
+//     const {username, fullname, bio}= req.body
+//     const user_id= req.user._id
+//     const updated_details= await User.findByIdAndUpdate(
+//         user_id,
+//         {
+//             username: username ?? undefined, //by this if the user has entered a new field then only it will be updated.
+//             fullname: fullname ?? undefined,
+//             bio: bio ?? undefined
+//         },
+//         {new: true}
+//     )
+//     //console.log(updated_details)
+//     if(!updated_details){
+//         throw new ApiError(500,"Error while updating user details")
+//     }
 
-    return res
-    .status(200)
-    .json(new ApiResponse(200,updated_details,"User details Updated"))
-})
+//     return res
+//     .status(200)
+//     .json(new ApiResponse(200,updated_details,"User details Updated"))
+// }) 
 
 const changePhoto= asynchandler(async(req,res)=>{
     const localfilePath= req.file?.path
@@ -297,31 +293,6 @@ const favSpot= asynchandler(async (req,res) => {
     .json(new ApiResponse(200,{user:user, spot:spotdec},"Spot marked favourite successfully"))
 })
 
-const checkIfSaved= asynchandler(async (req,res) => {
-    const lat= req.params.lat
-    const lng= req.params.lng
-    const user_id= req.user._id
-    const spot= await Spot.findOne({latitude:lat,longitude: lng })
-    const spot_id= spot._id
-    if(!spot){
-        throw new ApiError(200,"Error while fetching spot")
-    }
-    const user= await User.exists({  //exists always returns null or the user id
-        _id: user_id,
-        savedPlaces: spot_id
-    })
-    let result
-    if(!user){
-        result= false
-    }
-    else{
-        result= true
-    }
-    return res
-    .status(200)
-    .json(new ApiResponse(200,result,"Successfull checked if spot exists in savedPlaces"))
-})
-
 const getUserDetails= asynchandler(async (req,res) => {
     const user_id= req.user._id
     const user= await User.findById(user_id).select("-password -refreshToken").populate("savedPlaces reviewHistory followers following")
@@ -379,8 +350,25 @@ const addBio= asynchandler(async (req,res) => {
     .status(200)
     .json(new ApiResponse(200,userdocument,"Bio successfully updated"))
 })
+const updateName= asynchandler(async (req,res) => {
+    const user_id= req.user._id
+    const name= req.body.name
+    if(!name){
+        throw ApiError(401,"Name is required")
+    }
+    const userdocument= await User.findByIdAndUpdate(
+        user_id,
+        {name: name}
+    )
+    if(!userdocument){
+        throw new ApiError(404,"User not found")
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200,userdocument,"Bio successfully updated"))
+})
 
-const checkIsLiked= asynchandler(async(req,res)=>{
+const checkIsLikedSaved= asynchandler(async(req,res)=>{
     const lat= req.params.lat
     const lng= req.params.lng
     const user_id= req.user._id
@@ -392,16 +380,15 @@ const checkIsLiked= asynchandler(async(req,res)=>{
         _id: user_id,
         favourite: spot._id
     })
-    let result
-    if(userdocument){
-        result=true
-    }
-    else{
-        result=false
-    }
+    const userdocument2= await User.exists({  //exists always returns null or the user id
+        _id: user_id,
+        savedPlaces: spot._id
+    })
+    const likeresult=(Boolean(userdocument))
+    const savedresult=(Boolean(userdocument2))
     return res
     .status(200)
-    .json(new ApiResponse(200,{result: result, spot: spot},"Successfully checked Liked or not"))
+    .json(new ApiResponse(200,{likeresult: likeresult,savedresult: savedresult, spot: spot},"Successfully checked Liked or not"))
 })
 
 const removefavspot=asynchandler(async (req,res) => {
@@ -428,7 +415,9 @@ const removefavspot=asynchandler(async (req,res) => {
 })
 
 const getUserFavSpots= asynchandler(async (req,res) => {
-    const user_id= req.user.id
+    const user_id= req.user._id
+    //console.log(("USer:",user_id));
+    
     const user= await User.findById(user_id).select("-password -refreshToken").populate("favourite")
     const likedSpots= user.favourite
     if(!likedSpots){
@@ -441,46 +430,33 @@ const getUserFavSpots= asynchandler(async (req,res) => {
 
 const getanotherUserDetails=asynchandler(async (req,res) => {
     const userId=req.params.Id
-    const user= await User.findById(userId).populate("reviewHistory savedPlaces").select("-refreshToken -password")
+    if(!userId){
+        throw new ApiError(404,"User not found")
+    }
+    const user= await User.findById(userId).populate("reviewHistory savedPlaces followers following").select("-refreshToken -password")
     if(!user){
         throw new ApiError(404,"User not found")
     } 
     return res
     .status(200)
-    .json(new ApiResponse(200,user,"Fetched user details successfully"))
+    .json(new ApiResponse(200,{user: user},"Fetched user details successfully"))
 })
 
-const getFollowers=asynchandler(async (req,res) => {
+const isFollowing=asynchandler(async (req,res) => {
     const user_id= req.params.id
-    const curruser_id= req.user?._id
+    const curruser_id= req.user._id
     if(!user_id){
         throw new ApiError(404,"Secondary user not found")
-    }
-    if(!curruser_id){
-        throw new ApiError(404,"Primary user not found")
-    }
-    const user= await User.findById(user_id).populate("followers following")
-    //console.log(user);
-    //console.log("followers: ",user.followers);
-    
-    if(!user){
-        throw ApiError(404,"User not found")
     }
     const userdocument= await User.exists({
         _id: curruser_id,
         following: user_id
     })
-    let result
-    if(userdocument){
-        result=true
-    }
-    else{
-        result= false
-    }
+    const result=Boolean(userdocument)    
     //console.log("followers2: ",user.followers);
     return res
     .status(200)
-    .json(new ApiResponse(200,{followers: user.followers, following: user.following, result: result},"User's followers fetched successfully"))
+    .json(new ApiResponse(200,{isFollowing: result},"User's following confirmed successfully"))
 })
 
 const addAFollowerFollowing= asynchandler(async (req,res) => {
@@ -523,23 +499,22 @@ export {
     registerUser,
     loginUser,
     logout,
-    changeUserDetails,
     changePhoto,
     refreshAccessToken,
     changePassword,
     saveASpot,
     favSpot,
     removeSavedSpot,
-    checkIfSaved,
     getUserDetails,
     deleteReview,
     deleteSavedPlaceById,
     addBio,
-    checkIsLiked,
+    checkIsLikedSaved,
     removefavspot,
     getUserFavSpots,
     getanotherUserDetails,
-    getFollowers,
+    isFollowing,
     addAFollowerFollowing,
-    removeAFollowerFollowing
+    removeAFollowerFollowing,
+    updateName
 }
