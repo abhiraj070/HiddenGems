@@ -15,6 +15,7 @@ export default function UserProfilePage(){
     const [showFollowers, setShowFollowers]= useState(false)
     const [showFollowing, setShowFollowing]= useState(false)
     const [error, setError]= useState(null)
+    const [showFollowButton, setShowFollowButton]= useState(true)
     const {userId}= useParams()
 
     useEffect(()=>{
@@ -23,6 +24,9 @@ export default function UserProfilePage(){
                 const res= await axios.get(
                     `/api/v1/users/get/check/${userId}`
                 )
+                setShowFollowButton(res.data.data.isSame)
+                console.log(res.data.data.isSame);
+                
                 setIsFollowed(res.data.data.isFollowing)
                 setError(null)
             } catch (error) {
@@ -186,14 +190,15 @@ export default function UserProfilePage(){
                             </div>
                         </div>
                         <div className="flex gap-3 mt-4 md:mt-0">
-                            <button
+                            {showFollowButton? (<button
                                 className={`px-6 py-2 rounded-full 
                                     ${ isFollowed ? "border border-green-700 text-black bg-white":
                                     "bg-green-600 text-white font-medium hover:bg-green-700 transition shadow"}`}
                                 onClick={()=>{handleFollowClick()}}
                             >
                                 {isFollowed? "Unfollow" : "Follow"}
-                            </button>
+                            </button>) : ("")
+                            }
                         </div>
                         
                     </div>

@@ -501,6 +501,7 @@ const getanotherUserDetails=asynchandler(async (req,res) => {
 const isFollowing=asynchandler(async (req,res) => {
     const user_id= req.params.id
     const curruser_id= req.user._id
+    const isSame= !(user_id==curruser_id)
     if(!user_id){
         throw new ApiError(404,"Secondary user not found")
     }
@@ -512,7 +513,7 @@ const isFollowing=asynchandler(async (req,res) => {
     //console.log("followers2: ",user.followers);
     return res
     .status(200)
-    .json(new ApiResponse(200,{isFollowing: result},"User's following confirmed successfully"))
+    .json(new ApiResponse(200,{isFollowing: result, isSame: isSame},"User's following confirmed successfully"))
 })
 
 const addAFollowerFollowing= asynchandler(async (req,res) => {
