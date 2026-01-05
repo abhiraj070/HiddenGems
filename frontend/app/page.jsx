@@ -82,26 +82,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
-      {/* CTA Section */}
-      <section className="bg-teal text-sand py-16 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-4">Ready to Explore?</h2>
-          <p className="text-lg mb-8 opacity-90">Join thousands of travelers discovering the world's hidden gems.</p>
-          {!isLoggedIn && (
-            <Link href="/auth?mode=signup" className="inline-block btn-secondary text-lg px-8 py-3">
-              Start Your Adventure
-            </Link>
-          )}
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-dark-text/5 border-t border-stone py-8 px-6">
-        <div className="max-w-6xl mx-auto text-center text-dark-text/60">
-          <p>© 2025 HiddenGems. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   )
 }
