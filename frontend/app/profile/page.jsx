@@ -55,7 +55,6 @@ export default function ProfilePage() {
       setUser(res.data.data)
       setEditedBio(bio)
       setError(null)
-      setIsEditing(false)
     } catch (error) {
       setError(error.response?.data?.message)
     }

@@ -146,7 +146,7 @@ const googleSignIn=asynchandler(async (req,res) => {
         if(!accessToken || !refreshToken){
             throw new ApiError(500,"Error while creating tokens")
         }
-        const userdocument= await User.findById(createUser._id).select("-refreshtoken -password")
+        const userdocument= await User.findById(createUser._id).select("-refreshToken -password")
         return res
         .status(200)
         .cookie("accessToken",accessToken,option)

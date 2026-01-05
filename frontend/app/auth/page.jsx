@@ -77,8 +77,6 @@ export default function AuthPage() {
   document.body.appendChild(script)
 }, [])
 
-
-
   const handleprofilepictureChange = (e) => {
     const file = e.target.files?.[0]
     if (file) {
