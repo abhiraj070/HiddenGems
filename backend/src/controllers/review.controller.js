@@ -55,20 +55,22 @@ const createReview= asynchandler(async(req,res)=>{
 })
 
 const editReview= asynchandler(async (req,res) => {
-    const {spotName, content, tag}= req.body
+    console.log("1");
+    
+    const {review}= req.body
+    console.log(review);
+    
     const review_id= req.params.id
     const updatedreview=await Review.findByIdAndUpdate(
         review_id,
         {
-            spotName: spotName ?? undefined,
-            content: content ?? undefined,
-            tag: tag ?? undefined
+            content: review,
         },
         {new: true}
     )
 
     if(!updatedreview){
-        throw new ApiError(500,"Review not found")
+        throw new ApiError(404,"Review not found")
     }
 
     return res

@@ -22,6 +22,8 @@ export default function ProfilePage() {
   const [showFollowers, setShowFollowers]= useState(false)
   const [showFollowing, setShowFollowing]= useState(false)
   const [error, setError]= useState()
+  const [isReviewEditing, setIsReviewEditing]= useState(false)
+  const [editedReview, setEditedReview]= useState("")
 
   useEffect(() => {
     const userData = localStorage.getItem("user")
@@ -95,6 +97,24 @@ export default function ProfilePage() {
 
   const handleSpotClick=()=>{
     router.push("/home")
+  }
+
+  const handleClickEditReview=(i)=>{
+    setIsReviewEditing(!isReviewEditing)
+    setEditedReview(user.reviewHistory[i].content || "")
+  }
+
+  const handleSaveReview= async(id)=>{
+      setIsReviewEditing(false)
+    try {
+      await axios.post(
+        `/api/v1/review/edit/review/${id}`,
+        {review: editedReview}
+      )
+      setError(null)
+    } catch (error) {
+      setError(error.response?.data?.message)
+    }
   }
 
   const handleEditClick=()=>{
@@ -366,9 +386,9 @@ export default function ProfilePage() {
         </span>
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {user.reviewHistory.map((review) => (
+      {user.reviewHistory.map((review,i) => (
         <div
-          key={review._id}
+          key={i}
           className="
             group
             relative
@@ -392,19 +412,43 @@ export default function ProfilePage() {
             🗑
           </button>
 
+          <button
+            onClick={()=>{isReviewEditing? handleSaveReview(review._id):handleClickEditReview(i)}}
+            className="
+              absolute top-4 right-15
+              opacity-0 group-hover:opacity-100
+              transition
+              text-stone-400 hover:text-green-500
+            "
+          >
+            {isReviewEditing? "save": "✎"}
+          </button>
+
           <h3 className="text-sm font-semibold text-stone-900 mb-1">
             {review.spotName.charAt(0).toUpperCase() + review.spotName.slice(1)}
           </h3>
+          
 
           <p className="text-sm text-stone-700 leading-relaxed line-clamp-4">
-            {review.content}
-          </p>
 
+            {isReviewEditing ?
+              (<input
+                value={editedReview}
+                onChange={(e)=>{setEditedReview(e.target.value)}}
+                className="w-full bg-transparent border-b-2 border-green-500 focus:outline-none"
+              />)
+              :
+              (review.content)}
+          </p>
+          
+          
           <div className="mt-4 flex justify-between items-center text-xs text-stone-400">
             <span className="uppercase tracking-wide">{review.tag}</span>
             <span className="italic">Your review</span>
           </div>
+          
         </div>
+        
       ))}
     </div>
 
