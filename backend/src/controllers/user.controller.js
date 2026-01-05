@@ -461,7 +461,7 @@ const getFollowers=asynchandler(async (req,res) => {
     }
     const user= await User.findById(user_id).populate("followers following")
     //console.log(user);
-    console.log("followers: ",user.followers);
+    //console.log("followers: ",user.followers);
     
     if(!user){
         throw ApiError(404,"User not found")
@@ -477,7 +477,7 @@ const getFollowers=asynchandler(async (req,res) => {
     else{
         result= false
     }
-    console.log("followers2: ",user.followers);
+    //console.log("followers2: ",user.followers);
     return res
     .status(200)
     .json(new ApiResponse(200,{followers: user.followers, following: user.following, result: result},"User's followers fetched successfully"))
@@ -493,7 +493,7 @@ const addAFollowerFollowing= asynchandler(async (req,res) => {
     )
     const user2= await User.findByIdAndUpdate(
         userfolloweing_id,
-        {$addTOSet:{following: usertobefollowed_id}},
+        {$push:{following: usertobefollowed_id}},
         {new: true}
     )
     return res

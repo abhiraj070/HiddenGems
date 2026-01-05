@@ -16,19 +16,26 @@ export default function UserProfilePage(){
     const [showFollowing, setShowFollowing]= useState(false)
     const {userId}= useParams()
 
+
+    useEffect(()=>{
+        const fetchDetails= async()=>{
+            const res2= await axios.get(
+                `/api/v1/users/get/user/follower/${userId}`
+            )
+            //console.log(res2.data.data)
+            setIsFollowed(res2.data.data.result)
+            setFollowers(res2.data.data.followers)
+            setFollowing(res2.data.data.following)
+            //console.log("res: ",res);
+        }
+        fetchDetails()
+    },[])
+
     useEffect(()=>{
         const fectchUserDetails= async()=>{
             const res= await axios.get( //try to fetch whole user
                 `/api/v1/users/get/user/${userId}`
             )
-            const res2= await axios.get(
-                `/api/v1/users/get/user/follower/${userId}`
-            )
-            setIsFollowed(res2.data.data.result)
-            //console.log(res2.data.data)
-            setFollowers(res2.data.data.followers)
-            setFollowing(res2.data.data.following)
-            //console.log("res: ",res);
             setUser(res.data.data)
         }
         fectchUserDetails()
