@@ -4,7 +4,7 @@ import cors from 'cors'
 
 const app=express()
 app.use(cors({
-  origin: "https://hidden-gems-bpjk-jjpydgajn-abhiraj-sharmas-projects-33923310.vercel.app",
+  origin: true,
   credentials: true
 }))
 
