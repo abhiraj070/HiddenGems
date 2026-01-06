@@ -12,7 +12,7 @@ const corsOptions = {
     allowedHeaders: ["Content-Type", "Authorization"],
 }
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+app.options("/*", cors(corsOptions));
 
 
 app.use(cookieParser())
