@@ -80,8 +80,8 @@ export default function HomePage() {
   useEffect(()=>{
     const fetchReviews =async ()=>{
       try {
-        const res= await axios.get(
-          `/${api}/v1/spot/get/spots`
+        const res= await api.get(
+          `/api/v1/spot/get/spots`
         )
         const reviewGot= res.data.data
         //console.log("reviews: ",reviewGot);
@@ -108,8 +108,8 @@ export default function HomePage() {
     //filterSpots(updatedSpots, selectedCategories)
     setShowAddModal(false)
     try {
-       await axios.post(
-        `/${api}/v1/review/createReview`,
+       await api.post(
+        `/api/v1/review/createReview`,
         {
           spotName: formData.name,
           content: formData.description,

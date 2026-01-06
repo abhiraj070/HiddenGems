@@ -1,6 +1,5 @@
 "use client"
 
-import axios from "axios"
 import { useParams } from "next/navigation"
 import { useState, useEffect } from "react"
 import Link from "next/link"
@@ -21,8 +20,8 @@ export default function UserProfilePage(){
     useEffect(()=>{
         const fetchisFollowing= async()=>{
             try {
-                const res= await axios.get(
-                    `/${api}/v1/users/get/check/${userId}`
+                const res= await api.get(
+                    `/api/v1/users/get/check/${userId}`
                 )
                 setShowFollowButton(res.data.data.isSame)
                 console.log(res.data.data.isSame);
@@ -39,8 +38,8 @@ export default function UserProfilePage(){
     useEffect(()=>{
         const fectchUserDetails= async()=>{
             try {
-                const res= await axios.get( 
-                    `/${api}/v1/users/get/user/${userId}`
+                const res= await api.get( 
+                    `/api/v1/users/get/user/${userId}`
                 )
                 setUser(res.data.data.user)
                 setFollowers(res.data.data.user.followers)
@@ -66,8 +65,8 @@ export default function UserProfilePage(){
     const handleFollowClick=async()=>{
         if(!isFollowed){
             try {
-                await axios.post(
-                    `/${api}/v1/users/follow/user/${userId}`
+                await api.post(
+                    `/api/v1/users/follow/user/${userId}`
                 )
                 setIsFollowed(!isFollowed)
                 setError(null)
@@ -77,8 +76,8 @@ export default function UserProfilePage(){
         }
         else{
             try {
-                await axios.post(
-                    `/${api}/v1/users/unfollow/user/${userId}`
+                await api.post(
+                    `/api/v1/users/unfollow/user/${userId}`
                 )
                 setIsFollowed(!isFollowed)
                 setError(null)

@@ -51,8 +51,8 @@ export default function SidebarComponent({
   useEffect(()=>{
     const fetchlikes= async()=>{
       try {
-        const res= await axios.get(
-        `/${api}/v1/users/get/likes`
+        const res= await api.get(
+        `/api/v1/users/get/likes`
       )
         setError(null)
         setLikedLength(res.data.data.length)
@@ -67,8 +67,8 @@ export default function SidebarComponent({
   const onShowFavorites=async ()=>{
     if(!displayFavBox){
       try {
-        const res= await axios.get(
-          `/${api}/v1/users/get/likes`
+        const res= await api.get(
+          `/api/v1/users/get/likes`
         )
         //console.log(res.data.data)
         setError(null)

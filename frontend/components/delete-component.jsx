@@ -9,8 +9,8 @@ export default function DeleteComponent({setConfirmDelete, setShowPopUp, deleteR
     const onConfirm=async ()=>{
         if(deleteReviewId){
             try {
-                await axios.post(
-                    `/${api}/v1/users/delete/review/${deleteReviewId}`
+                await api.post(
+                    `/api/v1/users/delete/review/${deleteReviewId}`
                 )
                 setConfirmDelete(true)
                 setShowPopUp(false)
@@ -21,8 +21,8 @@ export default function DeleteComponent({setConfirmDelete, setShowPopUp, deleteR
         }
         else if(deleteSavedId){
             try {
-                await axios.post(
-                    `/${api}/v1/users/delete/saved/${deleteSavedId}`
+                await api.post(
+                    `/api/v1/users/delete/saved/${deleteSavedId}`
                 )
                 setConfirmDelete(true)
                 setShowPopUp(false)

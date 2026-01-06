@@ -33,8 +33,8 @@ export default function ProfilePage() {
     }
     const fetchUser= async ()=>{
       try {
-        const res= await axios.get(
-          `/${api}/v1/users/get/user`
+        const res= await api.get(
+          `/api/v1/users/get/user`
         )
         setUser(res.data.data.user)
         setError(null)
@@ -50,8 +50,8 @@ export default function ProfilePage() {
 
   const handleEditBio=async(bio)=>{
     try {
-      const res=await axios.post(
-        `/${api}/v1/users/addbio`,
+      const res=await api.post(
+        `/api/v1/users/addbio`,
         {bio: bio},
       )
       setUser(res.data.data)
@@ -77,8 +77,8 @@ export default function ProfilePage() {
       const fetchUser= async ()=>{
         try {
           setLoading(true)
-          const res= await axios.get(
-            `/${api}/v1/users/get/user`
+          const res= await api.get(
+            `/api/v1/users/get/user`
           )
           setUser(res.data.data.user)
           setError(null)
@@ -107,8 +107,8 @@ export default function ProfilePage() {
   const handleSaveReview= async(id)=>{
       setIsReviewEditing(false)
     try {
-      await axios.post(
-        `/${api}/v1/review/edit/review/${id}`,
+      await api.post(
+        `/api/v1/review/edit/review/${id}`,
         {review: editedReview}
       )
       setError(null)
@@ -136,8 +136,8 @@ export default function ProfilePage() {
   const handleSaveProfile = async() => {
     if (editedName.trim()) {
       try {
-        await axios.post(
-          `/${api}/v1/users/edit/name`,
+        await api.post(
+          `/api/v1/users/edit/name`,
           {name: editedName}
         )
         const updatedUser = { ...user, fullname: editedName }
@@ -151,8 +151,8 @@ export default function ProfilePage() {
 
   const handleLogout = async () => {
     try {
-      await axios.post(
-        `/${api}/v1/users/logout`
+      await api.post(
+        `/api/v1/users/logout`
       )
       setError(null)
     } catch (error) {

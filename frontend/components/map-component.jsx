@@ -76,8 +76,8 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
         const lngi= lng
         //console.log("lat: ",lat,"lng: ",lng);
         try {
-          const res= await axios.get(
-            `/${api}/v1/spot/get/${lati}/${lngi}`,
+          const res= await api.get(
+            `/api/v1/spot/get/${lati}/${lngi}`,
             { withCredentials: true }
           )
           //console.log("spotAllReviews: ",res.data.data.allCoordReviews)
@@ -117,8 +117,8 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
             const lati=lat
             const lngi=lng
             try {
-              const res= await axios.get(
-                `/${api}/v1/spot/get/${lati}/${lngi}`
+              const res= await api.get(
+                `/api/v1/spot/get/${lati}/${lngi}`
               )
               const spotAllReviews= res.data.data.allCoordReviews
               setAllReviews(spotAllReviews)

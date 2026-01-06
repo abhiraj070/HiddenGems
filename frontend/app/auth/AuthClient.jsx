@@ -33,8 +33,8 @@ export default function AuthClient() {
     setError("")
     setLoading(true)
     try {
-      const res = await axios.post(
-        `/${api}/v1/users/google-login`,
+      const res = await api.post(
+        `/api/v1/users/google-login`,
         { token: credential },
         { withCredentials: true }
       )
@@ -96,8 +96,8 @@ export default function AuthClient() {
     try {
       if (isLogin) {
         // Login      
-        const res= await axios.post(
-          `/${api}/v1/users/login`,
+        const res= await api.post(
+          `/api/v1/users/login`,
           {email, password},
           { withCredentials: true }
         )
@@ -114,8 +114,8 @@ export default function AuthClient() {
         formData.append("username", username);
         formData.append("password", password);
         formData.append("profilepicture", fileInputRef.current?.files?.[0]);
-        const res= await axios.post(
-          `/${api}/v1/users/register`, formData
+        const res= await api.post(
+          `/api/v1/users/register`, formData
         )
         const user= res.data.data
         //console.log("userstr:",res);
