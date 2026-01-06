@@ -9,6 +9,7 @@ import AddSpotModal from "@/components/add-spot-modal"
 import ListBoxModal from "../../components/list-box-modal"
 import SpotDetailsModal from "../../components/spot-details-modal"
 import LikeBoxComponent from "../../components/like-box-component"
+import api from "../../lib/api"
 import axios from "axios"
 
 export default function HomePage() {
@@ -80,7 +81,7 @@ export default function HomePage() {
     const fetchReviews =async ()=>{
       try {
         const res= await axios.get(
-          `/api/v1/spot/get/spots`
+          `/${api}/v1/spot/get/spots`
         )
         const reviewGot= res.data.data
         //console.log("reviews: ",reviewGot);
@@ -108,7 +109,7 @@ export default function HomePage() {
     setShowAddModal(false)
     try {
        await axios.post(
-        "/api/v1/review/createReview",
+        `/${api}/v1/review/createReview`,
         {
           spotName: formData.name,
           content: formData.description,

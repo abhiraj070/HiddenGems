@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState } from "react"
 import axios from "axios"
+import api from "../lib/api"
 
 export default function ListBoxModal({ onClose, allReviews, setShowDetails, setTransferSpecificReview, coordOfSpot, setIsSpotLiked }) {
   //console.log("allReviews: ",allReviews);
@@ -14,7 +15,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
     const fetchIsSavedLiked=async ()=>{
       try {
         const res= await axios.get(
-          `/api/v1/users/check/${coordOfSpot.lat}/${coordOfSpot.lng}`
+          `/${api}/v1/users/check/${coordOfSpot.lat}/${coordOfSpot.lng}`
         )
         //console.log("res: ",res.data.data);
         setlikenumber(res.data.data.spot.likes)
@@ -36,7 +37,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
     if(!turnred){
       try {
         const res= await axios.post(
-          `/api/v1/users/favSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
+          `/${api}/v1/users/favSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
         )
         //console.log("res:",res);
         setError(null)
@@ -50,7 +51,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
     else{
       try {
         const res= await axios.post(
-          `/api/v1/users/removeliked/${coordOfSpot.lat}/${coordOfSpot.lng}`
+          `/${api}/v1/users/removeliked/${coordOfSpot.lat}/${coordOfSpot.lng}`
         )
         setlikenumber(res.data.data.spot.likes)
         setError(null)
@@ -65,7 +66,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
     if(!turnblue){
       try {
         const res= await axios.post(
-          `/api/v1/users/saveSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
+          `/${api}/v1/users/saveSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
         )
         setError(null)
         setTurenBlue(!turnblue)
@@ -77,7 +78,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
     else{
       try {
         const res= await axios.post(
-          `/api/v1/users/deletespot/${coordOfSpot.lat}/${coordOfSpot.lng}`
+          `/${api}/v1/users/deletespot/${coordOfSpot.lat}/${coordOfSpot.lng}`
         )
         setError(null)
         setTurenBlue(!turnblue)

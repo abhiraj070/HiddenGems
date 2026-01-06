@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 import "leaflet/dist/leaflet.css"
+import api from "../lib/api"
 export default function MapComponent({onLocationPicked, currentLocation, dbspots, newspots, ListBox, setAllReviews, setCoordOfSpot}) {
   const mapContainer = useRef(null) 
   const map = useRef(null) 
@@ -76,7 +77,7 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
         //console.log("lat: ",lat,"lng: ",lng);
         try {
           const res= await axios.get(
-            `/api/v1/spot/get/${lati}/${lngi}`,
+            `/${api}/v1/spot/get/${lati}/${lngi}`,
             { withCredentials: true }
           )
           //console.log("spotAllReviews: ",res.data.data.allCoordReviews)
@@ -117,7 +118,7 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
             const lngi=lng
             try {
               const res= await axios.get(
-                `/api/v1/spot/get/${lati}/${lngi}`
+                `/${api}/v1/spot/get/${lati}/${lngi}`
               )
               const spotAllReviews= res.data.data.allCoordReviews
               setAllReviews(spotAllReviews)

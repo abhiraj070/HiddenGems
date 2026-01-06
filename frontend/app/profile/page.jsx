@@ -7,7 +7,8 @@ import axios from "axios"
 import DeleteComponent from "../../components/delete-component"
 import FollowerBox from "../../components/follower-modal"
 import FollowingBox from "../../components/following-modal"
-
+import api from "../../lib/api"
+import api from "@/lib/api"
 export default function ProfilePage() {
   const router = useRouter()
   const [user, setUser] = useState(null)
@@ -34,7 +35,7 @@ export default function ProfilePage() {
     const fetchUser= async ()=>{
       try {
         const res= await axios.get(
-          "/api/v1/users/get/user"
+          `/${api}/v1/users/get/user`
         )
         setUser(res.data.data.user)
         setError(null)
@@ -51,7 +52,7 @@ export default function ProfilePage() {
   const handleEditBio=async(bio)=>{
     try {
       const res=await axios.post(
-        "/api/v1/users/addbio",
+        `/${api}/v1/users/addbio`,
         {bio: bio},
       )
       setUser(res.data.data)
@@ -78,7 +79,7 @@ export default function ProfilePage() {
         try {
           setLoading(true)
           const res= await axios.get(
-            "/api/v1/users/get/user"
+            `/${api}/v1/users/get/user`
           )
           setUser(res.data.data.user)
           setError(null)
@@ -108,7 +109,7 @@ export default function ProfilePage() {
       setIsReviewEditing(false)
     try {
       await axios.post(
-        `/api/v1/review/edit/review/${id}`,
+        `/${api}/v1/review/edit/review/${id}`,
         {review: editedReview}
       )
       setError(null)
@@ -137,7 +138,7 @@ export default function ProfilePage() {
     if (editedName.trim()) {
       try {
         await axios.post(
-          "/api/v1/users/edit/name",
+          `/${api}/v1/users/edit/name`,
           {name: editedName}
         )
         const updatedUser = { ...user, fullname: editedName }
@@ -152,7 +153,7 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     try {
       await axios.post(
-        "/api/v1/users/logout"
+        `/${api}/v1/users/logout`
       )
       setError(null)
     } catch (error) {

@@ -1,14 +1,14 @@
 "use client"
 
 export default function FollowingBox({onClose, following}){
-    console.log("following: ",following);
+    //console.log("following: ",following);
     
     return(
         <div className=" fixed
-            left-[800px]
+            left-800px
             top-[162.5px]
             z-1000
-            w-[400px]
+            w-400px
             max-h-[60vh]
             rounded-2xl
             bg-white/90 backdrop-blur
@@ -36,7 +36,7 @@ export default function FollowingBox({onClose, following}){
                 className="
                     flex items-center gap-4
                     group
-                    w-full max-w-[360px]
+                    w-full max-w-360px
                     rounded-2xl
                     border border-stone-200
                     bg-white/70 backdrop-blur
@@ -73,7 +73,6 @@ export default function FollowingBox({onClose, following}){
                 </div>
             ))}
             </div>
-
     </div>
     )
 }

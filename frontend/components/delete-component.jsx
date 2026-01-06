@@ -2,7 +2,7 @@
 
 import axios from "axios"
 import {useState} from "react"
-
+import api from "../lib/api"
 export default function DeleteComponent({setConfirmDelete, setShowPopUp, deleteReviewId, deleteSavedId}){
     const [error, setError]= useState(null)
 
@@ -10,7 +10,7 @@ export default function DeleteComponent({setConfirmDelete, setShowPopUp, deleteR
         if(deleteReviewId){
             try {
                 await axios.post(
-                    `/api/v1/users/delete/review/${deleteReviewId}`
+                    `/${api}/v1/users/delete/review/${deleteReviewId}`
                 )
                 setConfirmDelete(true)
                 setShowPopUp(false)
@@ -22,7 +22,7 @@ export default function DeleteComponent({setConfirmDelete, setShowPopUp, deleteR
         else if(deleteSavedId){
             try {
                 await axios.post(
-                    `/api/v1/users/delete/saved/${deleteSavedId}`
+                    `/${api}/v1/users/delete/saved/${deleteSavedId}`
                 )
                 setConfirmDelete(true)
                 setShowPopUp(false)

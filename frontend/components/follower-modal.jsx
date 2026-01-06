@@ -1,15 +1,15 @@
 "use client"
 
 export default function FollowerBox({onClose, followers}){
-    console.log("followers: ",followers);
-    console.log(followers[0].username,followers[0].fullname);
+    //console.log("followers: ",followers);
+    //console.log(followers[0].username,followers[0].fullname);
     
     return(
     <div className=" fixed
-            left-[800px]
+            left-800px
             top-[162.5px]
             z-1000
-            w-[400px]
+            w-400px
             max-h-[60vh]
             rounded-2xl
             bg-white/90 backdrop-blur
@@ -38,7 +38,7 @@ export default function FollowerBox({onClose, followers}){
                         className="
                         flex items-center gap-4
                         group
-                        w-[360px]
+                        w-360px
                         rounded-2xl
                         border border-stone-200
                         bg-white/70 backdrop-blur

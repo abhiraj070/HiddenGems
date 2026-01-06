@@ -8,7 +8,7 @@ export default function LikeBoxComponent({allLikedSpots, onClose}){
     <div className=" fixed
             left-92 bottom-6
             z-1000
-            w-[420px]
+            w-420px
             max-h-[60vh]
             rounded-2xl
             bg-white/90 backdrop-blur
