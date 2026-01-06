@@ -8,7 +8,6 @@ import DeleteComponent from "../../components/delete-component"
 import FollowerBox from "../../components/follower-modal"
 import FollowingBox from "../../components/following-modal"
 import api from "../../lib/api"
-import api from "@/lib/api"
 export default function ProfilePage() {
   const router = useRouter()
   const [user, setUser] = useState(null)
