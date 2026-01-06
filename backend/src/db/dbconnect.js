@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 const db_connect=async ()=>{
     try {
-        await mongoose.connect(`${process.env.MONGODB_STRING}/hiddenGems`)
+        await mongoose.connect(`${process.env.MONGODB_URI}/hiddenGems`)
         console.log("db is connected");
     } catch (error) {
         console.log("MONGODB connection error ",error);
