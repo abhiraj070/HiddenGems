@@ -82,7 +82,7 @@ const loginUser= asynchandler(async(req,res)=>{
     user.save({validatebeforesave: false})
     const options={
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: "lax",
         path: "/"
     }
@@ -108,7 +108,7 @@ const googleSignIn=asynchandler(async (req,res) => {
     const payload= ticket.getPayload()
     const user= await User.findOne({email: payload.email})
     const option={
-        secure: false,
+        secure: true,
         httpOnly: true,
         sameSite: "lax",
         path: "/"
