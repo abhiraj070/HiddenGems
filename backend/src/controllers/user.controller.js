@@ -83,8 +83,7 @@ const loginUser= asynchandler(async(req,res)=>{
     const options={
         httpOnly: true,
         secure: true,
-        sameSite: "lax",
-        path: "/"
+        sameSite: "none",
     }
 
     return res
@@ -110,8 +109,7 @@ const googleSignIn=asynchandler(async (req,res) => {
     const option={
         secure: true,
         httpOnly: true,
-        sameSite: "lax",
-        path: "/"
+        sameSite: "none",
     }
     if(user){
         const accessToken= user.generateAccessToken()
