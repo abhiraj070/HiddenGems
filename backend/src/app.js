@@ -3,17 +3,10 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 
 const app=express()
-const corsOptions = {
-    origin: [
-        "https://hidden-gems-bpjk-jjpydgajn-abhiraj-sharmas-projects-33923310.vercel.app"
-    ],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-}
-app.use(cors(corsOptions));
-app.options("/*", cors(corsOptions));
-
+app.use(cors({
+  origin: true,
+  credentials: true
+}))
 
 app.use(cookieParser())
 app.use(express.json({ limit: "10mb"}))
