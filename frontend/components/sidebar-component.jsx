@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import {useRouter} from "next/navigation"
 import axios from "axios"
-import api from "../lib/api"
 export default function SidebarComponent({
   selectedCategories,
   setDisplayFavBox,
@@ -51,7 +50,7 @@ export default function SidebarComponent({
   useEffect(()=>{
     const fetchlikes= async()=>{
       try {
-        const res= await api.get(
+        const res= await axios.get(
         `/api/v1/users/get/likes`
       )
         setError(null)
@@ -67,7 +66,7 @@ export default function SidebarComponent({
   const onShowFavorites=async ()=>{
     if(!displayFavBox){
       try {
-        const res= await api.get(
+        const res= await axios.get(
           `/api/v1/users/get/likes`
         )
         //console.log(res.data.data)

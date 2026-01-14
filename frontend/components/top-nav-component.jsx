@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import { useState, useRef, useEffect } from "react"
 import axios from "axios"
 import Image from "next/image"
-import api from "../lib/api"
 export default function TopNavComponent({ user, onAddSpot }) {
   const router = useRouter()
   const [showProfileMenu, setShowProfileMenu] = useState(false)
@@ -26,7 +25,7 @@ export default function TopNavComponent({ user, onAddSpot }) {
   //console.log("user: ",user);
   const handleLogout = async() => {
     localStorage.removeItem("user")
-    await api.post(
+    await axios.post(
       `/api/v1/users/logout`
     )
     router.push("/")
@@ -160,15 +159,13 @@ export default function TopNavComponent({ user, onAddSpot }) {
             "
           >
             <div className="w-9 h-9 rounded-full overflow-hidden bg-teal ring-2 ring-teal/30">
-              {user.profilepicture? (<Image
-                src={user.profilepicture}
-                alt="Profile"
-                width={36}
-                height={36}
-                className="w-full h-full object-cover"
-              />):
-              (user.username[0].toUpperCase())
-            }
+              {
+                user.profilepicture ? <img 
+                  src={user.profilepicture}
+                />:
+                user.username[0].toUpperCase()
+              }
+            
             </div>
 
             <span className="hidden sm:block text-m font-medium text-dark-text">

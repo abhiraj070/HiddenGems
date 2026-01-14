@@ -7,7 +7,6 @@ import axios from "axios"
 import DeleteComponent from "../../components/delete-component"
 import FollowerBox from "../../components/follower-modal"
 import FollowingBox from "../../components/following-modal"
-import api from "../../lib/api"
 export default function ProfilePage() {
   const router = useRouter()
   const [user, setUser] = useState(null)
@@ -33,7 +32,7 @@ export default function ProfilePage() {
     }
     const fetchUser= async ()=>{
       try {
-        const res= await api.get(
+        const res= await axios.get(
           `/api/v1/users/get/user`
         )
         setUser(res.data.data.user)
@@ -50,7 +49,7 @@ export default function ProfilePage() {
 
   const handleEditBio=async(bio)=>{
     try {
-      const res=await api.post(
+      const res=await axios.post(
         `/api/v1/users/addbio`,
         {bio: bio},
       )
@@ -77,7 +76,7 @@ export default function ProfilePage() {
       const fetchUser= async ()=>{
         try {
           setLoading(true)
-          const res= await api.get(
+          const res= await axios.get(
             `/api/v1/users/get/user`
           )
           setUser(res.data.data.user)
@@ -107,7 +106,7 @@ export default function ProfilePage() {
   const handleSaveReview= async(id)=>{
       setIsReviewEditing(false)
     try {
-      await api.post(
+      await axios.post(
         `/api/v1/review/edit/review/${id}`,
         {review: editedReview}
       )
@@ -136,7 +135,7 @@ export default function ProfilePage() {
   const handleSaveProfile = async() => {
     if (editedName.trim()) {
       try {
-        await api.post(
+        await axios.post(
           `/api/v1/users/edit/name`,
           {name: editedName}
         )
@@ -151,7 +150,7 @@ export default function ProfilePage() {
 
   const handleLogout = async () => {
     try {
-      await api.post(
+      await axios.post(
         `/api/v1/users/logout`
       )
       setError(null)

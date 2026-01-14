@@ -1,7 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
 import axios from "axios"
-import api from "../lib/api"
 
 export default function ListBoxModal({ onClose, allReviews, setShowDetails, setTransferSpecificReview, coordOfSpot, setIsSpotLiked }) {
   //console.log("allReviews: ",allReviews);
@@ -14,7 +13,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
   useEffect(()=>{
     const fetchIsSavedLiked=async ()=>{
       try {
-        const res= await api.get(
+        const res= await axios.get(
           `/api/v1/users/check/${coordOfSpot.lat}/${coordOfSpot.lng}`
         )
         //console.log("res: ",res.data.data);
@@ -36,7 +35,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
   const handleLike=async()=>{
     if(!turnred){
       try {
-        const res= await api.post(
+        const res= await axios.post(
           `/api/v1/users/favSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
         )
         //console.log("res:",res);
@@ -50,7 +49,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
     }
     else{
       try {
-        const res= await api.post(
+        const res= await axios.post(
           `/api/v1/users/removeliked/${coordOfSpot.lat}/${coordOfSpot.lng}`
         )
         setlikenumber(res.data.data.spot.likes)
@@ -65,7 +64,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
   const handleSave= async ()=>{
     if(!turnblue){
       try {
-        await api.post(
+        await axios.post(
           `/api/v1/users/saveSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
         )
         setError(null)
@@ -77,7 +76,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
     } 
     else{
       try {
-        await api.post(
+        await axios.post(
           `/api/v1/users/deletespot/${coordOfSpot.lat}/${coordOfSpot.lng}`
         )
         setError(null)

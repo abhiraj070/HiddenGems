@@ -48,44 +48,102 @@ const registerUser= asynchandler(async(req,res)=>{
 })
 
 const loginUser= asynchandler(async(req,res)=>{
-    const {email, password}= req.body
+    console.log("loginUser: Request received");
 
-    if(!email){
+    const {email, password}= req.body
+    console.log("loginUser: Email:", email, "Password provided:", !!password);
+
+    if(!email || !password){
+        console.log("loginUser: Missing email or password");
         throw new ApiError(400,"All the fields are required")
     }
 
-    const user=await User.findOne({
-        email
-    })
+    console.log("loginUser: Finding user with email:", email);
+    const normalizedEmail = email.trim().toLowerCase();
+    let user;
+    try {
+        user = await User.findOne({ email: normalizedEmail });
+        console.log("loginUser: User.findOne succeeded");
+    } catch (dbError) {
+        console.log("loginUser: User.findOne failed:", dbError);
+        throw dbError;
+    }
+    console.log("loginUser: User found:", !!user);
     if(!user){
+        console.log("loginUser: User not registered");
         throw new ApiError(400,"User not Registered")
     }
-    //console.log(user);
+
+    console.log("loginUser: Checking if user has password");
+    if (!user.password) {
+        console.log("loginUser: User has no password, must login with Google");
+        throw new ApiError(400, "Please login using Google")
+    }
     
-    const isPassCorrect= await user.isPasswordCorrect(password)
+    console.log("loginUser: Verifying password");
+    let isPassCorrect;
+    try {
+        isPassCorrect = await user.isPasswordCorrect(password);
+        console.log("loginUser: isPasswordCorrect succeeded");
+    } catch (passError) {
+        console.log("loginUser: isPasswordCorrect failed:", passError);
+        throw passError;
+    }
+    console.log("loginUser: Password correct:", isPassCorrect);
     if(!isPassCorrect){
+        console.log("loginUser: Incorrect password");
         throw new ApiError(400,"Incorrect Password")
     }
 
-    const accessToken= user.generateAccessToken()
-    const refreshToken= user.generateRefreshToken()
+    console.log("loginUser: Generating tokens");
+    let accessToken, refreshToken;
+    try {
+        accessToken = user.generateAccessToken();
+        refreshToken = user.generateRefreshToken();
+        console.log("loginUser: Token generation succeeded");
+    } catch (tokenError) {
+        console.log("loginUser: Token generation failed:", tokenError);
+        throw tokenError;
+    }
+    console.log("loginUser: Tokens generated:", !!accessToken, !!refreshToken);
 
     if(!accessToken || !refreshToken){
+        console.log("loginUser: Token generation failed");
         throw new ApiError(500,"Issue in generating token")
     }
 
+    console.log("loginUser: Setting refreshToken on user");
     user.refreshToken=refreshToken
 
-    
-    const loggedInUser= await User.findById(user._id).select("-password -refreshToken")
+    console.log("loginUser: Finding logged in user details");
+    let loggedInUser;
+    try {
+        loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+        console.log("loginUser: User.findById succeeded");
+    } catch (findError) {
+        console.log("loginUser: User.findById failed:", findError);
+        throw findError;
+    }
+    console.log("loginUser: Logged in user details found:", !!loggedInUser);
 
-    user.save({validatebeforesave: false})
+    console.log("loginUser: Saving user");
+    try {
+        await user.save({validateBeforeSave: false});
+        console.log("loginUser: User.save succeeded");
+    } catch (saveError) {
+        console.log("loginUser: User.save failed:", saveError);
+        throw saveError;
+    }
+    console.log("loginUser: User saved successfully");
+
     const options={
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
+        secure: false,
+        sameSite: "lax",
+        path:"/"
     }
 
+    console.log("loginUser: Sending response");
     return res
     .status(200)
     .cookie("accessToken", accessToken, options)
@@ -98,6 +156,8 @@ const loginUser= asynchandler(async(req,res)=>{
 })
 
 const googleSignIn=asynchandler(async (req,res) => {
+    console.log("google-login hit");
+    console.log("BODY:", req.body);
     const {token}= req.body
     const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
     const ticket= await client.verifyIdToken({
@@ -107,24 +167,25 @@ const googleSignIn=asynchandler(async (req,res) => {
     const payload= ticket.getPayload()
     const user= await User.findOne({email: payload.email})
     const option={
-        secure: true,
+        secure: false,
         httpOnly: true,
-        sameSite: "none",
+        sameSite: "lax",
+        path:"/"
     }
     if(user){
-        const accessToken= user.generateAccessToken()
-        const refreshToken= user.generateRefreshToken()
+        const accessToken= await user.generateAccessToken()
+        const refreshToken= await user.generateRefreshToken()
         if(!accessToken || !refreshToken){
             throw new ApiError(500,"Error while creating Tokens")
         }
         user.refreshToken= refreshToken
-        await user.save({validatebeforesave: false})
+        await user.save({validateBeforeSave: false})
         const userdocument= await User.findById(user._id).select("-refreshToken -password")
         return res
         .status(200)
         .cookie("accessToken",accessToken,option)
         .cookie("refreshToken",refreshToken,option)
-        .json(new ApiResponse(200,{accessToken: accessToken, refreshToken: refreshToken, user: userdocument},"Successfully loggined"))
+        .json(new ApiResponse(200,{user: userdocument},"Successfully loggined"))
     }
     else{
         const createUser= await User.create({
@@ -137,10 +198,10 @@ const googleSignIn=asynchandler(async (req,res) => {
         if(!createUser){
             throw new ApiError(500,"Error in creating User account")
         }
-        const accessToken= createUser.generateAccessToken()
-        const refreshToken= createUser.generateRefreshToken()
+        const accessToken= await createUser.generateAccessToken()
+        const refreshToken= await createUser.generateRefreshToken()
         createUser.refreshToken= refreshToken
-        await createUser.save({validatebeforesave: false})
+        await createUser.save({validateBeforeSave: false})
         if(!accessToken || !refreshToken){
             throw new ApiError(500,"Error while creating tokens")
         }

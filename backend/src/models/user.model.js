@@ -31,7 +31,9 @@ const userschema = Schema({
     email:{
         type: String,
         required: true,
-        lowercase: true
+        lowercase: true,
+        trim: true,
+        unique: true
     },
     password:{
         type: String,
@@ -67,10 +69,14 @@ userschema.pre("save", async function() { // next() is not required in aysnc fun
 });
 
 userschema.methods.isPasswordCorrect=async function (password) {
-    return await bcrypt.compare(password,this.password)
+    console.log("User.isPasswordCorrect: Comparing password");
+    const result = await bcrypt.compare(password,this.password)
+    console.log("User.isPasswordCorrect: Password match:", result);
+    return result
 }
 
 userschema.methods.generateAccessToken = function() {
+    console.log("User.generateAccessToken: Generating access token");
     return JWT.sign(
         {
             _id: this._id,
@@ -86,6 +92,7 @@ userschema.methods.generateAccessToken = function() {
 }
 
 userschema.methods.generateRefreshToken = function() {
+    console.log("User.generateRefreshToken: Generating refresh token");
     return JWT.sign(
         {
             _id: this._id

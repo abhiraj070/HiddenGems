@@ -21,10 +21,14 @@ const getSpotBox= asynchandler(async (req,res)=>{
 })
 
 const getAllSpots=asynchandler(async(req,res)=>{
+    console.log("Collection:", Spot.collection.name);
+
+    console.log("getAllSpots: controller entered");
     const allSpots= await Spot.find({})
     if(!allSpots){
         throw new ApiError(500,"Error while fetching spots")
     }
+    console.log("getAllSpots: spots length =", allSpots.length);
     return res
     .status(200)
     .json(new ApiResponse(200,allSpots,"successfully fetched all spots"))

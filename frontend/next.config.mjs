@@ -4,7 +4,7 @@ const nextConfig = {
     return [
       {
         source: "/api/v1/:path*",
-        destination: "https://HiddenGems-4.onrender.com/api/v1/:path*", // Proxy to backend
+        destination: "http://localhost:8000/api/v1/:path*",  // Proxy to backend
       },
     ]
   },

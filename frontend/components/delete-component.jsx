@@ -2,14 +2,13 @@
 
 import axios from "axios"
 import {useState} from "react"
-import api from "../lib/api"
 export default function DeleteComponent({setConfirmDelete, setShowPopUp, deleteReviewId, deleteSavedId}){
     const [error, setError]= useState(null)
 
     const onConfirm=async ()=>{
         if(deleteReviewId){
             try {
-                await api.post(
+                await axios.post(
                     `/api/v1/users/delete/review/${deleteReviewId}`
                 )
                 setConfirmDelete(true)
@@ -21,7 +20,7 @@ export default function DeleteComponent({setConfirmDelete, setShowPopUp, deleteR
         }
         else if(deleteSavedId){
             try {
-                await api.post(
+                await axios.post(
                     `/api/v1/users/delete/saved/${deleteSavedId}`
                 )
                 setConfirmDelete(true)
