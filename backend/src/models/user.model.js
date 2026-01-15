@@ -58,6 +58,10 @@ const userschema = Schema({
     favourite:[{
         type: Schema.Types.ObjectId,
         ref: "Spot"
+    }],
+    likedReviews:[{
+        type: Schema.Types.ObjectId,
+        ref: "Review"
     }]
 },{Timestamps: true})
 

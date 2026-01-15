@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 
-export default function ListBoxModal({ onClose, allReviews, setShowDetails, setTransferSpecificReview, coordOfSpot, setIsSpotLiked }) {
+export default function ListBoxModal({ onClose, allReviews, setShowDetails, setTransferSpecificReview, coordOfSpot, setIsSpotLiked, isSpotLiked }) {
   //console.log("allReviews: ",allReviews);
   //console.log(("set: ",allReviews[0].reviews));
   const [turnblue, setTurenBlue]= useState(false)
@@ -33,33 +33,19 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
     setTransferSpecificReview(val)
   }
   const handleLike=async()=>{
-    if(!turnred){
       try {
         const res= await axios.post(
-          `/api/v1/users/favSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
+          `/api/v1/like/toggleLike/${coordOfSpot.lat}/${coordOfSpot.lng}/Spot`,
+          { withCredentials: true }
         )
         //console.log("res:",res);
         setError(null)
-        setIsSpotLiked(true)
+        setIsSpotLiked(!isSpotLiked)
         setlikenumber(res.data.data.spot.likes)
         setTurnRed(!turnred)
       } catch (error) {
         setError(error.message)
-      }
-    }
-    else{
-      try {
-        const res= await axios.post(
-          `/api/v1/users/removeliked/${coordOfSpot.lat}/${coordOfSpot.lng}`
-        )
-        setlikenumber(res.data.data.spot.likes)
-        setError(null)
-        setTurnRed(!turnred)
-      } catch (error) {
-        setError(error.message)
-      }
-      setIsSpotLiked(false)
-    }
+      }    
   }
   const handleSave= async ()=>{
     if(!turnblue){

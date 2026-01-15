@@ -184,6 +184,7 @@ export default function HomePage() {
         setTransferSpecificReview={setTransferSpecificReview}
         coordOfSpot={coordOfSpot}
         setIsSpotLiked={setIsSpotLiked}
+        isSpotLiked={isSpotLiked}
       />}
 
       {showDetails &&

@@ -22,11 +22,22 @@ const reviewSchema= Schema({
     },
     latitude:{
         type: Number,
-        set: val => Number(val.toFixed(3))
+        set: val => {
+            const num = Number(val);
+            if (Number.isNaN(num)) return undefined;
+            return Number(num.toFixed(3));
+        }
     },
     longitude:{
         type: Number,
-        set: val => Number(val.toFixed(3))
+        set: val => {
+            const num = Number(val);
+            if (Number.isNaN(num)) return undefined;
+            return Number(num.toFixed(3));
+        }
+    },
+    likes:{
+        type: Number
     }
 })
 

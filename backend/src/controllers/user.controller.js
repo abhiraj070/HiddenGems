@@ -48,93 +48,93 @@ const registerUser= asynchandler(async(req,res)=>{
 })
 
 const loginUser= asynchandler(async(req,res)=>{
-    console.log("loginUser: Request received");
+    //console.log("loginUser: Request received");
 
     const {email, password}= req.body
-    console.log("loginUser: Email:", email, "Password provided:", !!password);
+    //console.log("loginUser: Email:", email, "Password provided:", !!password);
 
     if(!email || !password){
-        console.log("loginUser: Missing email or password");
+        //console.log("loginUser: Missing email or password");
         throw new ApiError(400,"All the fields are required")
     }
 
-    console.log("loginUser: Finding user with email:", email);
+    //console.log("loginUser: Finding user with email:", email);
     const normalizedEmail = email.trim().toLowerCase();
     let user;
     try {
         user = await User.findOne({ email: normalizedEmail });
-        console.log("loginUser: User.findOne succeeded");
+        //console.log("loginUser: User.findOne succeeded");
     } catch (dbError) {
-        console.log("loginUser: User.findOne failed:", dbError);
+        //console.log("loginUser: User.findOne failed:", dbError);
         throw dbError;
     }
-    console.log("loginUser: User found:", !!user);
+    //console.log("loginUser: User found:", !!user);
     if(!user){
-        console.log("loginUser: User not registered");
+        //console.log("loginUser: User not registered");
         throw new ApiError(400,"User not Registered")
     }
 
-    console.log("loginUser: Checking if user has password");
+    //console.log("loginUser: Checking if user has password");
     if (!user.password) {
-        console.log("loginUser: User has no password, must login with Google");
+        //console.log("loginUser: User has no password, must login with Google");
         throw new ApiError(400, "Please login using Google")
     }
     
-    console.log("loginUser: Verifying password");
+    //console.log("loginUser: Verifying password");
     let isPassCorrect;
     try {
         isPassCorrect = await user.isPasswordCorrect(password);
-        console.log("loginUser: isPasswordCorrect succeeded");
+        //console.log("loginUser: isPasswordCorrect succeeded");
     } catch (passError) {
         console.log("loginUser: isPasswordCorrect failed:", passError);
         throw passError;
     }
-    console.log("loginUser: Password correct:", isPassCorrect);
+    //console.log("loginUser: Password correct:", isPassCorrect);
     if(!isPassCorrect){
-        console.log("loginUser: Incorrect password");
+        //console.log("loginUser: Incorrect password");
         throw new ApiError(400,"Incorrect Password")
     }
 
-    console.log("loginUser: Generating tokens");
+    //console.log("loginUser: Generating tokens");
     let accessToken, refreshToken;
     try {
         accessToken = user.generateAccessToken();
         refreshToken = user.generateRefreshToken();
-        console.log("loginUser: Token generation succeeded");
+        //console.log("loginUser: Token generation succeeded");
     } catch (tokenError) {
-        console.log("loginUser: Token generation failed:", tokenError);
+        //console.log("loginUser: Token generation failed:", tokenError);
         throw tokenError;
     }
-    console.log("loginUser: Tokens generated:", !!accessToken, !!refreshToken);
+    //console.log("loginUser: Tokens generated:", !!accessToken, !!refreshToken);
 
     if(!accessToken || !refreshToken){
-        console.log("loginUser: Token generation failed");
+        //console.log("loginUser: Token generation failed");
         throw new ApiError(500,"Issue in generating token")
     }
 
-    console.log("loginUser: Setting refreshToken on user");
+    //console.log("loginUser: Setting refreshToken on user");
     user.refreshToken=refreshToken
 
-    console.log("loginUser: Finding logged in user details");
+    //console.log("loginUser: Finding logged in user details");
     let loggedInUser;
     try {
         loggedInUser = await User.findById(user._id).select("-password -refreshToken");
-        console.log("loginUser: User.findById succeeded");
+        //console.log("loginUser: User.findById succeeded");
     } catch (findError) {
-        console.log("loginUser: User.findById failed:", findError);
+        //console.log("loginUser: User.findById failed:", findError);
         throw findError;
     }
-    console.log("loginUser: Logged in user details found:", !!loggedInUser);
+    //console.log("loginUser: Logged in user details found:", !!loggedInUser);
 
-    console.log("loginUser: Saving user");
+    //console.log("loginUser: Saving user");
     try {
         await user.save({validateBeforeSave: false});
-        console.log("loginUser: User.save succeeded");
+        //console.log("loginUser: User.save succeeded");
     } catch (saveError) {
-        console.log("loginUser: User.save failed:", saveError);
+        //console.log("loginUser: User.save failed:", saveError);
         throw saveError;
     }
-    console.log("loginUser: User saved successfully");
+    //console.log("loginUser: User saved successfully");
 
     const options={
         httpOnly: true,
@@ -143,7 +143,7 @@ const loginUser= asynchandler(async(req,res)=>{
         path:"/"
     }
 
-    console.log("loginUser: Sending response");
+    //console.log("loginUser: Sending response");
     return res
     .status(200)
     .cookie("accessToken", accessToken, options)
@@ -227,6 +227,7 @@ const logout= asynchandler(async(req,res)=>{
         }   
     */
    // so to check whether the delete was successfull or not we need to check modifiedCount.
+
    if(delete_rt.modifiedCount==0){
         throw new ApiError(500,"Unable to delete refresh Token")
    }
@@ -293,7 +294,7 @@ const refreshAccessToken= asynchandler(async(req,res)=>{
     if(!user){
         throw ApiError(400,"Unauthorized request")
     }
-    console.log(user);
+    //console.log(user);
     
     const accessToken= user.generateAccessToken()
     const newrefreshToken= user.generateRefreshToken

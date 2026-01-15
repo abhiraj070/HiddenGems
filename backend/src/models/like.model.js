@@ -1,16 +1,17 @@
 import mongoose,{Schema} from "mongoose";
 
 const LikeSchema= Schema({
-    LikedBy: {
+    likedBy: {
         type: Schema.Types.ObjectId,
-        ref: "User"
-    },
-    likedId: {
-        type: Schema.Types.ObjectId,
-        refPath: "likedType", //here refPath is used when we need ref dynamically.
+        ref: "User",
         required: true
     },
-    likedType: {
+    targetId: {
+        type: Schema.Types.ObjectId,
+        refPath: "targetType", //here refPath is used when we need ref dynamically.
+        required: true
+    },
+    targetType: {
         type: String,
         enum: ["Spot","Review"],
         required: true
@@ -20,7 +21,7 @@ const LikeSchema= Schema({
 // to solve this problem we use compound index:
 
 LikeSchema.index(
-    {LikedBy:1, likedId:1, likedType:1},
+    {likedBy:1, targetId:1, targetType:1},
     {unique: true}
 )
 
