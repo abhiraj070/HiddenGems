@@ -17,7 +17,8 @@ const reviewSchema= Schema({
     },
     tag:{
         type: String,
-        required: true
+        required: true,
+        index: true
     },
     latitude:{
         type: Number,

@@ -5,17 +5,19 @@ const spotSchema= Schema({
         type: String,
         lowercase: true,
         required: true,
-        trim: true
+        trim: true,
+        index: true
     },
     reviews:[{
         type: Schema.Types.ObjectId,
-        ref: "Review"
+        ref: "Review",
+        index: true
     }],
     latitude:{
         type: Number,
         set: val => {
-            const num = Number(val);
-            if (Number.isNaN(num)) return undefined;
+            const num = Number(val)
+            if (Number.isNaN(num)) return undefined
             return Number(num.toFixed(3));
         }
     },

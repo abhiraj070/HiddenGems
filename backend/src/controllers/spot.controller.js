@@ -34,4 +34,8 @@ const getAllSpots=asynchandler(async(req,res)=>{
     .json(new ApiResponse(200,allSpots,"successfully fetched all spots"))
 })
 
+const getSelectedSpot= asynchandler(async (req,res) => {
+    
+})
+
 export {getSpotBox, getAllSpots}

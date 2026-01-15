@@ -55,8 +55,6 @@ const createReview= asynchandler(async(req,res)=>{
 })
 
 const editReview= asynchandler(async (req,res) => {
-    console.log("1");
-    
     const {review}= req.body
     console.log(review);
     

@@ -397,7 +397,7 @@ const favSpot= asynchandler(async (req,res) => {
     }
     const spotdec= await Spot.findOneAndUpdate(
         {latitude: lat, longitude: lng},
-        {$inc:{likes: 1}},
+        {$inc:{likes: 1}}, 
         {new: true}
     )
     user.favourite.push(spot_id)
