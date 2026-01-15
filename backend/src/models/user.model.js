@@ -33,7 +33,8 @@ const userschema = Schema({
         required: true,
         lowercase: true,
         trim: true,
-        unique: true
+        unique: true,
+        index: true
     },
     password:{
         type: String,
@@ -64,6 +65,16 @@ const userschema = Schema({
         ref: "Review"
     }]
 },{Timestamps: true})
+
+userschema.index(
+    {_id:1, savedPlaces:1}
+)
+userschema.index(
+    {_id:1, favourite:1}
+)
+userschema.index(
+    {_id:1, following:1}
+)
 
 userschema.pre("save", async function() { // next() is not required in aysnc function in moongoose middleware
     if (!this.isModified("password")) {

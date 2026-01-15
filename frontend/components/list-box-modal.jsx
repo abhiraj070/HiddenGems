@@ -79,10 +79,10 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
   }
   return (
     <div className="fixed top-50 right-50 z-50 w-80 rounded-xl bg-white shadow-2xl border border-gray-200 flex flex-col">
-      <div className="flex items-center justify-between px-5 py-3 border-b
+      <div className="flex items-center justify-between px-5 py-4 border-b
                       bg-linear-to-r from-gray-50 to-gray-100 rounded-t-xl">
         <h3 className="text-lg font-semibold text-gray-800 tracking-wide">
-          Reviews
+          {allReviews[0].spotName[0].toUpperCase()+allReviews[0].spotName.slice(1)} Reviews
         </h3>
 
         <button
@@ -94,14 +94,6 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
           ✕
         </button>
       </div>
-      <div className="flex items-center justify-between px-5 py-3 border-b
-                      bg-linear-to-r from-gray-50 to-gray-100 ">
-        <h3 className="text-m font-semibold text-gray-800 tracking-wide">
-          {allReviews[0].spotName[0].toUpperCase()+allReviews[0].spotName.slice(1)}
-        </h3>
-          
-      </div>
-
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
         {allReviews[0].reviews.map((val) => (
           <div
@@ -124,8 +116,8 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
       <div className="flex items-center justify-between px-5 py-3 border-t bg-gray-50 rounded-b-xl">
         <button
           onClick={handleLike}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg
-                    ${turnred? "border bg-red-50 border-red-400 text-red-600":
+          className={`flex items-center gap-2 px-3 py-2 rounded-lg
+                    ${turnred? "border bg-red-100 border-red-400 text-red-600":
                     "border border-gray-300 text-gray-700 hover:bg-red-50 hover:border-red-300 hover:text-red-600"}`}
         >
           <span className="text-2xl leading-none">♡</span>
@@ -139,7 +131,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
           className={`flex items-center gap-2 px-4 py-2 rounded-lg
                     border
                     ${turnblue? 
-                     "bg-blue-50 border-blue-300 text-blue-500" :
+                     "bg-blue-100 border-blue-300 text-blue-500" :
                     "hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 border-gray-300 text-gray-700"}`}
         >
           <span className="text-lg"><svg

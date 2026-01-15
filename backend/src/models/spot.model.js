@@ -34,4 +34,9 @@ const spotSchema= Schema({
     }
 })
 
+spotSchema.index(
+    {latitude: 1, longitude:1},
+    {unique: true}
+)
+
 export const Spot= mongoose.model("Spot",spotSchema)

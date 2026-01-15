@@ -1,9 +1,7 @@
 import { Router } from "express";
 import { registerUser, loginUser, logout, updateName,
-    changePhoto, refreshAccessToken, changePassword, saveASpot, 
-    favSpot, removeSavedSpot, getUserDetails, googleSignIn, 
-    deleteReview, deleteSavedPlaceById, addBio, checkIsLikedSaved,
-    removefavspot, getUserFavSpots, getanotherUserDetails,
+    changePhoto, refreshAccessToken, changePassword, saveASpot, removeSavedSpot, getUserDetails, googleSignIn, 
+    deleteReview, deleteSavedPlaceById, addBio, checkIsLikedSaved, getUserFavSpots, getanotherUserDetails,
     isFollowing, addAFollowerFollowing, removeAFollowerFollowing } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -24,14 +22,12 @@ router.route("/updatePhoto").post(
 router.route("/refreshtoken").post(refreshAccessToken)
 router.route("/changePassword").post(verifyJWT,changePassword)
 router.route("/saveSpot/:lat/:lng").post(verifyJWT,saveASpot)
-router.route("/favSpot/:lat/:lng").post(verifyJWT,favSpot)
 router.route("/deletespot/:lat/:lng").post(verifyJWT,removeSavedSpot)
 router.route("/get/user").get(verifyJWT,getUserDetails)
 router.route("/delete/review/:id").post(verifyJWT,deleteReview)
 router.route("/delete/saved/:id").post(verifyJWT,deleteSavedPlaceById)
 router.route("/addbio").post(verifyJWT,addBio)
 router.route("/check/:lat/:lng").get(verifyJWT,checkIsLikedSaved)
-router.route("/removeliked/:lat/:lng").post(verifyJWT,removefavspot)
 router.route("/get/likes").get(verifyJWT,getUserFavSpots)
 router.route("/get/user/:Id").get(getanotherUserDetails)
 router.route("/get/check/:id").get(verifyJWT,isFollowing)

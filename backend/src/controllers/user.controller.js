@@ -376,39 +376,6 @@ const removeSavedSpot= asynchandler(async (req,res)=>{
     .json(new ApiResponse(200,updatedUser,"Spot deleted successfully"))
 })
 
-const favSpot= asynchandler(async (req,res) => {
-    const lat= req.params.lat
-    const lng= req.params.lng
-    const spot= await Spot.findOne({latitude:lat, longitude: lng})
-    if(!spot){
-        throw new ApiError(404,"No spot on this coordinate")
-    }
-    const spot_id= spot._id
-    const user_id= req.user._id
-    const user= await User.findById(user_id)
-    const exist= await User.exists({
-        _id: user_id,
-        favourite: spot_id
-    })
-
-    if(exist){
-        return res
-        .status(200)
-        .json(new ApiResponse(200,{spot: spot},"Spot already marked favourite"))
-    }
-    const spotdec= await Spot.findOneAndUpdate(
-        {latitude: lat, longitude: lng},
-        {$inc:{likes: 1}}, 
-        {new: true}
-    )
-    user.favourite.push(spot_id)
-    await user.save()
-    await user.populate("favourite")
-    return res
-    .status(200)
-    .json(new ApiResponse(200,{user:user, spot:spotdec},"Spot marked favourite successfully"))
-})
-
 const getUserDetails= asynchandler(async (req,res) => {
     const user_id= req.user._id
     const user= await User.findById(user_id).select("-password -refreshToken").populate("savedPlaces reviewHistory followers following")
@@ -507,29 +474,6 @@ const checkIsLikedSaved= asynchandler(async(req,res)=>{
     .json(new ApiResponse(200,{likeresult: likeresult,savedresult: savedresult, spot: spot},"Successfully checked Liked or not"))
 })
 
-const removefavspot=asynchandler(async (req,res) => {
-    const lat= req.params.lat
-    const lng= req.params.lng
-    const user_id= req.user._id
-    const spot= await Spot.findOne({latitude: lat, longitude: lng})
-    if(!spot){
-        throw new ApiError(404,"No spot found on this coordinate")
-    }
-    const updateduser= await User.findByIdAndUpdate(
-        user_id,
-        {$pull:{favourite: spot._id}},
-        {new: true}
-    )
-    const spotdec= await Spot.findOneAndUpdate(
-        {latitude: lat, longitude: lng},
-        {$inc:{likes: -1}},
-        {new: true}
-    )
-    return res
-    .status(200)
-    .json(new ApiResponse(200,{user: updateduser, spot: spotdec},"Spot removed form favourites successfully"))
-})
-
 const getUserFavSpots= asynchandler(async (req,res) => {
     const user_id= req.user._id
     //console.log(("USer:",user_id));
@@ -620,14 +564,12 @@ export {
     refreshAccessToken,
     changePassword,
     saveASpot,
-    favSpot,
     removeSavedSpot,
     getUserDetails,
     deleteReview,
     deleteSavedPlaceById,
     addBio,
     checkIsLikedSaved,
-    removefavspot,
     getUserFavSpots,
     getanotherUserDetails,
     isFollowing,

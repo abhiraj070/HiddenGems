@@ -38,7 +38,15 @@ const reviewSchema= Schema({
     },
     likes:{
         type: Number
+    },
+    comments:{
+        type: String
     }
 })
+
+reviewSchema.index(
+    {latitude:1, longitude:1}
+)
+
 
 export const Review= mongoose.model("Review",reviewSchema)
