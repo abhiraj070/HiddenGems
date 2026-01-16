@@ -25,9 +25,9 @@ export default function TopNavComponent({ user, onAddSpot }) {
   //console.log("user: ",user);
   const handleLogout = async() => {
     localStorage.removeItem("user")
-    await axios.post(
-      `/api/v1/users/logout`
-    )
+    // await axios.post(
+    //   `/api/v1/users/logout`
+    // )
     router.push("/")
   }
   const handleSearch=()=>{}

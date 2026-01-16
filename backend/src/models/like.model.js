@@ -16,7 +16,7 @@ const LikeSchema= Schema({
         enum: ["Spot","Review"],
         required: true
     }
-})
+},{timestamps: true})
 // if i would have used Unique: true here, that would create a problem that, a user can only have one liked document.
 // to solve this problem we use compound index:
 LikeSchema.index(

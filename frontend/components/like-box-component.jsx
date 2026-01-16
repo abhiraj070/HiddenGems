@@ -1,9 +1,53 @@
 "use client"
+import { useRef, useEffect, useState } from "react";
+import axios from "axios";
+export default function LikeBoxComponent({ onClose, cursor, setCursor}){
+    const observerRef = useRef(null);
+    const [allLikedSpots, setAllLikedSpots]= useState([])
+    const [showMoreLikeSpots, setShowMoreLikeSpots]= useState(false)
+    const [hasMore, setHasMore]= useState(true)
+    const [error, setError]= useState(null)
 
-export default function LikeBoxComponent({allLikedSpots, onClose}){
+    useEffect(()=>{
+        const fetchLikedSpots=async ()=>{            
+            if(hasMore){
+                try {
+                    const res= await axios.get(
+                        `/api/v1/like/getlikedSpots?cursor=${cursor}&limit=4`
+                    )
+            console.log("2");
+
+                    //console.log(res.data.data)
+                    setError(null)
+                    setCursor(res.data.data.nextCursor)
+                    setHasMore(Boolean(res.data.data.nextCursor))
+                    console.log("res: ",res);
+                    setAllLikedSpots(prev=>[...prev,...res.data.data.data])
+                } catch (error) {
+                    console.log("1");
+                    setError(error.message)
+                }
+            }    
+        }
+        fetchLikedSpots()
+    },[showMoreLikeSpots])
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                setShowMoreLikeSpots(!showMoreLikeSpots);
+            }
+        });
+        if (observerRef.current) {
+            observer.observe(observerRef.current);
+        }
+        return () => observer.disconnect();
+    }, [cursor])
+
     if(!allLikedSpots){
         return null
     }
+
     return(
     <div className=" fixed
             left-92 bottom-6
@@ -61,23 +105,35 @@ export default function LikeBoxComponent({allLikedSpots, onClose}){
                     transition-all duration-300
                     cursor-pointer
                     "
-                >
+                 >
                     <div className="flex items-start justify-between mb-3">
                     <h3 className="text-lg font-semibold text-stone-800 group-hover:text-green-700 transition">
-                        {place.spotName}
+                        {place.spotsLiked[0].spotName}
                     </h3>
+                    <div className="flex items-center gap-1">
+                        <span className="
+                            px-1 py-0.5
+                            rounded-full
+                            text-sm font-semibold
+                            text-green-700
+                        ">
+                            {place.spotsLiked[0].likes}
+                        </span>
 
-                    <button
-                        className="
-                        text-green-500
-                        transition
-                        text-xl
-                        "
-                        title="Remove from liked"
-                    >
-                        ♥
-                    </button>
+                        <button
+                            className="
+                            text-green-500
+                            transition
+                            text-xl
+                            leading-none
+                            p-0
+                            "
+                            title="Remove from liked"
+                        >
+                            ♥
+                        </button>
                     </div>
+                </div>
 
                     <div className="flex items-center justify-between">
                     <span className="
@@ -86,13 +142,13 @@ export default function LikeBoxComponent({allLikedSpots, onClose}){
                         rounded-full
                         bg-green-50 text-green-700
                     ">
-                        {place.category || "Hidden Gem"}
+                        {place.spotsLiked[0].category || "Hidden Gem"}
                     </span>
                     </div>
                 </div>
                 ))}
             </div>
-
+            <div ref={observerRef}></div>
             {allLikedSpots.length === 0 && (
                 <div className="mt-16 text-center">
                 <div className="

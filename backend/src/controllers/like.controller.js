@@ -6,6 +6,7 @@ import { Spot } from "../models/spot.model.js";
 import { User } from "../models/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Review } from "../models/review.model.js";
+import { lookup } from "dns";
 
 const toggleLike= asynchandler(async (req,res) => {
     const user_id= req.user._id
@@ -68,4 +69,39 @@ const toggleLike= asynchandler(async (req,res) => {
         .json(new ApiResponse(200,{user: userdocument, spot: spotDocumnet, review: reviewDocument},"Like toggled Successfully"))
 })
 
-export {toggleLike}
+//cursor based pagination with infinite scroll 
+const getAllLikedSpots= asynchandler(async (req,res) => {    
+    const {cursor, limit}= req.query
+    const userId= req.user._id
+    if(!userId){
+        throw ApiError(400,"Unauthorized user")
+    }
+    const query = 
+        cursor && mongoose.Types.ObjectId.isValid(cursor)
+            ? { _id: { $gt: new mongoose.Types.ObjectId(cursor) } }
+            : {};
+    const spots= await Like.aggregate([
+        {
+            $match:{likedBy: userId, ...query} //match is like find(). i used spread operator here because i want _id:{ $gt:cursor } inside not query: _id:{ $gt:cursor }
+        },
+        {
+            $sort:{createdAt: -1}
+        },
+        {
+            $limit: Number(limit) //from query number comes in a string form
+        },
+        {
+            $lookup:{ //lookup is like populate
+                from: "spots",
+                localField: "targetId",
+                foreignField: "_id",
+                as: "spotsLiked" //a new field is added in this step.
+            }
+        }
+    ])
+    return res
+    .status(200)
+    .json(new ApiResponse(200,{data: spots, nextCursor: spots.length? spots[spots.length-1]._id: null}))
+})
+
+export {toggleLike, getAllLikedSpots}

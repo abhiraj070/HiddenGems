@@ -64,7 +64,7 @@ const userschema = Schema({
         type: Schema.Types.ObjectId,
         ref: "Review"
     }]
-},{Timestamps: true})
+},{timestamps: true})
 
 userschema.index(
     {_id:1, savedPlaces:1}

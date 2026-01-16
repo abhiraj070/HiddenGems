@@ -39,9 +39,10 @@ const reviewSchema= Schema({
     likes:{
         type: Number
     },
-    comments:{
-        type: String
-    }
+    comments:[{
+        type: Schema.Types.ObjectId,
+        ref: "Comment"
+    }]
 })
 
 reviewSchema.index(

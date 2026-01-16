@@ -27,8 +27,9 @@ export default function HomePage() {
   const [error, setError]= useState(null)
   const [coordOfSpot, setCoordOfSpot]= useState()
   const [displayFavBox, setDisplayFavBox]= useState(false)
-  const [allLikedSpots, setAllLikedSpots]= useState(null)
   const [isSpotLiked, setIsSpotLiked]= useState(false)
+  const [cursor, setCursor]= useState(null)
+  
   const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -196,8 +197,9 @@ export default function HomePage() {
 
       {displayFavBox &&
         <LikeBoxComponent
-          allLikedSpots={allLikedSpots}
           onClose={()=>{setDisplayFavBox(false)}}
+          cursor={cursor}
+          setCursor={setCursor}
         />
       }
 

@@ -477,7 +477,9 @@ const checkIsLikedSaved= asynchandler(async(req,res)=>{
 const getUserFavSpots= asynchandler(async (req,res) => {
     const user_id= req.user._id
     //console.log(("USer:",user_id));
-    
+    if(!user_id){
+        throw ApiError(404,"Unathorized request")
+    }
     const user= await User.findById(user_id).select("-password -refreshToken").populate("favourite")
     const likedSpots= user.favourite
     if(!likedSpots){

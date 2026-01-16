@@ -6,9 +6,8 @@ import axios from "axios"
 export default function SidebarComponent({
   selectedCategories,
   setDisplayFavBox,
-  setAllLikedSpots,
   isSpotLiked,
-  displayFavBox
+  displayFavBox,
 }) {
   const categories = [
     { id: "cafe", name: "Cafe" },
@@ -63,23 +62,10 @@ export default function SidebarComponent({
     fetchlikes()
   },[isSpotLiked])
 
-  const onShowFavorites=async ()=>{
-    if(!displayFavBox){
-      try {
-        const res= await axios.get(
-          `/api/v1/users/get/likes`
-        )
-        //console.log(res.data.data)
-        setError(null)
-        setLikedLength(res.data.data.length)
-        setAllLikedSpots(res.data.data)
-      } catch (error) {
-        setError(error.message)
-      }
-      }
-      setDisplayFavBox(!displayFavBox)
+  const onShowFavorites=()=>{
+    setDisplayFavBox(!displayFavBox)
   }
-
+  
   return (
     <div
       className="
