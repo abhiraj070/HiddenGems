@@ -256,7 +256,7 @@ export default function ProfilePage() {
 
               <div className="group text-center">
                 <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
-                  {user.savedPlaces.length ?? 0}
+                  {user.savedSpots.length ?? 0}
                 </p>
                 <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
                   Saved Gems
@@ -328,12 +328,12 @@ export default function ProfilePage() {
     <div className="flex items-center justify-between mb-6">
       <h2 className="text-3xl font-bold">Saved Gems</h2>
       <span className="text-sm text-stone-500">
-        {user.savedPlaces.length} locations
+        {user.savedSpots.length} locations
       </span>
     </div>
 
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {user.savedPlaces.map((spot) => (
+      {user.savedSpots.map((spot) => (
         <div
           key={spot._id}
           onClick={handleSpotClick}

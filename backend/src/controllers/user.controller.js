@@ -329,61 +329,17 @@ const changePassword= asynchandler(async(req,res)=>{
     .json(new ApiResponse(200,user,"Password updated successfully"))
 })
 
-const saveASpot= asynchandler(async (req,res) => {
-    const lat= req.params.lat
-    const lng= req.params.lng
-    const spot= await Spot.findOne({latitude: lat, longitude: lng})
-    //console.log("spot: ",spot)
-    if(spot.length===0){
-        throw new ApiError(404,"Error while fetching spot")
-    }
-    const user_id= req.user._id
-    //console.log("user_id: ",user_id)
 
-    const isAlreadySaved= await User.exists({
-        _id: user_id,
-        savedPlaces: spot._id
-    })
-    //console.log("isAlreadySaved: ",isAlreadySaved);
-    
-    if(isAlreadySaved){
-        return res
-        .status(200)
-        .json(new ApiResponse(200,req.user.savedPlaces,"Spot is already saved"))
-    }
-    const user= await User.findById(user_id)
-    user.savedPlaces.push(spot._id)
-    await user.save()
-    await user.populate("savedPlaces")
-    return res
-    .status(200)
-    .json(new ApiResponse(200,user.savedPlaces,"Spot saved successfully"))
-})
 
-const removeSavedSpot= asynchandler(async (req,res)=>{
-    const lat= req.params.lat
-    const lng= req.params.lng
-    const spot= await Spot.find({latitude: lat,longitude: lng})
-    if(spot.length===0){
-        throw new ApiError(404,"Error while fetching Spot")
-    }
-    const spot_id= spot[0]._id
-    const user_id= req.user._id
-    const updatedUser= await User.findByIdAndUpdate(user_id,
-        {$pull: {savedPlaces: spot_id}},
-        {new: true}
-    )
-    return res
-    .status(200)
-    .json(new ApiResponse(200,updatedUser,"Spot deleted successfully"))
-})
+
 
 const getUserDetails= asynchandler(async (req,res) => {
     const user_id= req.user._id
-    const user= await User.findById(user_id).select("-password -refreshToken").populate("savedPlaces reviewHistory followers following")
+    const user= await User.findById(user_id).select("-password -refreshToken").populate("savedSpots reviewHistory followers following")
     if(!user){
         throw ApiError(400,"User Not Found")
     }
+    //console.log(user);
     return res
     .status(200)
     .json(new ApiResponse(200,{user: user},"User fetched successfully"))
@@ -404,22 +360,6 @@ const deleteReview= asynchandler(async (req,res) => {
     return res
     .status(200)
     .json(new ApiResponse(200,userdocument,"Successfully deleted detail by review using ID"))
-})
-
-const deleteSavedPlaceById= asynchandler(async (req,res) => {
-    const id= req.params.id
-    const user_id= req.user._id
-    const userdocument= await User.findByIdAndUpdate(
-        user_id,
-        {$pull:{savedPlaces: id}},
-        {new: true}
-    )
-    if(!userdocument){
-        throw ApiError(400,"User not found")
-    }
-    return res
-    .status(200)
-    .json(new ApiResponse(200,userdocument,"Successfully deleted detail by saved place using ID"))
 })
 
 const addBio= asynchandler(async (req,res) => {
@@ -469,7 +409,7 @@ const checkIsLikedSaved= asynchandler(async(req,res)=>{
     })
     const userdocument= await User.exists({  //exists always returns null or the user id
         _id: user_id,
-        savedPlaces: spot._id
+        savedSpots: spot._id
     })
     const likeresult=(Boolean(Likedocument))
     const savedresult=(Boolean(userdocument))
@@ -483,7 +423,7 @@ const getanotherUserDetails=asynchandler(async (req,res) => {
     if(!userId){
         throw new ApiError(404,"User not found")
     }
-    const user= await User.findById(userId).populate("reviewHistory savedPlaces followers following").select("-refreshToken -password")
+    const user= await User.findById(userId).populate("reviewHistory savedSpots followers following").select("-refreshToken -password")
     if(!user){
         throw new ApiError(404,"User not found")
     } 
@@ -553,11 +493,8 @@ export {
     changePhoto,
     refreshAccessToken,
     changePassword,
-    saveASpot,
-    removeSavedSpot,
     getUserDetails,
     deleteReview,
-    deleteSavedPlaceById,
     addBio,
     checkIsLikedSaved,
     getanotherUserDetails,

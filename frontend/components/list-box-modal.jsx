@@ -51,7 +51,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
     if(!turnblue){
       try {
         await axios.post(
-          `/api/v1/users/saveSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
+          `/api/v1/savedSpot/saveSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
         )
         setError(null)
         setTurenBlue(!turnblue)
@@ -63,7 +63,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
     else{
       try {
         await axios.post(
-          `/api/v1/users/deletespot/${coordOfSpot.lat}/${coordOfSpot.lng}`
+          `/api/v1/savedSpot/deletespot/${coordOfSpot.lat}/${coordOfSpot.lng}`
         )
         setError(null)
         setTurenBlue(!turnblue)

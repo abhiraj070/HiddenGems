@@ -52,7 +52,7 @@ const userschema = Schema({
         type: Schema.Types.ObjectId,
         ref: "Review"
     }],
-    savedPlaces:[{
+    savedSpots:[{
         type: Schema.Types.ObjectId,
         ref: "Spot"
     }],

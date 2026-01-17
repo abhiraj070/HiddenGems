@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { registerUser, loginUser, logout, updateName,
-    changePhoto, refreshAccessToken, changePassword, saveASpot, removeSavedSpot, getUserDetails, googleSignIn, 
-    deleteReview, deleteSavedPlaceById, addBio, checkIsLikedSaved, getanotherUserDetails,
+    changePhoto, refreshAccessToken, changePassword, getUserDetails, googleSignIn, 
+    deleteReview, addBio, checkIsLikedSaved, getanotherUserDetails,
     isFollowing, addAFollowerFollowing, removeAFollowerFollowing } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -21,14 +21,10 @@ router.route("/updatePhoto").post(
 )
 router.route("/refreshtoken").post(refreshAccessToken)
 router.route("/changePassword").post(verifyJWT,changePassword)
-router.route("/saveSpot/:lat/:lng").post(verifyJWT,saveASpot)
-router.route("/deletespot/:lat/:lng").post(verifyJWT,removeSavedSpot)
 router.route("/get/user").get(verifyJWT,getUserDetails)
 router.route("/delete/review/:id").post(verifyJWT,deleteReview)
-router.route("/delete/saved/:id").post(verifyJWT,deleteSavedPlaceById)
 router.route("/addbio").post(verifyJWT,addBio)
 router.route("/check/:lat/:lng").get(verifyJWT,checkIsLikedSaved)
-
 router.route("/get/user/:Id").get(getanotherUserDetails)
 router.route("/get/check/:id").get(verifyJWT,isFollowing)
 router.route("/follow/user/:id").post(verifyJWT,addAFollowerFollowing)

@@ -21,7 +21,7 @@ export default function DeleteComponent({setConfirmDelete, setShowPopUp, deleteR
         else if(deleteSavedId){
             try {
                 await axios.post(
-                    `/api/v1/users/delete/saved/${deleteSavedId}`
+                    `/api/v1/savedSpot/delete/saved/${deleteSavedId}`
                 )
                 setConfirmDelete(true)
                 setShowPopUp(false)
