@@ -78,14 +78,14 @@ const getAllLikedSpots= asynchandler(async (req,res) => {
     }
     const query = 
         cursor && mongoose.Types.ObjectId.isValid(cursor)
-            ? { _id: { $gt: new mongoose.Types.ObjectId(cursor) } }
+            ? { _id: { $lt: new mongoose.Types.ObjectId(cursor) } }
             : {};
     const spots= await Like.aggregate([
         {
-            $match:{likedBy: userId, ...query} //match is like find(). i used spread operator here because i want _id:{ $gt:cursor } inside not query: _id:{ $gt:cursor }
+            $match:{likedBy: userId, targetType: "Spot", ...query} //match is like find(). i used spread operator here because i want _id:{ $lt:cursor } inside not query: _id:{ $lt:cursor }
         },
         {
-            $sort:{createdAt: -1}
+            $sort:{_id: -1}
         },
         {
             $limit: Number(limit) //from query number comes in a string form

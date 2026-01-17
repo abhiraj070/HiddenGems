@@ -1,48 +1,54 @@
 "use client"
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import axios from "axios";
 export default function LikeBoxComponent({ onClose, cursor, setCursor}){
     const observerRef = useRef(null);
+    const fetchRef = useRef(null);
     const [allLikedSpots, setAllLikedSpots]= useState([])
-    const [showMoreLikeSpots, setShowMoreLikeSpots]= useState(false)
     const [hasMore, setHasMore]= useState(true)
     const [error, setError]= useState(null)
+    const [loading, setLoading]= useState(false)
 
-    useEffect(()=>{
-        const fetchLikedSpots=async ()=>{            
-            if(hasMore){
-                try {
-                    const res= await axios.get(
-                        `/api/v1/like/getlikedSpots?cursor=${cursor}&limit=4`
-                    )
-            console.log("2");
-
-                    //console.log(res.data.data)
-                    setError(null)
-                    setCursor(res.data.data.nextCursor)
-                    setHasMore(Boolean(res.data.data.nextCursor))
-                    console.log("res: ",res);
-                    setAllLikedSpots(prev=>[...prev,...res.data.data.data])
-                } catch (error) {
-                    console.log("1");
-                    setError(error.message)
-                }
-            }    
-        }
-        fetchLikedSpots()
-    },[showMoreLikeSpots])
+    const fetchLikedSpots= useCallback(async ()=>{ //we didn't used useEffect here cuz useEffect will run this function when consditions achieved. but usecallback will only return a stable function refrence which only recreates when the dependencies changes.
+        if(!loading && hasMore){//if we dont want our function refrence to change on every rerender(because this function is present in ome useeffects dependency array and if the refrence changes it triggers the effect), we use useCallback
+            setLoading(true)
+            try {
+                const url = cursor 
+                    ? `/api/v1/like/getlikedSpots?cursor=${cursor}&limit=5`
+                    : `/api/v1/like/getlikedSpots?limit=5`;
+                const res= await axios.get(url)
+                //console.log(res.data.data)
+                setError(null)
+                setCursor(res.data.data.nextCursor)
+                setHasMore(Boolean(res.data.data.nextCursor))
+                //console.log("res: ",res);
+                setAllLikedSpots(prev=>[...prev,...res.data.data.data])
+            } catch (error) {
+                setError(error.message)
+            } finally{
+                setLoading(false)
+            }
+        }    
+    },[cursor, hasMore, loading])// depencencies are needed to change the refrence on specific rerendes. 
+    // this is because the changes done in the state variable do not automatically comes inside the function which was
+    // created on the previous renders. for state variables to get updated the fucntion needs to be recreated and this is 
+    // when the refrence of the function change
 
     useEffect(() => {
-        const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) {
-                setShowMoreLikeSpots(!showMoreLikeSpots);
+        fetchRef.current = fetchLikedSpots;
+    }, [fetchLikedSpots]) //fucntion as a dependency in a dependency array means that when ever the function is recreated and refrence is changes the useEffect triggers
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(entries => { // a tool provided by the browser to keep an i on screen. as soon as the req html appears on the screen this triggers
+            if (entries[0].isIntersecting) { //after the div is visible browser generates a object which is passed to entries, in it there is a field isIntersecting, it turns true when div is visible
+                fetchRef.current();
             }
         });
         if (observerRef.current) {
-            observer.observe(observerRef.current);
+            observer.observe(observerRef.current) // due to this assignment of observer.observe we got an eye on the div and whenever it is inside the viewport it tells the browser and then it triggers the callback function given to it.
         }
         return () => observer.disconnect();
-    }, [cursor])
+    }, [])
 
     if(!allLikedSpots){
         return null
@@ -148,7 +154,10 @@ export default function LikeBoxComponent({ onClose, cursor, setCursor}){
                 </div>
                 ))}
             </div>
-            <div ref={observerRef}></div>
+            <div ref={observerRef}></div> {/*observerRef is a useRef which will be used to store the refrence of this html so that 
+                                            whenever it apears on screen the furthur process trigger. 
+                                            so here ref is helping provide the ref to the useRef. 
+                                            As soon as this div renders the ref is stored in the useref */}
             {allLikedSpots.length === 0 && (
                 <div className="mt-16 text-center">
                 <div className="
@@ -165,7 +174,7 @@ export default function LikeBoxComponent({ onClose, cursor, setCursor}){
                 </div>
             )}
             </div>
+             
         </div>
         )
-
 }

@@ -147,7 +147,6 @@ export default function HomePage() {
           onCategoryChange={handleCategoryChange}
           onSelectSpot={setSelectedSpot}
           setDisplayFavBox={setDisplayFavBox}
-          setAllLikedSpots={setAllLikedSpots}
           isSpotLiked={isSpotLiked}
           displayFavBox={displayFavBox}
         />
