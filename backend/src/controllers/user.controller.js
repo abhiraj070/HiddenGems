@@ -478,19 +478,6 @@ const checkIsLikedSaved= asynchandler(async(req,res)=>{
     .json(new ApiResponse(200,{likeresult: likeresult,savedresult: savedresult, spot: spot},"Successfully checked Liked or not"))
 })
 
-const getNumberOfFavSpots= asynchandler(async (req,res) => {
-    const user_id= req.user._id
-    //console.log(("USer:",user_id));
-    if(!user_id){
-        throw ApiError(404,"Unathorized request")
-    }
-    const likeSpots= await Like.find({likedBy: user_id})
-    const number= likeSpots.length
-    return res
-    .status(200)
-    .json(new ApiResponse(200,{number: number},"Successfully fetched user's liked spots"))
-})
-
 const getanotherUserDetails=asynchandler(async (req,res) => {
     const userId=req.params.Id
     if(!userId){
@@ -573,7 +560,6 @@ export {
     deleteSavedPlaceById,
     addBio,
     checkIsLikedSaved,
-    getNumberOfFavSpots,
     getanotherUserDetails,
     isFollowing,
     addAFollowerFollowing,

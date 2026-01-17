@@ -51,7 +51,7 @@ export default function SidebarComponent({
     const fetchlikes= async()=>{
       try {
         const res= await axios.get(
-        `/api/v1/users/get/likes`
+        `/api/v1/like/get/likes`
       )
         setError(null)
         setLikedLength(res.data.data.number)

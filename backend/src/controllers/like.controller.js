@@ -103,4 +103,19 @@ const getAllLikedSpots= asynchandler(async (req,res) => {
     .json(new ApiResponse(200,{data: spots, nextCursor: spots.length? spots[spots.length-1]._id: null}))
 })
 
-export {toggleLike, getAllLikedSpots}
+const getNumberOfFavSpots= asynchandler(async (req,res) => {
+    const user_id= req.user._id
+    //console.log(("USer:",user_id));
+    if(!user_id){
+        throw ApiError(404,"Unathorized request")
+    }
+    const likeSpots= await Like.find({likedBy: user_id})
+    const number= likeSpots.length
+    return res
+    .status(200)
+    .json(new ApiResponse(200,{number: number},"Successfully fetched user's liked spots"))
+})
+
+
+
+export {toggleLike, getAllLikedSpots, getNumberOfFavSpots}
