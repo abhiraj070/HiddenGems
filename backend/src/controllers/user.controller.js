@@ -6,6 +6,8 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { asynchandler } from "../utils/asynchandler.js"
 import JWT from "jsonwebtoken"
 import { OAuth2Client } from "google-auth-library"
+import { Review } from "../models/review.model.js"
+import { Like } from "../models/like.model.js"
 const registerUser= asynchandler(async(req,res)=>{
     const  {fullname, username, password, email}= req.body
 
@@ -395,6 +397,7 @@ const deleteReview= asynchandler(async (req,res) => {
         {$pull:{reviewHistory: id}},
         {new: true}
     )
+    await Review.findByIdAndDelete(id)
     if(!userdocument){
         throw ApiError(400,"User not found")
     }
@@ -459,35 +462,33 @@ const checkIsLikedSaved= asynchandler(async(req,res)=>{
     if(!spot){
         throw new ApiError(404,"No Spot on this coordinate")
     }
-    const userdocument= await User.exists({
-        _id: user_id,
-        favourite: spot._id
+    const Likedocument= await Like.exists({
+        likedBy: user_id,
+        targetId: spot._id,
+        targetType: "Spot"
     })
-    const userdocument2= await User.exists({  //exists always returns null or the user id
+    const userdocument= await User.exists({  //exists always returns null or the user id
         _id: user_id,
         savedPlaces: spot._id
     })
-    const likeresult=(Boolean(userdocument))
-    const savedresult=(Boolean(userdocument2))
+    const likeresult=(Boolean(Likedocument))
+    const savedresult=(Boolean(userdocument))
     return res
     .status(200)
     .json(new ApiResponse(200,{likeresult: likeresult,savedresult: savedresult, spot: spot},"Successfully checked Liked or not"))
 })
 
-const getUserFavSpots= asynchandler(async (req,res) => {
+const getNumberOfFavSpots= asynchandler(async (req,res) => {
     const user_id= req.user._id
     //console.log(("USer:",user_id));
     if(!user_id){
         throw ApiError(404,"Unathorized request")
     }
-    const user= await User.findById(user_id).select("-password -refreshToken").populate("favourite")
-    const likedSpots= user.favourite
-    if(!likedSpots){
-        throw new ApiError(404,"User not found")
-    }
+    const likeSpots= await Like.find({likedBy: user_id})
+    const number= likeSpots.length
     return res
     .status(200)
-    .json(new ApiResponse(200,likedSpots,"Successfully fetched user's liked spots"))
+    .json(new ApiResponse(200,{number: number},"Successfully fetched user's liked spots"))
 })
 
 const getanotherUserDetails=asynchandler(async (req,res) => {
@@ -572,7 +573,7 @@ export {
     deleteSavedPlaceById,
     addBio,
     checkIsLikedSaved,
-    getUserFavSpots,
+    getNumberOfFavSpots,
     getanotherUserDetails,
     isFollowing,
     addAFollowerFollowing,

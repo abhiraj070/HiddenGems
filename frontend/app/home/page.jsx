@@ -29,6 +29,8 @@ export default function HomePage() {
   const [displayFavBox, setDisplayFavBox]= useState(false)
   const [isSpotLiked, setIsSpotLiked]= useState(false)
   const [cursor, setCursor]= useState(null)
+  const [likedlength, setLikedLength]= useState(0)
+
   
   const [formData, setFormData] = useState({
         name: "",
@@ -149,6 +151,9 @@ export default function HomePage() {
           setDisplayFavBox={setDisplayFavBox}
           isSpotLiked={isSpotLiked}
           displayFavBox={displayFavBox}
+          setLikedLength={setLikedLength}
+          likedlength={likedlength}
+
         />
 
         <div className="flex-1 ml-80 ">
@@ -199,6 +204,7 @@ export default function HomePage() {
           onClose={()=>{setDisplayFavBox(false)}}
           cursor={cursor}
           setCursor={setCursor}
+          likedlength={likedlength}
         />
       }
 

@@ -1,7 +1,7 @@
 "use client"
 import { useRef, useEffect, useState, useCallback } from "react";
 import axios from "axios";
-export default function LikeBoxComponent({ onClose, cursor, setCursor}){
+export default function LikeBoxComponent({ onClose, cursor, setCursor, likedlength}){
     const observerRef = useRef(null);
     const fetchRef = useRef(null);
     const [allLikedSpots, setAllLikedSpots]= useState([])
@@ -82,7 +82,7 @@ export default function LikeBoxComponent({ onClose, cursor, setCursor}){
             text-sm font-semibold
             bg-green-100 text-green-700
             ">
-            {allLikedSpots.length} Liked
+            {likedlength} Liked
             </span>
             <button
                 onClick={onClose}
@@ -114,7 +114,7 @@ export default function LikeBoxComponent({ onClose, cursor, setCursor}){
                  >
                     <div className="flex items-start justify-between mb-3">
                     <h3 className="text-lg font-semibold text-stone-800 group-hover:text-green-700 transition">
-                        {place.spotsLiked[0].spotName}
+                        {place.spotsLiked[0].spotName[0].toUpperCase()+place.spotsLiked[0].spotName.slice(1) }
                     </h3>
                     <div className="flex items-center gap-1">
                         <span className="
@@ -148,7 +148,7 @@ export default function LikeBoxComponent({ onClose, cursor, setCursor}){
                         rounded-full
                         bg-green-50 text-green-700
                     ">
-                        {place.spotsLiked[0].category || "Hidden Gem"}
+                        Hidden Gem
                     </span>
                     </div>
                 </div>

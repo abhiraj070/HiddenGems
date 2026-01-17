@@ -6,7 +6,6 @@ import { Spot } from "../models/spot.model.js";
 import { User } from "../models/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Review } from "../models/review.model.js";
-import { lookup } from "dns";
 
 const toggleLike= asynchandler(async (req,res) => {
     const user_id= req.user._id
@@ -85,7 +84,7 @@ const getAllLikedSpots= asynchandler(async (req,res) => {
             $match:{likedBy: userId, targetType: "Spot", ...query} //match is like find(). i used spread operator here because i want _id:{ $lt:cursor } inside not query: _id:{ $lt:cursor }
         },
         {
-            $sort:{_id: -1}
+            $sort:{createdAt: -1}
         },
         {
             $limit: Number(limit) //from query number comes in a string form

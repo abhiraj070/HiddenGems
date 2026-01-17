@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { registerUser, loginUser, logout, updateName,
     changePhoto, refreshAccessToken, changePassword, saveASpot, removeSavedSpot, getUserDetails, googleSignIn, 
-    deleteReview, deleteSavedPlaceById, addBio, checkIsLikedSaved, getUserFavSpots, getanotherUserDetails,
+    deleteReview, deleteSavedPlaceById, addBio, checkIsLikedSaved, getNumberOfFavSpots, getanotherUserDetails,
     isFollowing, addAFollowerFollowing, removeAFollowerFollowing } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -28,7 +28,7 @@ router.route("/delete/review/:id").post(verifyJWT,deleteReview)
 router.route("/delete/saved/:id").post(verifyJWT,deleteSavedPlaceById)
 router.route("/addbio").post(verifyJWT,addBio)
 router.route("/check/:lat/:lng").get(verifyJWT,checkIsLikedSaved)
-router.route("/get/likes").get(verifyJWT,getUserFavSpots)
+router.route("/get/likes").get(verifyJWT,getNumberOfFavSpots)
 router.route("/get/user/:Id").get(getanotherUserDetails)
 router.route("/get/check/:id").get(verifyJWT,isFollowing)
 router.route("/follow/user/:id").post(verifyJWT,addAFollowerFollowing)

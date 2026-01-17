@@ -8,6 +8,8 @@ export default function SidebarComponent({
   setDisplayFavBox,
   isSpotLiked,
   displayFavBox,
+  likedlength,
+  setLikedLength
 }) {
   const categories = [
     { id: "cafe", name: "Cafe" },
@@ -27,7 +29,6 @@ export default function SidebarComponent({
   ]
   const router= useRouter()
   const [expandedCategories, setExpandedCategories] = useState(false)
-  const [likedlength, setLikedLength]= useState(0)
   const [error, setError]= useState(null)
 
   const handleCategoryToggle = (categoryId) => {
@@ -53,7 +54,7 @@ export default function SidebarComponent({
         `/api/v1/users/get/likes`
       )
         setError(null)
-        setLikedLength(res.data.data.length)
+        setLikedLength(res.data.data.number)
       } catch (error) {
         setError(error.message)
       }
