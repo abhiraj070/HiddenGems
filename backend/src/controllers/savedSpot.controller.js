@@ -1,3 +1,4 @@
+import { SavedSpot } from "../models/savedSpot.model.js"
 import { Spot } from "../models/spot.model.js"
 import { User } from "../models/user.model.js"
 import { ApiError } from "../utils/ApiError.js"
@@ -14,9 +15,9 @@ const saveASpot= asynchandler(async (req,res) => {
     }
     const user_id= req.user._id
     //console.log("user_id: ",user_id)
-    const isAlreadySaved= await User.exists({
-        _id: user_id,
-        savedSpots: spot._id
+    const isAlreadySaved= await SavedSpot.exists({
+        savedBy: user_id,
+        targetId: spot._id
     })
     //console.log("isAlreadySaved: ",isAlreadySaved);
     if(isAlreadySaved){

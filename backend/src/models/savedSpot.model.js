@@ -11,4 +11,9 @@ const savedSpotsSchema= Schema({
     }
 },{timestamps: true})
 
+SavedSpot.index(
+    {savedBy:1, targetId:1},
+    {unique: true}
+)
+
 export const SavedSpot= mongoose.model("SavedSpot", savedSpotsSchema)
