@@ -48,30 +48,15 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
       }    
   }
   const handleSave= async ()=>{
-    if(!turnblue){
       try {
         await axios.post(
-          `/api/v1/savedSpot/saveSpot/${coordOfSpot.lat}/${coordOfSpot.lng}`
+          `/api/v1/savedSpot/toggleSave/${coordOfSpot.lat}/${coordOfSpot.lng}`
         )
         setError(null)
         setTurenBlue(!turnblue)
-        //console.log("res save: ",res);
       } catch (error) {
         setError(error.message)
       }
-    } 
-    else{
-      try {
-        await axios.post(
-          `/api/v1/savedSpot/deletespot/${coordOfSpot.lat}/${coordOfSpot.lng}`
-        )
-        setError(null)
-        setTurenBlue(!turnblue)
-        //console.log("res unsave: ",res);
-      } catch (error) {
-        setError(error.message)
-      }
-    }
   }
 
   if(!allReviews){ //due to this, if we didn't recive allreviews the box will be blank

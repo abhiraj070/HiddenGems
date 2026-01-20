@@ -11,7 +11,7 @@ const savedSpotsSchema= Schema({
     }
 },{timestamps: true})
 
-SavedSpot.index(
+savedSpotsSchema.index(
     {savedBy:1, targetId:1},
     {unique: true}
 )

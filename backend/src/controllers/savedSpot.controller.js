@@ -5,7 +5,7 @@ import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asynchandler } from "../utils/asynchandler.js"
 
-const saveASpot= asynchandler(async (req,res) => {
+const toggelSaveSpot= asynchandler(async (req,res) => {
     const lat= req.params.lat
     const lng= req.params.lng
     const spot= await Spot.findOne({latitude: lat, longitude: lng})
@@ -14,6 +14,9 @@ const saveASpot= asynchandler(async (req,res) => {
         throw new ApiError(404,"Error while fetching spot")
     }
     const user_id= req.user._id
+    if(!user_id){
+        throw ApiError(401,"Unathorized Request")
+    }
     //console.log("user_id: ",user_id)
     const isAlreadySaved= await SavedSpot.exists({
         savedBy: user_id,
@@ -21,17 +24,29 @@ const saveASpot= asynchandler(async (req,res) => {
     })
     //console.log("isAlreadySaved: ",isAlreadySaved);
     if(isAlreadySaved){
+        await SavedSpot.findOneAndDelete({
+            savedBy: user_id,
+            targetId: spot._id
+        })
+        await User.findByIdAndUpdate(
+            user_id,
+            {$pull:{savedSpots: spot._id}}
+        )
         return res
         .status(200)
-        .json(new ApiResponse(200,req.user.savedSpots,"Spot is already saved"))
+        .json(new ApiResponse(200,{},"Spot is already saved"))
     }
-    const user= await User.findById(user_id)
-    user.savedSpots.push(spot._id)
-    await user.save()
-    await user.populate("savedSpots")
+    await SavedSpot.create({
+        savedBy: user_id,
+        targetId: spot._id
+    })
+    await User.findByIdAndUpdate(
+        user_id,
+        {$push:{savedSpots: spot._id}}
+    )
     return res
     .status(200)
-    .json(new ApiResponse(200,user.savedSpots,"Spot saved successfully"))
+    .json(new ApiResponse(200,{},"Spot saved successfully"))
 })
 
 const deleteSavedPlaceById= asynchandler(async (req,res) => {
@@ -50,22 +65,4 @@ const deleteSavedPlaceById= asynchandler(async (req,res) => {
     .json(new ApiResponse(200,userdocument,"Successfully deleted detail by saved place using ID"))
 })
 
-const removeSavedSpot= asynchandler(async (req,res)=>{
-    const lat= req.params.lat
-    const lng= req.params.lng
-    const spot= await Spot.find({latitude: lat,longitude: lng})
-    if(spot.length===0){
-        throw new ApiError(404,"Error while fetching Spot")
-    }
-    const spot_id= spot[0]._id
-    const user_id= req.user._id
-    const updatedUser= await User.findByIdAndUpdate(user_id,
-        {$pull: {savedSpots: spot_id}},
-        {new: true}
-    )
-    return res
-    .status(200)
-    .json(new ApiResponse(200,updatedUser,"Spot deleted successfully"))
-})
-
-export { saveASpot, deleteSavedPlaceById, removeSavedSpot}
+export { toggelSaveSpot, deleteSavedPlaceById}
