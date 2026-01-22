@@ -5,9 +5,12 @@ export default function FollowerBox({onClose, followers}){
     //console.log(followers[0].username,followers[0].fullname);
     
     return(
-    <div className=" fixed
-            left-800px
-            top-[162.5px]
+    <div className=" 
+            fixed
+            top-1/2
+            left-1/2
+            -translate-x-1/2
+            -translate-y-1/2
             z-1000
             w-400px
             max-h-[60vh]
@@ -36,7 +39,7 @@ export default function FollowerBox({onClose, followers}){
                         <div
                         key={follower._id}
                         className="
-                        flex items-center gap-4
+                        flex items-center gap-15
                         group
                         w-360px
                         rounded-2xl

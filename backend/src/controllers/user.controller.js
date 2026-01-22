@@ -8,6 +8,7 @@ import JWT from "jsonwebtoken"
 import { OAuth2Client } from "google-auth-library"
 import { Review } from "../models/review.model.js"
 import { Like } from "../models/like.model.js"
+import { Follow } from "../models/follow.model.js"
 const registerUser= asynchandler(async(req,res)=>{
     const  {fullname, username, password, email}= req.body
 
@@ -329,20 +330,54 @@ const changePassword= asynchandler(async(req,res)=>{
     .json(new ApiResponse(200,user,"Password updated successfully"))
 })
 
-
-
-
-
 const getUserDetails= asynchandler(async (req,res) => {
     const user_id= req.user._id
-    const user= await User.findById(user_id).select("-password -refreshToken").populate("savedSpots reviewHistory followers following")
+    const user= await User.aggregate([
+        {$match:{_id: user_id}},
+        {$lookup:{
+            from: "spots",
+            localField: "savedSpots",
+            foreignField: "_id",
+            as: "savedSpots" //the old savedSpots field will be replaces by the new one.
+        }},
+        {$lookup:{
+            from: "reviews",
+            localField: "reviewHistory",
+            foreignField: "_id",
+            as: "reviewHistory"
+        }},
+    ])
+    const followers= await Follow.aggregate([
+        {$match:{targetId: user_id}},
+        {$sort:{createdAt: -1}},
+        {$lookup: {
+            from: "users",
+            localField: "followerId",
+            foreignField: "_id",
+            as: "follower"
+        }},
+        {$unwind: "$follower"}
+    ])
+    const followings= await Follow.aggregate([
+        {$match:{followerId: user_id}},
+        {$sort:{createdAt: -1}},
+        {$lookup: {
+            from: "users",
+            localField: "targetId",
+            foreignField: "_id",
+            as: "following"
+        }},
+        {$unwind: "$following"}
+    ])
     if(!user){
         throw ApiError(400,"User Not Found")
     }
-    //console.log(user);
+    user[0].followers= followers
+    user[0].followings= followings
+    const plainUser= JSON.parse(JSON.stringify(user[0]))
     return res
     .status(200)
-    .json(new ApiResponse(200,{user: user},"User fetched successfully"))
+    .json(new ApiResponse(200,{user: plainUser},"User fetched successfully"))
 })
 
 const deleteReview= asynchandler(async (req,res) => {
@@ -423,7 +458,7 @@ const getanotherUserDetails=asynchandler(async (req,res) => {
     if(!userId){
         throw new ApiError(404,"User not found")
     }
-    const user= await User.findById(userId).populate("reviewHistory savedSpots followers following").select("-refreshToken -password")
+    const user= await User.findById(userId).populate("reviewHistory savedSpots").select("-refreshToken -password")
     if(!user){
         throw new ApiError(404,"User not found")
     } 
@@ -432,60 +467,44 @@ const getanotherUserDetails=asynchandler(async (req,res) => {
     .json(new ApiResponse(200,{user: user},"Fetched user details successfully"))
 })
 
-const isFollowing=asynchandler(async (req,res) => {
-    const user_id= req.params.id
-    const curruser_id= req.user._id
-    const isSame= !(user_id==curruser_id)
-    if(!user_id){
-        throw new ApiError(404,"Secondary user not found")
-    }
-    const userdocument= await User.exists({
-        _id: curruser_id,
-        following: user_id
-    })
-    const result=Boolean(userdocument)    
-    //console.log("followers2: ",user.followers);
-    return res
-    .status(200)
-    .json(new ApiResponse(200,{isFollowing: result, isSame: isSame},"User's following confirmed successfully"))
-})
-
-const addAFollowerFollowing= asynchandler(async (req,res) => {
+const toggleFollow= asynchandler(async (req,res) => {
     const usertobefollowed_id= req.params.id
     const userfolloweing_id= req.user._id
-    const user1= await User.findByIdAndUpdate(
-        usertobefollowed_id,
-        {$push: {followers: userfolloweing_id}},
-        {new: true}
-    )
-    const user2= await User.findByIdAndUpdate(
+    const isFollowing= await Follow.exists({
+        targetId: usertobefollowed_id,
+        followerId: userfolloweing_id
+    })
+    if(isFollowing){
+        const followDocument= await Follow.findOneAndDelete({
+            targetId: usertobefollowed_id,
+            followerId: userfolloweing_id
+        })
+        await User.findByIdAndUpdate(
+            userfolloweing_id,
+            {$pull:{follow: followDocument._id}},
+        )
+        return res
+        .status(200)
+        .json(new ApiResponse(200,{},"Successfully handled follow system"))
+    }
+    const followDocument= await Follow.create({
+        targetId: usertobefollowed_id,
+        followerId: userfolloweing_id
+    })
+    console.log("a: ",followDocument);
+    
+    await User.findByIdAndUpdate(
         userfolloweing_id,
-        {$push:{following: usertobefollowed_id}},
-        {new: true}
+        {$push:{follow: followDocument._id}},
+    )
+    await User.findByIdAndUpdate(
+        usertobefollowed_id,
+        {$push:{follow: followDocument._id}},
     )
     return res
     .status(200)
-    .json(new ApiResponse(200,{user: user1, follower: user2},"Successfully handled follow system"))
+    .json(new ApiResponse(200,{},"Successfully handled follow system"))
 })
-
-const removeAFollowerFollowing= asynchandler(async (req,res) => {
-    const usertobeunfollowed_id= req.params.id
-    const userunfolloweing_id= req.user._id
-    const user1= await User.findByIdAndUpdate(
-        usertobeunfollowed_id,
-        {$pull: {followers: userunfolloweing_id}},
-        {new: true}
-    )
-    const user2= await User.findByIdAndUpdate(
-        userunfolloweing_id,
-        {$pull:{following: usertobeunfollowed_id}},
-        {new: true}
-    )
-    return res
-    .status(200)
-    .json(new ApiResponse(200,{user: user1, unfollower: user2},"Successfully handled unfollow system"))
-})
-
 export {
     registerUser,
     loginUser,
@@ -498,9 +517,7 @@ export {
     addBio,
     checkIsLikedSaved,
     getanotherUserDetails,
-    isFollowing,
-    addAFollowerFollowing,
-    removeAFollowerFollowing,
+    toggleFollow,
     updateName,
     googleSignIn
 }

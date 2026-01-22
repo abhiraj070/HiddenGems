@@ -1,8 +1,7 @@
 import { Router } from "express";
 import { registerUser, loginUser, logout, updateName,
     changePhoto, refreshAccessToken, changePassword, getUserDetails, googleSignIn, 
-    deleteReview, addBio, checkIsLikedSaved, getanotherUserDetails,
-    isFollowing, addAFollowerFollowing, removeAFollowerFollowing } from "../controllers/user.controller.js";
+    deleteReview, addBio, checkIsLikedSaved, getanotherUserDetails, toggleFollow } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
@@ -26,9 +25,7 @@ router.route("/delete/review/:id").post(verifyJWT,deleteReview)
 router.route("/addbio").post(verifyJWT,addBio)
 router.route("/check/:lat/:lng").get(verifyJWT,checkIsLikedSaved)
 router.route("/get/user/:Id").get(getanotherUserDetails)
-router.route("/get/check/:id").get(verifyJWT,isFollowing)
-router.route("/follow/user/:id").post(verifyJWT,addAFollowerFollowing)
-router.route("/unfollow/user/:id").post(verifyJWT,removeAFollowerFollowing)
+router.route("/follow/user/:id").post(verifyJWT,toggleFollow)
 router.route("/edit/name").post(verifyJWT,updateName)
 router.route("/google-login").post(googleSignIn)
 export default router

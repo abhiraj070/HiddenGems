@@ -52,17 +52,21 @@ const toggelSaveSpot= asynchandler(async (req,res) => {
 const deleteSavedPlaceById= asynchandler(async (req,res) => {
     const id= req.params.id
     const user_id= req.user._id
-    const userdocument= await User.findByIdAndUpdate(
+    await User.findByIdAndUpdate(
         user_id,
         {$pull:{savedSpots: id}},
         {new: true}
     )
+    await SavedSpot.findOneAndDelete({
+        savedBy:user_id,
+        targetId: id
+    })
     if(!userdocument){
         throw ApiError(400,"User not found")
     }
     return res
     .status(200)
-    .json(new ApiResponse(200,userdocument,"Successfully deleted detail by saved place using ID"))
+    .json(new ApiResponse(200,{},"Successfully deleted detail by saved place using ID"))
 })
 
 export { toggelSaveSpot, deleteSavedPlaceById}

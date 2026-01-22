@@ -7,5 +7,4 @@ const router= Router()
 router.route("/toggleSave/:lat/:lng").post(verifyJWT,toggelSaveSpot)
 router.route("/delete/saved/:id").post(verifyJWT,deleteSavedPlaceById)
 
-
 export default router

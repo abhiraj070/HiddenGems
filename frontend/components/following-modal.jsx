@@ -1,12 +1,15 @@
 "use client"
 
-export default function FollowingBox({onClose, following}){
-    //console.log("following: ",following);
+export default function FollowingBox({onClose, followings}){
+    console.log("following: ",followings);
     
     return(
-        <div className=" fixed
-            left-800px
-            top-[162.5px]
+        <div className=" 
+            fixed
+            top-1/2
+            left-1/2
+            -translate-x-1/2
+            -translate-y-1/2
             z-1000
             w-400px
             max-h-[60vh]
@@ -29,12 +32,12 @@ export default function FollowingBox({onClose, following}){
                 ✕
             </button>
         </div>
-        <div className="flex flex-col gap-6">
-            {following.map((user) => (
+        <div className="flex flex-col gap-6 items-center">
+            {followings.map((user) => (
                 <div
                 key={user._id}
                 className="
-                    flex items-center gap-4
+                    flex items-center gap-15
                     group
                     w-full max-w-360px
                     rounded-2xl
@@ -49,25 +52,25 @@ export default function FollowingBox({onClose, following}){
                 "
                 >
                 <div className="h-10 w-10 rounded-full overflow-hidden bg-gray-200 shrink-0">
-                    {user.profilepicture ? (
+                    {user.following.profilepicture ? (
                     <img
-                        src={user.profilepicture}
+                        src={user.following.profilepicture}
                         alt="profile"
                         className="h-full w-full object-cover"
                     />
                     ) : (
                     <span className="flex h-full w-full items-center justify-center text-sm font-semibold text-gray-600">
-                        {user.username?.[0]?.toUpperCase()}
+                        {user.following.username?.[0]?.toUpperCase()}
                     </span>
                     )}
                 </div>
 
                 <div className="leading-tight">
                     <p className="font-semibold text-stone-800 group-hover:text-green-700">
-                    {user.username}
+                    {user.following.username}
                     </p>
                     <p className="text-sm text-stone-500">
-                    {user.fullname}
+                    {user.following.fullname}
                     </p>
                 </div>
                 </div>

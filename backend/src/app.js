@@ -19,6 +19,7 @@ import reviewRouter from './routes/review.route.js'
 import spotRouter from './routes/spot.route.js'
 import likeRouter from './routes/like.route.js'
 import savedSpotRouter from './routes/savedSpot.route.js'
+import followRouter from './routes/follow.route.js'
 
 //route decleration
 app.use("/api/v1/users",userRouter)
@@ -26,5 +27,6 @@ app.use("/api/v1/review",reviewRouter)
 app.use("/api/v1/spot",spotRouter)
 app.use("/api/v1/like",likeRouter)
 app.use("/api/v1/savedSpot",savedSpotRouter)
+app.use("/api/v1/follow",followRouter)
 
 export { app }

@@ -36,8 +36,9 @@ export default function ProfilePage() {
           `/api/v1/users/get/user`
         )
         setUser(res.data.data.user)
+        
         setError(null)
-        //console.log("user: ",res.data.data);
+        console.log("user: ",res.data.data);
       } catch (error) {
         setError(error.response?.data?.message)
       }finally{  
@@ -277,7 +278,7 @@ export default function ProfilePage() {
               onClick={()=>{handleFollowingClick()}}
               >
                 <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
-                  {user.following.length ?? 0}
+                  {user.followings.length ?? 0}
                 </p>
                 <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
                   Following
@@ -470,7 +471,7 @@ export default function ProfilePage() {
   {showFollowing &&
     <FollowingBox
       onClose={()=>{setShowFollowing(false)}}
-      following={user.following}
+      followings={user.followings}
     />
   }
 

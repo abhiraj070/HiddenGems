@@ -21,10 +21,10 @@ export default function UserProfilePage(){
         const fetchisFollowing= async()=>{
             try {
                 const res= await axios.get(
-                    `/api/v1/users/get/check/${userId}`
+                    `/api/v1/follow/get/check/${userId}`
                 )
                 setShowFollowButton(res.data.data.isSame)
-                console.log(res.data.data.isSame);
+                //console.log(res.data.data.isSame);
                 
                 setIsFollowed(res.data.data.isFollowing)
                 setError(null)
@@ -33,7 +33,7 @@ export default function UserProfilePage(){
             }
         }
         fetchisFollowing()
-    })
+    },[])
 
     useEffect(()=>{
         const fectchUserDetails= async()=>{
@@ -43,7 +43,7 @@ export default function UserProfilePage(){
                 )
                 setUser(res.data.data.user)
                 setFollowers(res.data.data.user.followers)
-                setFollowing(res.data.data.user.following)
+                setFollowing(res.data.data.user.followings)
                 setError(null)
             } catch (error) {
                 setError(error.response?.data?.message)
@@ -63,7 +63,6 @@ export default function UserProfilePage(){
     }
 
     const handleFollowClick=async()=>{
-        if(!isFollowed){
             try {
                 await axios.post(
                     `/api/v1/users/follow/user/${userId}`
@@ -73,18 +72,6 @@ export default function UserProfilePage(){
             } catch (error) {
                 setError(error.response?.data?.message)
             }
-        }
-        else{
-            try {
-                await axios.post(
-                    `/api/v1/users/unfollow/user/${userId}`
-                )
-                setIsFollowed(!isFollowed)
-                setError(null)
-            } catch (error) {
-                setError(error.response?.data?.message)
-            }
-        }
     }
 
     if(!user){
