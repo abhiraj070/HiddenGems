@@ -9,6 +9,7 @@ import { OAuth2Client } from "google-auth-library"
 import { Review } from "../models/review.model.js"
 import { Like } from "../models/like.model.js"
 import { Follow } from "../models/follow.model.js"
+import mongoose from "mongoose"
 const registerUser= asynchandler(async(req,res)=>{
     const  {fullname, username, password, email}= req.body
 
@@ -330,56 +331,6 @@ const changePassword= asynchandler(async(req,res)=>{
     .json(new ApiResponse(200,user,"Password updated successfully"))
 })
 
-const getUserDetails= asynchandler(async (req,res) => {
-    const user_id= req.user._id
-    const user= await User.aggregate([
-        {$match:{_id: user_id}},
-        {$lookup:{
-            from: "spots",
-            localField: "savedSpots",
-            foreignField: "_id",
-            as: "savedSpots" //the old savedSpots field will be replaces by the new one.
-        }},
-        {$lookup:{
-            from: "reviews",
-            localField: "reviewHistory",
-            foreignField: "_id",
-            as: "reviewHistory"
-        }},
-    ])
-    const followers= await Follow.aggregate([
-        {$match:{targetId: user_id}},
-        {$sort:{createdAt: -1}},
-        {$lookup: {
-            from: "users",
-            localField: "followerId",
-            foreignField: "_id",
-            as: "follower"
-        }},
-        {$unwind: "$follower"}
-    ])
-    const followings= await Follow.aggregate([
-        {$match:{followerId: user_id}},
-        {$sort:{createdAt: -1}},
-        {$lookup: {
-            from: "users",
-            localField: "targetId",
-            foreignField: "_id",
-            as: "following"
-        }},
-        {$unwind: "$following"}
-    ])
-    if(!user){
-        throw ApiError(400,"User Not Found")
-    }
-    user[0].followers= followers
-    user[0].followings= followings
-    const plainUser= JSON.parse(JSON.stringify(user[0]))
-    return res
-    .status(200)
-    .json(new ApiResponse(200,{user: plainUser},"User fetched successfully"))
-})
-
 const deleteReview= asynchandler(async (req,res) => {
     const id= req.params.id
     const user_id= req.user._id
@@ -453,18 +404,106 @@ const checkIsLikedSaved= asynchandler(async(req,res)=>{
     .json(new ApiResponse(200,{likeresult: likeresult,savedresult: savedresult, spot: spot},"Successfully checked Liked or not"))
 })
 
+const getUserDetails= asynchandler(async (req,res) => {
+    const user_id= req.user._id
+    const user= await User.aggregate([
+        {$match:{_id: user_id}},
+        {$lookup:{
+            from: "spots",
+            localField: "savedSpots",
+            foreignField: "_id",
+            as: "savedSpots" //the old savedSpots field will be replaces by the new one.
+        }},
+        {$lookup:{
+            from: "reviews",
+            localField: "reviewHistory",
+            foreignField: "_id",
+            as: "reviewHistory"
+        }},
+    ])
+    const followers= await Follow.aggregate([
+        {$match:{targetId: user_id}},
+        {$sort:{createdAt: -1}},
+        {$lookup: {
+            from: "users",
+            localField: "followerId",
+            foreignField: "_id",
+            as: "follower"
+        }},
+        {$unwind: "$follower"}
+    ])
+    const followings= await Follow.aggregate([
+        {$match:{followerId: user_id}},
+        {$sort:{createdAt: -1}},
+        {$lookup: {
+            from: "users",
+            localField: "targetId",
+            foreignField: "_id",
+            as: "following"
+        }},
+        {$unwind: "$following"}
+    ])
+    if(user.length===0){
+        throw ApiError(400,"User Not Found")
+    }
+    user[0].followers= followers
+    user[0].followings= followings
+    return res
+    .status(200)
+    .json(new ApiResponse(200,{user: user[0]},"User fetched successfully"))
+})
+
 const getanotherUserDetails=asynchandler(async (req,res) => {
-    const userId=req.params.Id
+    const userid=req.params.Id
+    const userId = new mongoose.Types.ObjectId(userid)// we get strings from the params, we cannot directly compare this with the ids inside mongodb as the storing type is different, so this converts the string into the type in which mongodb stores it.
     if(!userId){
         throw new ApiError(404,"User not found")
     }
-    const user= await User.findById(userId).populate("reviewHistory savedSpots").select("-refreshToken -password")
-    if(!user){
+    const user= await User.aggregate([
+        {$match: {_id: userId}},
+        {$lookup:{
+            from: "spots",
+            localField: "savedSpots",
+            foreignField: "_id",
+            as: "savedSpots"
+        }},
+        {$lookup:{
+            from: "reviews",
+            localField: "reviewHistory",
+            foreignField: "_id",
+            as: "reviewHistory"
+        }}
+    ])
+    const followings= await Follow.aggregate([
+        {$match:{followerId: userId}},
+        {$sort: {createdAt:-1}},
+        {$lookup: {
+            from: "users",
+            localField: "targetId",
+            foreignField: "_id",
+            as: "following"
+        }},
+        {$unwind:"$following"}// i am using $ here because unwind need to access the value in the key following whereas above in lookup the field name is requied or keys are required because they do not need to access the value they jsut need to compare the names.
+    ])
+    const followers= await Follow.aggregate([
+        {$match:{targetId: userId}},
+        {$sort:{createdAt:-1}},
+        {$lookup:{
+            from: "users",
+            localField: "followerId",
+            foreignField: "_id",
+            as: "follower"
+        }},
+        {$unwind:"$follower"}
+    ])
+    if(user.lenght===0){
         throw new ApiError(404,"User not found")
     } 
+    user[0].followings= followings, //i am using "user[0]" and not "user" beacuse aggregate returns an array.
+    user[0].followers=followers
     return res
     .status(200)
-    .json(new ApiResponse(200,{user: user},"Fetched user details successfully"))
+    .json(new ApiResponse(200,{user: user[0]},"Fetched user details successfully"))
 })
 
 const toggleFollow= asynchandler(async (req,res) => {
