@@ -195,7 +195,7 @@ export default function HomePage() {
       {showDetails &&
         <SpotDetailsModal
           onClose={()=>{setShowDetails(false)}}
-          review={transferSpecificReview}
+          reviewInherit={transferSpecificReview}
         />
       }
 

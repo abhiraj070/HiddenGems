@@ -10,6 +10,7 @@ import { Review } from "../models/review.model.js"
 import { Like } from "../models/like.model.js"
 import { Follow } from "../models/follow.model.js"
 import mongoose from "mongoose"
+import { SavedSpot } from "../models/savedSpot.model.js"
 const registerUser= asynchandler(async(req,res)=>{
     const  {fullname, username, password, email}= req.body
 
@@ -381,27 +382,42 @@ const updateName= asynchandler(async (req,res) => {
 })
 
 const checkIsLikedSaved= asynchandler(async(req,res)=>{
+    //console.log("1");
+
     const lat= req.params.lat
     const lng= req.params.lng
+    const {type, id}= req.params
     const user_id= req.user._id
-    const spot= await Spot.findOne({latitude: lat, longitude: lng})
-    if(!spot){
-        throw new ApiError(404,"No Spot on this coordinate")
+    let target
+    if(type==="Spot"){
+        target= await Spot.findOne({latitude: lat, longitude: lng})
     }
-    const Likedocument= await Like.exists({
+    else{
+        target= await Review.findById(id)
+    }
+    if(!target){
+        throw new ApiError(403,"No Spot on this coordinate")
+    }
+    const Likedocument= await Like.findOne({
         likedBy: user_id,
-        targetId: spot._id,
-        targetType: "Spot"
+        targetId: target._id,
+        targetType: `${type}`
     })
-    const userdocument= await User.exists({  //exists always returns null or the user id
-        _id: user_id,
-        savedSpots: spot._id
-    })
+    //console.log("like: ",Likedocument);
+    
+    let savedDocument
+    if(type==="Spot"){
+        savedDocument= await SavedSpot.exists({  //exists always returns null or the user id
+            savedBy: user_id,
+            targetId: target._id
+        })
+    }
+    
     const likeresult=(Boolean(Likedocument))
-    const savedresult=(Boolean(userdocument))
+    const savedresult=(Boolean(savedDocument))
     return res
     .status(200)
-    .json(new ApiResponse(200,{likeresult: likeresult,savedresult: savedresult, spot: spot},"Successfully checked Liked or not"))
+    .json(new ApiResponse(200,{likeresult: likeresult,savedresult: savedresult, target: target, },"Successfully checked Liked or not"))
 })
 
 const getUserDetails= asynchandler(async (req,res) => {

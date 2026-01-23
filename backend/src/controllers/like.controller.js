@@ -10,7 +10,7 @@ import { Review } from "../models/review.model.js";
 const toggleLike= asynchandler(async (req,res) => {
     const user_id= req.user._id
     const {lat, lng}= req.params
-    const {type}= req.params
+    const {type, id}= req.params
     //console.log("user: ",user_id);
     if(!user_id){
         throw new ApiError(404, "Unathorized request")
@@ -18,10 +18,15 @@ const toggleLike= asynchandler(async (req,res) => {
     if(!type){
         throw new ApiError(400,"missing required parameters")
     }
-    const model= type==="Spot"? Spot: Review
-    const target= await model.findOne({latitude: lat, longitude: lng})
+    let target
+    if(type==="Spot"){
+        target= await Spot.findOne({latitude: lat, longitude: lng})
+    }
+    else{
+        target= await Review.findById(id)
+    }
     if(!target){
-        throw ApiError(400,"No spot created on recived coordinates")
+        throw ApiError(400,"No spot/Review created on recived coordinates")
     }
     //console.log("target: ",target);
     const target_id= target._id
@@ -42,23 +47,23 @@ const toggleLike= asynchandler(async (req,res) => {
         })
         if(type==="Spot"){
             userdocument= await User.findByIdAndUpdate(user_id,{$push:{favourite: target_id}},{new: true}).populate("favourite")
-            spotDocumnet= await Spot.findByIdAndUpdate(target_id,{$inc:{likes: 1}},{new: true})
-            console.log("spot: ",spotDocumnet);
+            spotDocumnet= await Spot.findByIdAndUpdate(target_id,{$inc:{likes: 1}},{new: true}).populate("owner")
+            //console.log("spot: ",spotDocumnet);
             
         }
         else{
             userdocument= await User.findByIdAndUpdate(user_id, {$push:{likedReviews: target_id}},{new: true}).populate("likedReviews")
-            reviewDocument= await Review.findByIdAndUpdate(target_id, {$inc:{likes: 1}},{new: true})
+            reviewDocument= await Review.findByIdAndUpdate(target_id, {$inc:{likes: 1}},{new: true}).populate("owner")
         }
     }
     else{
         await Like.findOneAndDelete({likedBy: user_id, targetId: target_id, targetType: type})    
         if(type==="Spot"){
-            spotDocumnet= await Spot.findByIdAndUpdate(target_id, {$inc:{likes: -1}},{new: true})
+            spotDocumnet= await Spot.findByIdAndUpdate(target_id, {$inc:{likes: -1}},{new: true}).populate("owner")
             userdocument= await User.findByIdAndUpdate(user_id,{$pull:{favourite: target_id}}, {new: true}).populate("favourite")
         }
         else{
-            reviewDocument= await Review.findByIdAndUpdate(target_id, {$inc:{likes:-1}},{new: true})
+            reviewDocument= await Review.findByIdAndUpdate(target_id, {$inc:{likes:-1}},{new: true}).populate("owner")
             userdocument= await User.findByIdAndUpdate(user_id,{$pull:{likedReviews: target_id}},{new: true}).populate("likedReviews")
         }
     }
@@ -109,7 +114,7 @@ const getNumberOfFavSpots= asynchandler(async (req,res) => {
     if(!user_id){
         throw ApiError(404,"Unathorized request")
     }
-    const likeSpots= await Like.find({likedBy: user_id})
+    const likeSpots= await Like.find({likedBy: user_id, targetType: "Spot"})
     const number= likeSpots.length
     return res
     .status(200)

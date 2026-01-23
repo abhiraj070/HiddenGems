@@ -14,10 +14,10 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
     const fetchIsSavedLiked=async ()=>{
       try {
         const res= await axios.get(
-          `/api/v1/users/check/${coordOfSpot.lat}/${coordOfSpot.lng}`
+          `/api/v1/users/check/${coordOfSpot.lat}/${coordOfSpot.lng}/null/Spot`
         )
         //console.log("res: ",res.data.data);
-        setlikenumber(res.data.data.spot.likes)
+        setlikenumber(res.data.data.target.likes)
         setTurnRed(res.data.data.likeresult)
         setTurenBlue(res.data.data.savedresult)
         setError(null)
@@ -35,13 +35,13 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
   const handleLike=async()=>{
       try {
         const res= await axios.post(
-          `/api/v1/like/toggleLike/${coordOfSpot.lat}/${coordOfSpot.lng}/Spot`,
+          `/api/v1/like/toggleLike/${coordOfSpot.lat}/${coordOfSpot.lng}/null/Spot`,
           { withCredentials: true }
         )
         //console.log("res:",res);
         setError(null)
         setIsSpotLiked(!isSpotLiked)
-        setlikenumber(res.data.data.spot.likes)
+        setlikenumber(res.data.data.target.likes)
         setTurnRed(!turnred)
       } catch (error) {
         setError(error.message)

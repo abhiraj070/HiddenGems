@@ -1,12 +1,50 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import axios from "axios"
 
-export default function SpotDetailsModal({ onClose, review }) {
+export default function SpotDetailsModal({ onClose, reviewInherit }) {
+  const [turnred, setTurnRed]= useState(false)
+  const [review, setReview]= useState(null)
   const router= useRouter()
   //console.log("creating detail box")
+  //console.log("review: ",review);
+  
+  useEffect(()=>{
+    setReview(reviewInherit)
+  },[])
+
+  useEffect(()=>{
+    //console.log("2");
+    if (!review) return
+    //console.log("1");
+    
+    const fetchIsLiked= async ()=>{
+      const res= await axios.get(
+        `/api/v1/users/check/null/null/${review._id}/Review`
+      )
+      //console.log("res: ",res);
+      setTurnRed(res.data.data.likeresult)
+    }
+    fetchIsLiked()
+  },[review])
+
+  //here the flow of the useEffects are intersting: first each effect will run sequentially, but after the 1st effect rerender will not be triggered because then 2nd effect will never run, so in react all the effects runs first then the rerender takes place.
+
   const handleProfileClick=(Id)=>{
     router.push(`/profile/${Id}`)
+  }
+
+  const handleLike= async()=>{
+    setTurnRed(!turnred)
+    const res= await axios.post(
+      `/api/v1/like/toggleLike/null/null/${review._id}/Review`
+    )
+    setReview(res.data.data.review)
+  }
+  const handleCommentOpen=()=>{
+
   }
   if(!review){
     return null
@@ -97,6 +135,97 @@ export default function SpotDetailsModal({ onClose, review }) {
             </div>
             
         </div>
+        <div
+          className="
+            flex items-center justify-between
+            border-t border-gray-200
+            pt-4
+          "
+        >
+          <div className="flex items-center gap-6">
+            
+            <button
+              onClick={handleLike}
+              className="
+                flex items-center 
+                text-gray-600
+                hover:text-red-600
+                transition
+              "
+            >
+              <span
+                className={`
+                  flex items-center justify-center
+                  h-8 w-8
+                  rounded-full
+                 ${turnred ? "text-red-500" : " group-hover:bg-red-200"}
+                  transition
+                `}
+              >
+                
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill={`${turnred? "currentColor":"none"}`}
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="h-5 w-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 8.25c0-2.485-2.099-4.5-4.687-4.5-1.935 0-3.597 1.126-4.313 2.733-.716-1.607-2.378-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+                  />
+                </svg>
+                
+              </span>
+
+              <span className="text-sm text-gray-500">
+                {review.likes}
+              </span>
+
+            </button>
+
+            <button
+              onClick={handleCommentOpen}
+              className="
+                flex items-center gap-2
+                text-gray-600
+                hover:text-blue-600
+                transition
+              "
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="h-5 w-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M7.5 8.25h9m-9 3h6m-6 6.75
+                    1.5-1.5h9a2.25 2.25 0 002.25-2.25v-9
+                    A2.25 2.25 0 0018 3H6
+                    A2.25 2.25 0 003.75 5.25v9
+                    A2.25 2.25 0 006 16.5h1.5z"
+                />
+              </svg>
+
+              <span className="text-sm font-medium">
+                Comment
+              </span>
+
+              <span className="text-sm text-gray-500">
+                {review.commentsCount}
+              </span>
+            </button>
+
+          </div>
+        </div>
+
         <div
         className="
             mt-6

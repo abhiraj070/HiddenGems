@@ -1,8 +1,14 @@
 "use client"
 
+import { useRouter } from "next/navigation"
+
 export default function FollowerBox({onClose, followers}){
     //console.log("followers: ",followers);
     //console.log(followers[0].username,followers[0].fullname);
+    const router= useRouter()
+    const handleProfileClick=(Id)=>{
+        router.push(`/profile/${Id}`)
+    }
     
     return(
     <div className=" 
@@ -51,6 +57,7 @@ export default function FollowerBox({onClose, followers}){
                     transition-all duration-300
                     cursor-pointer
                 "
+                onClick={()=>{handleProfileClick(user.follower._id)}}
                 >
                 <div className="h-10 w-10 rounded-full overflow-hidden bg-gray-200 shrink-0">
                     {user.follower.profilepicture ? (

@@ -4,7 +4,7 @@ import { toggleLike, getAllLikedSpots, getNumberOfFavSpots } from "../controller
 
 const router= Router()
 
-router.route("/toggleLike/:lat/:lng/:type").post(verifyJWT,toggleLike)
+router.route("/toggleLike/:lat/:lng/:id/:type").post(verifyJWT,toggleLike)
 router.route("/getlikedSpots").get(verifyJWT,getAllLikedSpots)
 router.route("/get/likes").get(verifyJWT,getNumberOfFavSpots)
 
