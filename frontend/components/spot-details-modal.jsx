@@ -3,13 +3,16 @@
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import axios from "axios"
+import { CommentBox } from "./comment-box"
 
 export default function SpotDetailsModal({ onClose, reviewInherit }) {
   const [turnred, setTurnRed]= useState(false)
   const [review, setReview]= useState(null)
+  const [openComments, setOpenComments]= useState(false)
+  const [comLen, setComLen]= useState(0)
   const router= useRouter()
   //console.log("creating detail box")
-  //console.log("review: ",review);
+  //console.log("reviewxxx: ",reviewInherit._id);
   
   useEffect(()=>{
     setReview(reviewInherit)
@@ -25,6 +28,7 @@ export default function SpotDetailsModal({ onClose, reviewInherit }) {
         `/api/v1/users/check/null/null/${review._id}/Review`
       )
       //console.log("res: ",res);
+      setComLen(res.data.data.length)
       setTurnRed(res.data.data.likeresult)
     }
     fetchIsLiked()
@@ -44,14 +48,15 @@ export default function SpotDetailsModal({ onClose, reviewInherit }) {
     setReview(res.data.data.review)
   }
   const handleCommentOpen=()=>{
-
+    setOpenComments(true)
   }
   if(!review){
     return null
   }
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="relative w-[90%] max-w-2xl rounded-2xl bg-white shadow-2xl p-8">
+    <div className="h-screen overflow-hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
+      <div className="flex h-full items-center justify-center">
+      <div className="relative w-[90%] max-w-2xl -translate-x-45 rounded-2xl bg-white shadow-2xl p-8 transition-transform">
         
         <button
           onClick={onClose}
@@ -214,8 +219,8 @@ export default function SpotDetailsModal({ onClose, reviewInherit }) {
                 />
               </svg>
 
-              <span className="text-sm font-medium">
-                Comment
+              <span className="text-sm text-gray-500">
+                {comLen}
               </span>
 
               <span className="text-sm text-gray-500">
@@ -260,6 +265,15 @@ export default function SpotDetailsModal({ onClose, reviewInherit }) {
         </a>
         </div>
       </div>
+    </div>
+          {openComments && 
+            <div className="fixed top-70 left-1/2 z-60 w-full max-w-xl translate-x-40">
+              <CommentBox 
+              reviewId={reviewInherit._id} 
+              onClose={()=>{setOpenComments(false)}}
+              />
+            </div>
+          }
     </div>
   )
 }

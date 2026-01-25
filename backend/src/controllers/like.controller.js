@@ -47,7 +47,7 @@ const toggleLike= asynchandler(async (req,res) => {
         })
         if(type==="Spot"){
             userdocument= await User.findByIdAndUpdate(user_id,{$push:{favourite: target_id}},{new: true}).populate("favourite")
-            spotDocumnet= await Spot.findByIdAndUpdate(target_id,{$inc:{likes: 1}},{new: true}).populate("owner")
+            spotDocumnet= await Spot.findByIdAndUpdate(target_id,{$inc:{likes: 1}},{new: true})
             //console.log("spot: ",spotDocumnet);
             
         }
@@ -59,7 +59,7 @@ const toggleLike= asynchandler(async (req,res) => {
     else{
         await Like.findOneAndDelete({likedBy: user_id, targetId: target_id, targetType: type})    
         if(type==="Spot"){
-            spotDocumnet= await Spot.findByIdAndUpdate(target_id, {$inc:{likes: -1}},{new: true}).populate("owner")
+            spotDocumnet= await Spot.findByIdAndUpdate(target_id, {$inc:{likes: -1}},{new: true})
             userdocument= await User.findByIdAndUpdate(user_id,{$pull:{favourite: target_id}}, {new: true}).populate("favourite")
         }
         else{
@@ -75,6 +75,8 @@ const toggleLike= asynchandler(async (req,res) => {
 
 //cursor based pagination with infinite scroll 
 const getAllLikedSpots= asynchandler(async (req,res) => {    
+    //console.log("1");
+    
     const {cursor, limit}= req.query
     const userId= req.user._id
     if(!userId){
@@ -101,8 +103,10 @@ const getAllLikedSpots= asynchandler(async (req,res) => {
                 foreignField: "_id",
                 as: "spotsLiked" //a new field is added in this step.
             }
-        }
+        }        
     ])
+        //console.log("re:",spots)
+
     return res
     .status(200)
     .json(new ApiResponse(200,{data: spots, nextCursor: spots.length? spots[spots.length-1]._id: null}))

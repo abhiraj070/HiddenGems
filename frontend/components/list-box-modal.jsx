@@ -38,10 +38,10 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
           `/api/v1/like/toggleLike/${coordOfSpot.lat}/${coordOfSpot.lng}/null/Spot`,
           { withCredentials: true }
         )
-        //console.log("res:",res);
+        console.log("res:",res);
         setError(null)
         setIsSpotLiked(!isSpotLiked)
-        setlikenumber(res.data.data.target.likes)
+        setlikenumber(res.data.data.spot.likes)
         setTurnRed(!turnred)
       } catch (error) {
         setError(error.message)

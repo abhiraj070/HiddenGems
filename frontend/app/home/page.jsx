@@ -174,7 +174,7 @@ export default function HomePage() {
       {/* heres how the popup components are handeled. if i press the button then only render the component */}
       {showAddModal && 
       <AddSpotModal  
-        onClose={() => setShowAddModal(false)} 
+        onClose={() => {setShowAddModal(false), setFormData({name: "",description: "",category: "nature",lat: "",lng: "",})}} 
         onAddSpot={handleAddSpot} 
         formData={formData}
         setFormData={setFormData} 

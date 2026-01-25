@@ -161,8 +161,8 @@ const loginUser= asynchandler(async(req,res)=>{
 })
 
 const googleSignIn=asynchandler(async (req,res) => {
-    console.log("google-login hit");
-    console.log("BODY:", req.body);
+    //console.log("google-login hit");
+    //console.log("BODY:", req.body);
     const {token}= req.body
     const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
     const ticket= await client.verifyIdToken({
@@ -297,7 +297,7 @@ const refreshAccessToken= asynchandler(async(req,res)=>{
 
     const user= await User.findById(decoded?._id)
     if(!user){
-        throw ApiError(400,"Unauthorized request")
+        throw new ApiError(400,"Unauthorized request")
     }
     //console.log(user);
     
@@ -340,9 +340,22 @@ const deleteReview= asynchandler(async (req,res) => {
         {$pull:{reviewHistory: id}},
         {new: true}
     )
-    await Review.findByIdAndDelete(id)
+    const reviewDocument= await Review.findByIdAndDelete(id)
+    if(!reviewDocument){
+        throw new ApiError(404,"Review not found")
+    }
+    const spotDocument= await Spot.findOneAndUpdate({latitude: reviewDocument.latitude, longitude: reviewDocument.longitude},{$pull:{reviews: id}},{new: true})
+
+    if(!spotDocument){
+        throw new ApiError(404,"No Spot found at recived coordinates")
+    }
+    if(spotDocument.reviews.length==0){
+        await Spot.findByIdAndDelete(spotDocument._id)
+    }
+    await Like.deleteMany({targetId: spotDocument._id})
+    await SavedSpot.deleteMany({targetId: spotDocument._id})
     if(!userdocument){
-        throw ApiError(400,"User not found")
+        throw new ApiError(400,"User not found")
     }
     return res
     .status(200)
@@ -383,17 +396,17 @@ const updateName= asynchandler(async (req,res) => {
 
 const checkIsLikedSaved= asynchandler(async(req,res)=>{
     //console.log("1");
-
     const lat= req.params.lat
     const lng= req.params.lng
     const {type, id}= req.params
     const user_id= req.user._id
-    let target
+    let target, length
     if(type==="Spot"){
         target= await Spot.findOne({latitude: lat, longitude: lng})
     }
     else{
         target= await Review.findById(id)
+        length= target.comments.length
     }
     if(!target){
         throw new ApiError(403,"No Spot on this coordinate")
@@ -417,7 +430,7 @@ const checkIsLikedSaved= asynchandler(async(req,res)=>{
     const savedresult=(Boolean(savedDocument))
     return res
     .status(200)
-    .json(new ApiResponse(200,{likeresult: likeresult,savedresult: savedresult, target: target, },"Successfully checked Liked or not"))
+    .json(new ApiResponse(200,{likeresult: likeresult,savedresult: savedresult, target: target, length: length},"Successfully checked Liked or not"))
 })
 
 const getUserDetails= asynchandler(async (req,res) => {

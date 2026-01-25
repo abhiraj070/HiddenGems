@@ -23,6 +23,8 @@ export default function LikeBoxComponent({ onClose, cursor, setCursor, likedleng
                 setHasMore(Boolean(res.data.data.nextCursor))
                 //console.log("res: ",res);
                 setAllLikedSpots(prev=>[...prev,...res.data.data.data])
+                //console.log("liked: ",allLikedSpots);
+                
             } catch (error) {
                 setError(error.message)
             } finally{
@@ -114,7 +116,7 @@ export default function LikeBoxComponent({ onClose, cursor, setCursor, likedleng
                  >
                     <div className="flex items-start justify-between mb-3">
                     <h3 className="text-lg font-semibold text-stone-800 group-hover:text-green-700 transition">
-                        {place.spotsLiked[0].spotName[0].toUpperCase()+place.spotsLiked[0].spotName.slice(1) }
+                        {place.spotsLiked[0].spotName[0].toUpperCase()+place.spotsLiked[0].spotName.slice(1)}
                     </h3>
                     <div className="flex items-center gap-1">
                         <span className="

@@ -5,13 +5,17 @@ const commentSchema= Schema({
         type: Schema.Types.ObjectId,
         ref: "User"
     },
-    spot:{
+    review:{
         type: Schema.Types.ObjectId,
-        ref: "Spot"
+        ref: "Review"
     },
     content:{
         type: String
     }
 },{timestamps: true})
+
+commentSchema.index(
+    {owner: 1, review:1},
+)
 
 export const Comment= mongoose.model("Comment",commentSchema)

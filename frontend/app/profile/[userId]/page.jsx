@@ -272,7 +272,7 @@ export default function UserProfilePage(){
         {showFollowing&&
         <FollowingBox
             onClose={()=>{setShowFollowing(false)}}
-            following={following}
+            followings={following}
         />
         }
         {error && (
