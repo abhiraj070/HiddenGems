@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 const CATEGORIES = [
   { id: "nature", name: "Nature" },
@@ -18,8 +18,20 @@ const CATEGORIES = [
   { id: "others", name: "Others" }
 ]
 
-export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, formData, setFormData}) {
-  const [pickingOnMap, setPickingOnMap] = useState(false)
+export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, formData, setFormData, spotCoord, istickedRef, setPickingOnMap, pickingOnMap}) {
+  console.log("coord: ",spotCoord);
+  
+  useEffect(()=>{
+    setPickingOnMap(istickedRef.current)
+    if(!spotCoord) return
+    setFormData(prev=>({
+      ...prev,
+      lat: spotCoord.lat,
+      lng: spotCoord.lng
+    }))
+    istickedRef.current=true
+    setPickingOnMap(istickedRef.current)
+  },[spotCoord])
 
   const handleChange = (e) => {
     const { name, value } = e.target // eg: name: category, value: sports
@@ -29,9 +41,12 @@ export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, form
     }))
   }
 
-  const onTick= (val)=>{
-    setPickingOnMap(val)
-    setShowAddModal(false)
+  const onTick= ()=>{
+    setPickingOnMap(!istickedRef.current)
+    istickedRef.current=!istickedRef.current
+    if(istickedRef.current==true){
+      setShowAddModal(false)
+    }
   }
 
   const handleSubmit = (e) => {
@@ -93,7 +108,7 @@ export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, form
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-dark-text mb-2">Category*</label>
+            <label className="block text-sm font-medium text-dark-text mb-2">Tag*</label>
             <select
               name="category"
               value={formData.category}
@@ -114,13 +129,12 @@ export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, form
               <input
                 type="checkbox"
                 checked={pickingOnMap}
-                onChange={(e) => {onTick(e.target.checked)}}
+                onChange={onTick}
                 className="w-4 h-4 cursor-pointer"
               />
               Pick location on map
             </label>
 
-            {!pickingOnMap ? (
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-dark-text mb-2">Latitude</label>
@@ -128,7 +142,7 @@ export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, form
                     type="number"
                     name="lat"
                     value={formData.lat}
-                    onChange={handleChange}
+                    onChange={()=>{handleChange(),formData.lat==="" ? (setPickingOnMap(false)):(setPickingOnMap(true))}}
                     step="0.0001"
                     className="w-full px-4 py-2 border border-stone rounded-lg focus:outline-none focus:ring-2 focus:ring-teal bg-cream cursor-text"
                     placeholder="40.7128"
@@ -140,18 +154,14 @@ export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, form
                     type="number"
                     name="lng"
                     value={formData.lng}
-                    onChange={handleChange}
+                    onChange={()=>{handleChange(),formData.lat==="" ? (setPickingOnMap(false)):(setPickingOnMap(true))}}
                     step="0.0001"
                     className="w-full px-4 py-2 border border-stone rounded-lg focus:outline-none focus:ring-2 focus:ring-teal bg-cream cursor-text"
                     placeholder="-74.0060"
                   />
                 </div>
               </div>
-            ) : (
-              <p className="text-sm text-teal bg-teal/10 p-3 rounded-lg">
-                Click on the map to select a location.
-              </p>
-            )}
+            
           </div>
 
           <div className="flex gap-3 pt-4">

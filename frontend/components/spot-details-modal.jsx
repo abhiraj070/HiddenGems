@@ -186,7 +186,7 @@ export default function SpotDetailsModal({ onClose, reviewInherit }) {
               </span>
 
               <span className="text-sm text-gray-500">
-                {review.likes}
+                {review.likes || 0}
               </span>
 
             </button>
@@ -221,10 +221,6 @@ export default function SpotDetailsModal({ onClose, reviewInherit }) {
 
               <span className="text-sm text-gray-500">
                 {comLen}
-              </span>
-
-              <span className="text-sm text-gray-500">
-                {review.commentsCount}
               </span>
             </button>
 

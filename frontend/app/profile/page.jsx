@@ -24,6 +24,9 @@ export default function ProfilePage() {
   const [isReviewEditing, setIsReviewEditing]= useState(false)
   const [editedReview, setEditedReview]= useState("")
 
+
+  //console.log("user:",user);
+  
   useEffect(() => {
     const userData = localStorage.getItem("user")
     if (!userData) {

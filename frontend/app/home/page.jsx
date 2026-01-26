@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import MapComponent from "@/components/map-component"
 import SidebarComponent from "@/components/sidebar-component"
@@ -30,7 +30,8 @@ export default function HomePage() {
   const [isSpotLiked, setIsSpotLiked]= useState(false)
   const [cursor, setCursor]= useState(null)
   const [likedlength, setLikedLength]= useState(0)
-
+  const [spotCoord, setSpotCoord]= useState(null)
+  const [pickingOnMap, setPickingOnMap] = useState(false)
   
   const [formData, setFormData] = useState({
         name: "",
@@ -40,6 +41,8 @@ export default function HomePage() {
         lat: "",
         lng: "",
     })
+  const istickedRef= useRef(false)
+
   useEffect(() => {
     const userdata= localStorage.getItem("user")
     //console.log("userdata:",userdata);
@@ -77,6 +80,8 @@ export default function HomePage() {
       lng: lng,
     }))
     setShowAddModal(true)
+    setPickingOnMap(true)
+    istickedRef.current= true
   }
 
   useEffect(()=>{
@@ -141,7 +146,7 @@ export default function HomePage() {
       {/* when any of these props update value. the whole home page gets re-rendered */}
       <TopNavComponent 
         user={user} 
-        onAddSpot={() => setShowAddModal(true)} 
+        onAddSpot={() => {setShowAddModal(true), setSpotCoord(null)}} 
       />
 
       <div className="flex h-[calc(100vh-80px)]">
@@ -174,11 +179,15 @@ export default function HomePage() {
       {/* heres how the popup components are handeled. if i press the button then only render the component */}
       {showAddModal && 
       <AddSpotModal  
-        onClose={() => {setShowAddModal(false), setFormData({name: "",description: "",category: "nature",lat: "",lng: "",})}} 
+        onClose={() => {setShowAddModal(false), setFormData({name: "",description: "",category: "nature",lat: "",lng: ""}, istickedRef.current=false, setPickingOnMap(false))}} 
         onAddSpot={handleAddSpot} 
         formData={formData}
         setFormData={setFormData} 
         setShowAddModal={setShowAddModal}
+        spotCoord={spotCoord}
+        istickedRef={istickedRef}
+        setPickingOnMap={setPickingOnMap}
+        pickingOnMap={pickingOnMap}
       />}
 
       {showList &&
@@ -190,6 +199,7 @@ export default function HomePage() {
         coordOfSpot={coordOfSpot}
         setIsSpotLiked={setIsSpotLiked}
         isSpotLiked={isSpotLiked}
+        onAddReviewClick={()=>{setShowAddModal(true), setShowList(false), setSpotCoord(coordOfSpot)}}
       />}
 
       {showDetails &&

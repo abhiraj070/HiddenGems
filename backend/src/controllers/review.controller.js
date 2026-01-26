@@ -164,7 +164,7 @@ const addAComment= asynchandler(async (req,res) => {
         reviewId,
         {$push:{comments: commentDocument._id}}
     )
-    console.log("review:",reviewDocument);
+    //console.log("review:",reviewDocument);
     
     return res
     .status(200)

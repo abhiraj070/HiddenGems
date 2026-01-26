@@ -10,7 +10,8 @@ const getSpotBox= asynchandler(async (req,res)=>{
     .find({latitude: lat, longitude: lng})
     .populate(
         {path: "reviews", 
-            populate: {path: "owner"}
+            populate: {path: "owner"},
+            options :{sort:{likes: -1}}
         })
     if(allCoordReviews.length === 0){
         throw new ApiError(500,"something went wrong will fetching the reviews")
