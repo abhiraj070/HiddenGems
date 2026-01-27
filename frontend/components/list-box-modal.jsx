@@ -5,7 +5,7 @@ import axios from "axios"
 export default function ListBoxModal({ onClose, allReviews, setShowDetails, setTransferSpecificReview, coordOfSpot, setIsSpotLiked, isSpotLiked, onAddReviewClick }) {
   //console.log("allReviews: ",allReviews);
   //console.log(("set: ",allReviews[0].reviews));
-  console.log("cod:",coordOfSpot);
+  //console.log("cod:",coordOfSpot);
   
   const [turnblue, setTurenBlue]= useState(false)
   const [turnred, setTurnRed]= useState(false)
@@ -69,7 +69,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
       <div className="flex items-center justify-between px-5 py-4 border-b
                       bg-linear-to-r from-gray-50 to-gray-100 rounded-t-xl">
         <h3 className="text-lg font-semibold text-gray-800 tracking-wide">
-          {allReviews[0].spotName[0].toUpperCase()+allReviews[0].spotName.slice(1)} Tags
+          {allReviews.spotName[0].toUpperCase()+allReviews.spotName.slice(1)} Tags
         </h3>
 
         <button
@@ -82,7 +82,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
         </button>
       </div>
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
-        {allReviews[0].reviews.map((val) => (
+        {allReviews.reviews.map((val) => (
           <div
             key={val._id}
             onClick={() => handleReviewClick(val)}

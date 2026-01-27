@@ -33,6 +33,7 @@ const createReview= asynchandler(async(req,res)=>{
     let task
 
     if(!isSpot){
+        
         task= await Spot.create({
             spotName,
             latitude,
@@ -41,7 +42,9 @@ const createReview= asynchandler(async(req,res)=>{
         })
     }
     else{
-        await isSpot.reviews.push(createdReview._id)
+        const reviewDocument= await Review.find({latitude,longitude}).sort({likes:-1})
+        isSpot.spotName=reviewDocument[0].spotName
+        isSpot.reviews.push(createdReview._id)
         await isSpot.save()
         task= isSpot
     }
