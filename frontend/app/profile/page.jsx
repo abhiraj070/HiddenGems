@@ -25,7 +25,7 @@ export default function ProfilePage() {
   const [editedReview, setEditedReview]= useState("")
 
 
-  //console.log("user:",user);
+  console.log("user:",user);
   
   useEffect(() => {
     const userData = localStorage.getItem("user")
@@ -164,6 +164,12 @@ export default function ProfilePage() {
       localStorage.removeItem("user")
       router.push("/")
     }
+  }
+
+  const handleCommentDelete= async(id)=>{
+    await axios.post(
+      `/api/v1/review/delete/comment/${id}`
+    )
   }
 
   if (loading) {
@@ -328,134 +334,341 @@ export default function ProfilePage() {
     </div>
   </section>
 
-  <section className="max-w-7xl mx-auto px-6 pb-20 space-y-20">
-    <div className="flex items-center justify-between mb-6">
-      <h2 className="text-3xl font-bold">Saved Gems</h2>
-      <span className="text-sm text-stone-500">
-        {user.savedSpots.length} locations
+  <section className="max-w-7xl mx-auto px-6 py-24 space-y-28">
+
+{/* ================= SAVED GEMS ================= */}
+
+<div className="space-y-10">
+  <div className="flex justify-between items-end">
+    <div>
+      <h2 className="text-4xl font-extrabold tracking-tight">
+        Saved Gems
+      </h2>
+      <p className="text-stone-500 mt-1">
+        Places you loved & saved
+      </p>
+    </div>
+
+   <div className="flex items-center gap-3 mt-1">
+  <p className="text-stone-500 text-sm">
+    Spots
+  </p>
+
+  <span className="px-3 py-0.5 rounded-full text-xs bg-green-100 text-green-700 font-semibold">
+    {user.savedSpots.length}
+  </span>
+</div>
+  </div>
+
+  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+    {user.savedSpots.map(spot => (
+      <div
+        key={spot._id}
+        onClick={() => handleSpotClick(spot)}
+        className="
+          group relative overflow-hidden
+          rounded-3xl p-7
+          bg-linear-to-br from-white to-stone-100
+          border border-stone-200
+          shadow-sm hover:shadow-2xl
+          transition-all duration-300
+          hover:-translate-y-2
+          cursor-pointer
+        "
+      >
+
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition bg-linear-to-br from-green-50 to-transparent" />
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            handleSavedDelete(spot._id)
+          }}
+          className="
+            absolute top-4 right-4 z-10
+            p-2 rounded-full
+            bg-white shadow-md
+            opacity-0 group-hover:opacity-100
+            hover:text-red-500
+            transition
+          "
+        >
+          🗑
+        </button>
+
+        <h3 className="relative text-2xl font-semibold text-stone-900 mb-3">
+          {spot.spotName[0].toUpperCase() + spot.spotName.slice(1)}
+        </h3>
+
+        <p className="relative text-sm text-green-600 font-medium">
+          Explore on map →
+        </p>
+
+      </div>
+    ))}
+  </div>
+</div>
+
+
+{/* ================= COMMENTS ================= */}
+
+<div className="space-y-10">
+
+  <div className="flex justify-between items-end">
+    <div>
+      <h2 className="text-4xl font-extrabold tracking-tight">
+        Your Comments
+      </h2>
+      <p className="text-stone-500 mt-1">
+        Quick thoughts you shared
+      </p>
+    </div>
+
+    <div className="flex items-center gap-3 mt-1">
+  <p className="text-stone-500 text-sm">
+    Comments
+  </p>
+
+  <span className="px-3 py-0.5 rounded-full text-xs bg-green-100 text-green-700 font-semibold">
+    {user.comments.length}
+  </span>
+</div>
+
+  </div>
+
+  <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-7">
+
+    {user.comments.map(comment => (
+      <div
+        key={comment._id}
+        className="
+          group relative rounded-3xl
+          bg-white border border-stone-200
+          p-6 shadow-sm hover:shadow-xl
+          transition
+        "
+      >
+
+        <button
+          onClick={() => handleCommentDelete(comment._id)}
+          className="
+            absolute top-4 right-4
+            opacity-0 group-hover:opacity-100
+            transition
+            hover:text-red-500
+          "
+        >
+          🗑
+        </button>
+
+        <p className="text-stone-700 leading-relaxed line-clamp-5">
+          {comment.content}
+        </p>
+
+        <div className="mt-5 flex items-center justify-between text-xs">
+          <span className=" py-1 rounded-full text-stone-400 italic">
+            spotName: {comment.review.spotName}
+          </span>
+          <span className="text-stone-400 italic">
+            Tag: {comment.review.tag}
+          </span>
+        </div>
+
+      </div>
+    ))}
+  </div>
+</div>
+
+<div className="space-y-10">
+
+  <div className="flex justify-between items-end">
+    <div>
+      <h2 className="text-4xl font-extrabold tracking-tight">
+        Your Liked Reviews
+      </h2>
+      <p className="text-stone-500 mt-1">
+        Reviews you loved
+      </p>
+    </div>
+
+    <div className="flex items-center gap-3 mt-1">
+      <p className="text-stone-500 text-sm">
+        Liked
+      </p>
+
+      <span className="px-3 py-0.5 rounded-full text-xs bg-green-100 text-green-700 font-semibold">
+        {user.likedReviews.length}
       </span>
     </div>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {user.savedSpots.map((spot) => (
-        <div
-          key={spot._id}
-          onClick={handleSpotClick}
-          className="
-            group relative
-            cursor-pointer
-            rounded-3xl
-            border border-stone-200
-            bg-linear-to-br from-white to-stone-50
-            p-6
-            transition-all duration-300
-            hover:-translate-y-1
-            hover:shadow-2xl
-          "
-        >
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              handleSavedDelete(spot._id)
-            }}
-            className="
-              absolute top-4 right-4
-              opacity-0 group-hover:opacity-100
-              scale-90 group-hover:scale-100
-              transition
-              bg-red-500 text-white
-              rounded-full p-2
-              shadow-lg
-            "
-          >
-            🗑
-          </button>
-
-          <h3 className="text-xl font-semibold text-stone-900 mb-2">
-            {spot.spotName.charAt(0).toUpperCase() + spot.spotName.slice(1)}
-          </h3>
-
-          <p className="text-sm  leading-relaxed text-green-600">
-            Click to explore this gem on the map →
-          </p>
-        </div>
-      ))}
-    </div>
-
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold">Review History</h2>
-        <span className="text-sm text-stone-500">
-          {user.reviewHistory.length} locations
-        </span>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {user.reviewHistory.map((review,i) => (
-        <div
-          key={i}
-          className="
-            group
-            relative
-            rounded-2xl
-            border border-stone-200
-            bg-white
-            p-5
-            transition
-            hover:shadow-lg
-          "
-        >
-          <button
-            onClick={() => handleReviewDelete(review._id)}
-            className="
-              absolute top-4 right-4
-              opacity-0 group-hover:opacity-100
-              transition
-              text-stone-400 hover:text-red-500
-            "
-          >
-            🗑
-          </button>
 
-          <button
-            onClick={()=>{isReviewEditing? handleSaveReview(review._id):handleClickEditReview(i)}}
-            className="
-              absolute top-4 right-15
-              opacity-0 group-hover:opacity-100
-              transition
-              text-stone-400 hover:text-green-500
-            "
-          >
-            {isReviewEditing? "save": "✎"}
-          </button>
+      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-7">
 
-          <h3 className="text-sm font-semibold text-stone-900 mb-1">
-            {review.spotName.charAt(0).toUpperCase() + review.spotName.slice(1)}
-          </h3>
-          
+        {user.likedReviews.map((liked) => (
+              <div
+                key={liked._id}
+                className=" group relative rounded-xl border border-gray-200 bg-white p-4 transition-colors hover:border-green-600 hover:bg-green-50"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col gap-1">
 
-          <p className="text-sm text-stone-700 leading-relaxed line-clamp-4">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="
+                        h-10 w-10
+                        rounded-full
+                        border border-gray-300
+                        bg-gray-200
+                        overflow-hidden
+                        flex items-center justify-center
+                      "
+                      
+                    >
+                      {liked.owner.profilepicture ? (
+                        <img
+                          src={liked.owner.profilepicture}
+                          alt={liked.owner.username}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-gray-600 text-m font-medium">
+                          {liked.owner.username?.[0]?.toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-sm font-semibold text-gray-900">
+                      {liked.owner.username}
+                    </div>
+                  </div>
 
-            {isReviewEditing ?
-              (<input
-                value={editedReview}
-                onChange={(e)=>{setEditedReview(e.target.value)}}
-                className="w-full bg-transparent border-b-2 border-green-500 focus:outline-none"
-              />)
-              :
-              (review.content)}
-          </p>
-          
-          
-          <div className="mt-4 flex justify-between items-center text-xs text-stone-400">
-            <span className="uppercase tracking-wide">{review.tag}</span>
-            <span className="italic">Your review</span>
-          </div>
-          
-        </div>
-        
-      ))}
+                  <div className="text-sm leading-relaxed text-gray-600 pl-13">
+                    {liked.content}
+                  </div>
+
+                  </div>
+                </div>
+                <div className="mt-2 inline-flex items-center gap-3 text-xs">
+                <span className="text-stone-400 italic">
+                  spotName: {liked.spotName}
+                </span>
+                <span className="px-10 py-1 rounded-full text-stone-400 italic">
+                  tag: {liked.tag}
+                </span>
+              </div>
+
+              </div>
+            ))}
+      </div>
     </div>
 
-  </section>
+        
+
+
+{/* ================= REVIEWS ================= */}
+
+<div className="space-y-10">
+
+  <div className="flex justify-between items-end">
+    <div>
+      <h2 className="text-4xl font-extrabold tracking-tight">
+        Review History
+      </h2>
+      <p className="text-stone-500 mt-1">
+        Your detailed experiences
+      </p>
+    </div>
+
+    <div className="flex items-center gap-3 mt-1">
+  <p className="text-stone-500 text-sm">
+    Reviews
+  </p>
+
+  <span className="px-3 py-0.5 rounded-full text-xs bg-green-100 text-green-700 font-semibold">
+    {user.reviewHistory.length}
+  </span>
+</div>
+
+  </div>
+
+  <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-7">
+
+    {user.reviewHistory.map((review, i) => (
+      <div
+        key={review._id}
+        className="
+          group relative rounded-3xl
+          bg-linear-to-br from-white to-stone-50
+          border border-stone-200
+          p-7 shadow-sm hover:shadow-xl
+          transition
+        "
+      >
+
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-green-50/40 transition" />
+
+        <button
+          onClick={() => handleReviewDelete(review._id)}
+          className="
+            absolute top-4 right-4 z-10
+            opacity-0 group-hover:opacity-100
+            hover:text-red-500 transition
+          "
+        >
+          🗑
+        </button>
+
+        <button
+          onClick={() =>
+            isReviewEditing
+              ? handleSaveReview(review._id)
+              : handleClickEditReview(i)
+          }
+          className="
+            absolute top-4 right-14 z-10
+            opacity-0 group-hover:opacity-100
+            hover:text-green-600 transition
+          "
+        >
+          {isReviewEditing ? "💾" : "✎"}
+        </button>
+
+        <h3 className="relative text-lg font-semibold mb-2">
+          {review.spotName[0].toUpperCase() + review.spotName.slice(1)}
+        </h3>
+
+        {isReviewEditing ? (
+          <input
+            value={editedReview}
+            onChange={e => setEditedReview(e.target.value)}
+            className="
+              relative w-full
+              bg-transparent
+              border-b-2 border-green-500
+              focus:outline-none py-1
+            "
+          />
+        ) : (
+          <p className="relative text-stone-700 leading-relaxed line-clamp-5">
+            {review.content}
+          </p>
+        )}
+
+        <div className="mt-5 flex justify-between items-center text-xs">
+          <span className=" py-1 rounded-full text-stone-400 italic">
+            Tag:{review.tag}
+          </span>
+          <span className="text-stone-400 italic">
+            your review
+          </span>
+        </div>
+
+      </div>
+    ))}
+  </div>
+</div>
+</section>
   {showPopUp&&
     <DeleteComponent
       setConfirmDelete={setConfirmDelete}

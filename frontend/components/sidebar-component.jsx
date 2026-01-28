@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import {useRouter} from "next/navigation"
 import axios from "axios"
+import Link from "next/link"
 export default function SidebarComponent({
   selectedCategories,
   setDisplayFavBox,
@@ -27,7 +27,6 @@ export default function SidebarComponent({
     { id: "city", name: "City"},
     { id: "others", name: "Others" }
   ]
-  const router= useRouter()
   const [expandedCategories, setExpandedCategories] = useState(false)
   const [error, setError]= useState(null)
 
@@ -37,10 +36,6 @@ export default function SidebarComponent({
       : [...selectedCategories, categoryId]
 
     onCategoryChange(updated.length === 0 ? [] : updated)
-  }
-
-  const onShowSaved=()=>{
-    router.push("/profile")
   }
 
   const isSelected = (categoryId) => {
@@ -131,8 +126,8 @@ export default function SidebarComponent({
 
       <div className="flex-1" />
       <div className="mx-4 mb-6 space-y-3">
-        <button
-          onClick={onShowSaved}
+        <Link
+          href={`/profile`}
           className="w-full flex items-center gap-4 px-5 py-4 rounded-xl bg-white hover:bg-stone-100 transition shadow-lg border border-stone-200"
         >
           <div className="flex-1 text-left">
@@ -155,7 +150,7 @@ export default function SidebarComponent({
             <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" />
           </svg>
           </span>
-        </button>
+        </Link>
 
         <button
           onClick={() => onShowFavorites()}

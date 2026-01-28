@@ -1,7 +1,6 @@
 import axios from "axios"
 import { useState, useEffect, useRef, useCallback } from "react"
-import { useRouter } from "next/navigation"
-import { log } from "util"
+import Link from "next/link"
 export function CommentBox({reviewId, onClose}){
     const [comments, setComments]= useState([])
     const [cursor, setCursor]= useState(null)
@@ -14,7 +13,6 @@ export function CommentBox({reviewId, onClose}){
     const fectchCommentsRef= useRef()
     //console.log("id:",reviewId.reviewId);
     //console.log("comment: ",comments);
-    const router= useRouter()
 
     useEffect(()=>{
         const parseduser= JSON.parse(localStorage.getItem("user"))
@@ -79,12 +77,8 @@ export function CommentBox({reviewId, onClose}){
       })
     }
 
-    const handleProfileClick=(id)=>{
-      router.push(`/profile/${id}`)
-    }
-
     const handleCommentDelete=async(id)=>{
-      console.log("1");
+      //console.log("1");
       
       await axios.post(
         `/api/v1/review/delete/comment/${id}`
@@ -119,10 +113,8 @@ export function CommentBox({reviewId, onClose}){
             <div className="flex items-center gap-3">
               <div className="flex flex-col gap-1">
 
-              <div className="flex items-center gap-3 cursor-pointer"
-              
-                onClick={()=>{handleProfileClick(comment.owner._id)  }}
-              >
+              <div className="flex items-center gap-3 cursor-pointer">
+                <Link href={`/profile/${comment.owner._id}`}>
                 <div
                   className="
                     h-10 w-10
@@ -146,6 +138,7 @@ export function CommentBox({reviewId, onClose}){
                     </span>
                   )}
                 </div>
+                </Link>
 
                 {comment.owner._id?.toString() === userId?.toString() && (
                   <button
@@ -166,7 +159,7 @@ export function CommentBox({reviewId, onClose}){
                   {comment.owner.username}
                 </div>
               </div>
-
+                
               <div className="text-sm leading-relaxed text-gray-600 pl-13">
                 {comment.content}
               </div>

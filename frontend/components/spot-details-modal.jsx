@@ -1,16 +1,15 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import axios from "axios"
 import { CommentBox } from "./comment-box"
+import Link from "next/link"
 
 export default function SpotDetailsModal({ onClose, reviewInherit }) {
   const [turnred, setTurnRed]= useState(false)
   const [review, setReview]= useState(null)
   const [openComments, setOpenComments]= useState(false)
   const [comLen, setComLen]= useState(0)
-  const router= useRouter()
   //console.log("creating detail box")
   //console.log("reviewxxx: ",reviewInherit._id);
   
@@ -35,10 +34,6 @@ export default function SpotDetailsModal({ onClose, reviewInherit }) {
   },[review])
 
   //here the flow of the useEffects are intersting: first each effect will run sequentially, but after the 1st effect rerender will not be triggered because then 2nd effect will never run, so in react all the effects runs first then the rerender takes place.
-
-  const handleProfileClick=(Id)=>{
-    router.push(`/profile/${Id}`)
-  }
 
   const handleLike= async()=>{
     setTurnRed(!turnred)
@@ -106,36 +101,38 @@ export default function SpotDetailsModal({ onClose, reviewInherit }) {
                 Review's Owner:
             </p>
 
-            <div className="flex items-center gap-3 cursor-pointer"
-            onClick={()=>{handleProfileClick(review.owner._id)}}
-            >
+            <Link
+                href={`/profile/${review.owner._id}`}
+                className="flex items-center gap-3 cursor-pointer"
+              >
                 <div
-                    className="
+                  className="
                     h-10 w-10
                     rounded-full
                     border border-gray-300
                     bg-gray-200
                     overflow-hidden
                     flex items-center justify-center
-                    "
+                  "
                 >
-                    {review.owner.profilepicture ? (
+                  {review.owner.profilepicture ? (
                     <img
-                        src={review.owner.profilepicture}
-                        alt={review.owner.username}
-                        className="h-full w-full object-cover"
+                      src={review.owner.profilepicture}
+                      alt={review.owner.username}
+                      className="h-full w-full object-cover"
                     />
-                    ) : (
+                  ) : (
                     <span className="text-gray-600 text-m font-medium">
-                        {review.owner.username?.[0]?.toUpperCase()}
+                      {review.owner.username?.[0]?.toUpperCase()}
                     </span>
-                    )}
+                  )}
                 </div>
 
                 <p className="text-m font-medium text-gray-800">
-                    {review.owner.username}
+                  {review.owner.username}
                 </p>
-                </div>
+              </Link>
+
                 
             </div>
             

@@ -59,6 +59,10 @@ const userschema = Schema({
     likedReviews:[{
         type: Schema.Types.ObjectId,
         ref: "Review"
+    }],
+    comments:[{
+        type: Schema.Types.ObjectId,
+        ref: "Comment"
     }]
 },{timestamps: true})
 

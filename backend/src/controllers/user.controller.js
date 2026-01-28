@@ -435,21 +435,18 @@ const checkIsLikedSaved= asynchandler(async(req,res)=>{
 
 const getUserDetails= asynchandler(async (req,res) => {
     const user_id= req.user._id
-    const user= await User.aggregate([
-        {$match:{_id: user_id}},
-        {$lookup:{
-            from: "spots",
-            localField: "savedSpots",
-            foreignField: "_id",
-            as: "savedSpots" //the old savedSpots field will be replaces by the new one.
-        }},
-        {$lookup:{
-            from: "reviews",
-            localField: "reviewHistory",
-            foreignField: "_id",
-            as: "reviewHistory"
-        }},
-    ])
+    const user = await User.findById(user_id)
+    .populate("savedSpots")
+    .populate({
+        path: "likedReviews",
+        populate: { path: "owner" }
+    })
+    .populate({
+        path: "comments",
+        populate: {path: "review"}
+    })
+    .populate("reviewHistory")
+
     const followers= await Follow.aggregate([
         {$match:{targetId: user_id}},
         {$sort:{createdAt: -1}},
@@ -472,14 +469,15 @@ const getUserDetails= asynchandler(async (req,res) => {
         }},
         {$unwind: "$following"}
     ])
-    if(user.length===0){
+    if(!user){
         throw ApiError(400,"User Not Found")
     }
-    user[0].followers= followers
-    user[0].followings= followings
+    const userObj= user.toObject() //this convets moongoose Document in palin JS object. because i want to save new fields in the obj but moongose does not lets it go with the res cuz its not in the schema fields
+    userObj.followers= followers
+    userObj.followings= followings
     return res
     .status(200)
-    .json(new ApiResponse(200,{user: user[0]},"User fetched successfully"))
+    .json(new ApiResponse(200,{user: userObj},"User fetched successfully"))
 })
 
 const getanotherUserDetails=asynchandler(async (req,res) => {

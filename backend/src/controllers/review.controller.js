@@ -163,6 +163,7 @@ const addAComment= asynchandler(async (req,res) => {
         review: id,
         content: content
     })
+    await User.findByIdAndDelete(userId,{comments: commentDocument._id})
     const reviewDocument= await Review.findByIdAndUpdate(
         reviewId,
         {$push:{comments: commentDocument._id}}
@@ -175,7 +176,7 @@ const addAComment= asynchandler(async (req,res) => {
 })
 
 const deleteAComment= asynchandler(async (req,res) => {
-    console.log("1");
+    //console.log("1");
     
     const commentid= req.params.Id
     const userId= req.user._id
@@ -197,7 +198,7 @@ const deleteAComment= asynchandler(async (req,res) => {
         {$pull:{comments: commentDocument._id}},
         {new: true}
     )
-    console.log("4");
+    //console.log("4");
     
     return res
     .status(200)
