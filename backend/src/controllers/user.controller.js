@@ -557,7 +557,7 @@ const toggleFollow= asynchandler(async (req,res) => {
         targetId: usertobefollowed_id,
         followerId: userfolloweing_id
     })
-    console.log("a: ",followDocument);
+    //console.log("a: ",followDocument);
     
     await User.findByIdAndUpdate(
         userfolloweing_id,

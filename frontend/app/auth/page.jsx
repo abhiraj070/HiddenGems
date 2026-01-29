@@ -102,7 +102,7 @@ export default function AuthPage() {
         )
         const user= res.data.data.user
         //console.log("User: ",user );
-        console.log(("User: ",user));
+        //console.log(("User: ",user));
         
         localStorage.setItem("user",JSON.stringify(user))
         router.push("/home")

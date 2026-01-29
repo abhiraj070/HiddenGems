@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 import "leaflet/dist/leaflet.css"
-export default function MapComponent({onLocationPicked, currentLocation, dbspots, newspots, ListBox, setAllReviews, setCoordOfSpot}) {
+export default function MapComponent({onLocationPicked, currentLocation, newspots, ListBox, setAllReviews, setCoordOfSpot}) {
   const mapContainer = useRef(null) 
   const map = useRef(null) 
   const marked= useRef(new Set())// created a set here to avoid storing duplicates while storing
@@ -11,6 +11,9 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
   const [mapready, setMapReady]= useState(false)
   const [error, setError]= useState(null)
   const currentLocationMarkerRef = useRef(null)
+  const [dbspots, setdbspots]= useState([])
+  const [mapMoved, setMapMoved]= useState(false)
+
   useEffect(() => {
     const initMap = async() => {
       const L = (await import("leaflet")).default //dynamic import of leaflet because at the beginning window is not present
@@ -48,9 +51,13 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
       if(!map.current){ 
         return 
       }
+      //console.log("2");
+      
       const handler= (e) => {
         const lat= e.latlng.lat
         const lng= e.latlng.lng
+        //console.log("5");
+        
         onMapClick(lat,lng)
       }
       map.current.on("click", handler)
@@ -58,6 +65,44 @@ export default function MapComponent({onLocationPicked, currentLocation, dbspots
       map.current.off("click", handler)
     }
   },[mapready]) 
+
+  useEffect(()=>{
+    if(!map.current) return
+    map.current.on("moveend zoomend",()=>{
+      //console.log("4");
+      setMapMoved(prev => !prev)
+    })
+  },[mapready])
+
+  useEffect(()=>{
+    if(!map.current) return
+    const bounds= map.current.getBounds()
+    const ne={
+      lat: bounds.getNorthEast().lat,
+      lng: bounds.getNorthEast().lng
+    }
+    const sw={
+      lat: bounds.getSouthWest().lat,
+      lng: bounds.getSouthWest().lng
+    }
+    //console.log("ne:",ne,"sw",sw);
+    const fetchReviews =async ()=>{
+      try {
+        const res= await axios.post(  
+          `/api/v1/spot/get/spots`,
+          {ne: ne, sw: sw},
+        )
+        const reviewGot= res.data.data
+        //console.log("reviews: ",reviewGot);
+        //console.log("res: ",res);
+        setdbspots(reviewGot)
+        setError(null)
+      } catch (error) {
+        setError(error.message)
+      }    
+    }
+    fetchReviews()
+  },[mapMoved])
 
   // database reviews marker and onclick for box adding 
   useEffect(()=>{

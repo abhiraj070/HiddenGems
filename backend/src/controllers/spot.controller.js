@@ -28,10 +28,23 @@ const getSpotBox= asynchandler(async (req,res)=>{
 const getAllSpots=asynchandler(async(req,res)=>{
     //console.log("Collection:", Spot.collection.name);
     //console.log("getAllSpots: controller entered");
-    const allSpots= await Spot.find({})
-    if(!allSpots){
+    const {ne, sw}= req.body
+    //console.log("ne:",ne,"sw:",sw);
+    //console.log("1");
+    
+    
+    const allSpots= await Spot.aggregate([
+        {$match:{
+            latitude: {$gte: sw.lat, $lte:ne.lat},
+            longitude: {$gte:sw.lng, $lte: ne.lng}
+        }},
+    ])
+    //console.log(allSpots);
+
+    if(allSpots.length===0){
         throw new ApiError(500,"Error while fetching spots")
     }
+    
     //console.log("getAllSpots: spots length =", allSpots.length);
     return res
     .status(200)

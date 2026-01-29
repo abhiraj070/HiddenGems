@@ -18,7 +18,7 @@ const spotSchema= Schema({
         set: val => {
             const num = Number(val)
             if (Number.isNaN(num)) return undefined
-            return Number(num.toFixed(3));
+            return Number(num.toFixed(6));
         }
     },
     longitude:{
@@ -26,7 +26,7 @@ const spotSchema= Schema({
         set: val => {
             const num = Number(val);
             if (Number.isNaN(num)) return undefined;
-            return Number(num.toFixed(3));
+            return Number(num.toFixed(6));
         }
     },
     likes:{

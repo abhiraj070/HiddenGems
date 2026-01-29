@@ -15,7 +15,6 @@ export default function HomePage() {
   const router = useRouter()
   const [user, setUser] = useState(null)
   const [newspots, setnewSpots] = useState(null)
-  const [dbspots, setdbspots]= useState([])
   const [selectedCategories, setSelectedCategories] = useState([])
   const [showAddModal, setShowAddModal] = useState(false)
   const [showList, setShowList]= useState(false)
@@ -84,23 +83,7 @@ export default function HomePage() {
     istickedRef.current= true
   }
 
-  useEffect(()=>{
-    const fetchReviews =async ()=>{
-      try {
-        const res= await axios.get(
-          `/api/v1/spot/get/spots`
-        )
-        const reviewGot= res.data.data
-        //console.log("reviews: ",reviewGot);
-        //console.log("res: ",res);
-        setdbspots(reviewGot)
-        setError(null)
-      } catch (error) {
-        setError(error.message)
-      }    
-    }
-    fetchReviews()
-  },[])
+  
 
   const handleCategoryChange=()=>{}
 
@@ -166,7 +149,6 @@ export default function HomePage() {
             selectedSpot={selectedSpot}
             onLocationPicked={handleLocationPicked}
             currentLocation={currentLocation}
-            dbspots={dbspots}
             newspots={newspots}
             ListBox={setShowList}
             setAllReviews={setAllReviews}
