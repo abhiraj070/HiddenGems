@@ -3,12 +3,9 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState, useRef, useEffect } from "react"
-import axios from "axios"
-import Image from "next/image"
-export default function TopNavComponent({ user, onAddSpot }) {
+export default function TopNavComponent({ user, onAddSpot, setPlace, place, SetInitializeSearch, initializeSearch }) {
   const router = useRouter()
   const [showProfileMenu, setShowProfileMenu] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
   const menuRef = useRef(null)
 
   useEffect(() => {
@@ -30,10 +27,13 @@ export default function TopNavComponent({ user, onAddSpot }) {
     // )
     router.push("/")
   }
-  const handleSearch=()=>{}
+  const handleSearch=()=>{
+    //console.log("1")
+    SetInitializeSearch(!initializeSearch)
+  }
 
   return (
-    <nav className="sticky top-0 z-50 bg-sand">
+<nav className="sticky top-0 z-50 bg-sand">
   <div className="w-full py-4">
     <div
       className="
@@ -62,13 +62,18 @@ export default function TopNavComponent({ user, onAddSpot }) {
       >
         HiddenGems
       </Link>
-
+    <form
+      onSubmit={(e)=>{
+        e.preventDefault()
+        handleSearch()
+      }}
+    >
       <div className="relative max-w-lg w-full mx-auto group">
         <input
           type="text"
-          placeholder="Search a tag..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search a Place..."
+          value={place}
+          onChange={(e) => setPlace(e.target.value)}
           className="
             w-full px-5 py-3 pr-14 rounded-xl
             bg-cream/70
@@ -82,9 +87,8 @@ export default function TopNavComponent({ user, onAddSpot }) {
             focus:shadow-[0_0_0_2px_rgba(20,184,166,0.35)]
           "
         />
-
         <button
-          onClick={handleSearch}
+          type= "submit"
           className="
             absolute right-2 top-1/2 -translate-y-1/2
             h-10 w-10
@@ -126,6 +130,7 @@ export default function TopNavComponent({ user, onAddSpot }) {
           "
         />
       </div>
+    </form>
 
 
       <div className="flex items-center gap-3">

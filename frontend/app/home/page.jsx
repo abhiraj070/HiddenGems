@@ -31,6 +31,8 @@ export default function HomePage() {
   const [likedlength, setLikedLength]= useState(0)
   const [spotCoord, setSpotCoord]= useState(null)
   const [pickingOnMap, setPickingOnMap] = useState(false)
+  const [place, setPlace]= useState("")
+  const [initializeSearch, SetInitializeSearch]= useState(false)
   
   const [formData, setFormData] = useState({
         name: "",
@@ -42,6 +44,8 @@ export default function HomePage() {
     })
   const istickedRef= useRef(false)
 
+  //console.log("place:12",place);
+  
   useEffect(() => {
     const userdata= localStorage.getItem("user")
     //console.log("userdata:",userdata);
@@ -130,6 +134,10 @@ export default function HomePage() {
       <TopNavComponent 
         user={user} 
         onAddSpot={() => {setShowAddModal(true), setSpotCoord(null)}} 
+        setPlace={setPlace}
+        place= {place}
+        initializeSearch={initializeSearch}
+        SetInitializeSearch={SetInitializeSearch}
       />
 
       <div className="flex h-[calc(100vh-80px)]">
@@ -141,7 +149,6 @@ export default function HomePage() {
           displayFavBox={displayFavBox}
           setLikedLength={setLikedLength}
           likedlength={likedlength}
-
         />
 
         <div className="flex-1 ml-80 ">
@@ -153,6 +160,8 @@ export default function HomePage() {
             ListBox={setShowList}
             setAllReviews={setAllReviews}
             setCoordOfSpot={setCoordOfSpot}
+            initializeSearch={initializeSearch}
+            place={place}
           />
         </div>
       </div>

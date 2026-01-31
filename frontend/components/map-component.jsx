@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 import "leaflet/dist/leaflet.css"
-export default function MapComponent({onLocationPicked, currentLocation, newspots, ListBox, setAllReviews, setCoordOfSpot}) {
+export default function MapComponent({onLocationPicked, currentLocation, newspots, ListBox, setAllReviews, setCoordOfSpot, initializeSearch, place}) {
   const mapContainer = useRef(null) 
   const map = useRef(null) 
   const marked= useRef(new Set())// created a set here to avoid storing duplicates while storing
@@ -13,10 +13,12 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
   const currentLocationMarkerRef = useRef(null)
   const [dbspots, setdbspots]= useState([])
   const [mapMoved, setMapMoved]= useState(false)
-
+  //console.log("p1:",place);
+  //console.log("in",initializeSearch);
+  
   useEffect(() => {
     const initMap = async() => {
-      const L = (await import("leaflet")).default //dynamic import of leaflet because at the beginning window is not present
+      const L = (await import("leaflet")).default //dynamic import of leaflet because at the beginning window is not present.
 
       delete L.Icon.Default.prototype._getIconUrl //default code in order to make the marker visible
       L.Icon.Default.mergeOptions({
@@ -34,9 +36,9 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
           : [28.626, 77.213],
         10
       )
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {// OSM is the place where we get the whole map from, it is like a wikipidea for maps. and leaftet adds all the features in on the map like zoom, markers, popups, etc. it is like a brain for the maps
         maxZoom: 20,
-      }).addTo(map.current) 
+      }).addTo(map.current)
       setMapReady(true)
     }
     initMap()
@@ -45,6 +47,43 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
   const onMapClick=(lat,lng)=>{
     onLocationPicked(lat,lng)
   }
+
+  useEffect(()=>{
+    const moveMap= async()=>{
+      if(!map.current) return
+    const getCoordOfPlace = async (place)=>{
+      console.log("place",place)
+
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}`
+      const res= await axios.get(url)
+      if(!res.data.length){
+        alert("Place not found")
+        return null
+      }
+      //console.log("res:",res)
+      
+      return {
+        lat: parseFloat(res.data[0].lat),
+        lng: parseFloat(res.data[0].lon)
+      }
+    }
+    const result= await getCoordOfPlace(place)
+    if(!result){
+      return
+    }
+    //console.log("result:",result)
+
+    
+    map.current.flyTo([result.lat, result.lng])
+    const currIcon= L.icon({
+      iconUrl: "/loc.png",
+      iconSize: [55, 60],
+    })
+    L.marker([result.lat, result.lng],{icon: currIcon}).addTo(map.current).bindPopup(`${place}`).openPopup()
+    }
+    moveMap()
+    
+  },[initializeSearch])
   
   //onclick for addspots to open
   useEffect(()=>{
@@ -192,7 +231,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
       iconSize: [55, 60],
     })
     map.current.setView([lat, lng], 10)
-    currentLocationMarkerRef.current= L.marker([lat,lng],{icon: currIcon}).addTo(map.current)
+    currentLocationMarkerRef.current= L.marker([lat,lng],{icon: currIcon}).addTo(map.current).bindPopup("Your Location").openPopup()
   },[currentLocation, mapready])
 
   return (
