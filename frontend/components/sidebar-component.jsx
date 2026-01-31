@@ -31,15 +31,10 @@ export default function SidebarComponent({
   const [error, setError]= useState(null)
 
   const handleCategoryToggle = (categoryId) => {
-    const updated = selectedCategories.includes(categoryId)
-      ? selectedCategories.filter((c) => c !== categoryId)
-      : [...selectedCategories, categoryId]
-
-    onCategoryChange(updated.length === 0 ? [] : updated)
+    
   }
 
   const isSelected = (categoryId) => {
-    return selectedCategories.includes(categoryId)
   }
 
   useEffect(()=>{

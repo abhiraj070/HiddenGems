@@ -171,3 +171,72 @@ select {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+@layer components {
+
+  /* Floating glass container */
+  .leaflet-control-zoom {
+    @apply rounded-3xl backdrop-blur-xl border border-white/30 bg-white/70;
+    box-shadow:
+      0 20px 50px -12px rgba(0, 0, 0, 0.18),
+      inset 0 1px 1px rgba(255,255,255,.9);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+    transition: box-shadow .3s ease, transform .3s ease;
+  }
+
+  .leaflet-control-zoom:hover {
+    box-shadow:
+      0 26px 70px -15px rgba(0, 0, 0, 0.22),
+      inset 0 1px 1px rgba(255,255,255,.9);
+    transform: translateY(-2px);
+  }
+
+  /* Buttons */
+  .leaflet-control-zoom a {
+    @apply w-11 h-11 rounded-xl flex items-center justify-center text-lg font-semibold transition-all duration-300;
+    background: linear-gradient(180deg, #ffffff, #f1f5f9);
+    color: #0f766e;
+    border: 1px solid rgba(15, 118, 110, 0.12);
+    box-shadow:
+      0 6px 14px rgba(0,0,0,.08),
+      inset 0 1px 0 rgba(255,255,255,.9);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Glow ripple effect */
+  .leaflet-control-zoom a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(20,184,166,.25), transparent 60%);
+    opacity: 0;
+    transition: opacity .3s ease;
+  }
+
+  .leaflet-control-zoom a:hover::after {
+    opacity: 1;
+  }
+
+  /* Hover = modern gradient */
+  .leaflet-control-zoom a:hover {
+    color: white;
+    background: linear-gradient(135deg, #0f766e, #14b8a6);
+    box-shadow: 0 10px 28px rgba(20,184,166,.45);
+    transform: translateY(-2px) scale(1.04);
+  }
+
+  /* Press feedback */
+  .leaflet-control-zoom a:active {
+    transform: scale(.92);
+    box-shadow: 0 4px 10px rgba(15,118,110,.25);
+  }
+
+  /* subtle separator look */
+  .leaflet-control-zoom a + a {
+    margin-top: 2px;
+  }
+}
+
