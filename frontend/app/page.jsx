@@ -9,7 +9,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     const user = localStorage.getItem("user")
-    setIsLoggedIn(!!user)
+    setIsLoggedIn(user)
   }, [])
 
   const gems = [
@@ -30,6 +30,9 @@ export default function LandingPage() {
     }
   ]
 
+  const handleLoginClick=()=>{
+
+  }
   
   return (
     <div className="bg-backgroundLight dark:bg-backgroundDark font-display text-charcoal">
@@ -39,9 +42,20 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h2 className="text-3xl font-bold text-primary">HiddenGems</h2>
 
-          <button className="bg-primary text-white px-6 py-2 rounded-lg font-bold">
-            Login
-          </button>
+          {isLoggedIn ? (
+              <Link href="/home" className="btn-primary text-lg px-8 py-3">
+                Explore Map
+              </Link>
+            ) : (
+              <>
+                <Link href="/auth?mode=signup" className="btn-primary text-lg px-8 py-3">
+                  Get Started
+                </Link>
+                <Link href="/auth?mode=login" className="btn-outline text-lg px-8 py-3">
+                  I Have an Account
+                </Link>
+              </>
+            )}
         </div>
       </header>
 
@@ -76,7 +90,8 @@ export default function LandingPage() {
                 group
               "
             >
-              <span className="relative z-10 flex items-center gap-2">
+              {isLoggedIn? 
+                (<Link className="relative z-10 flex items-center gap-2" href="/home">
                 Explore
                 <svg
                   className="w-4 h-4 transition-transform group-hover:translate-x-1"
@@ -87,7 +102,21 @@ export default function LandingPage() {
                 >
                   <path d="M5 12h14M13 5l7 7-7 7" />
                 </svg>
-              </span>
+              </Link>) :
+                (<Link className="relative z-10 flex items-center gap-2" href="/auth?mode=signup">
+                  Sign In To Explore
+                  <svg
+                  className="w-4 h-4 transition-transform group-hover:translate-x-1"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M5 12h14M13 5l7 7-7 7" />
+                </svg>
+                </Link>)
+              }
+              
 
               {/* hover glow layer */}
               <span className="
@@ -158,11 +187,6 @@ export default function LandingPage() {
         </p>
 
       </section>
-
-      {/* FOOTER */}
-      <footer className="py-10 text-center text-sm text-charcoal/50">
-        © 2024 HiddenGems — Built for explorers
-      </footer>
 
     </div>
     

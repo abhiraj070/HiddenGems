@@ -12,20 +12,20 @@ export default function SidebarComponent({
   setLikedLength
 }) {
   const categories = [
-    { id: "cafe", name: "Cafe" },
-    { id: "hotel", name: "Hotel" },
-    { id: "restaurant", name: "Restaurant"},
-    { id: "homestay", name: "Homestay"},
-    { id: "hostel", name: "Hostel" },
-    { id: "library", name: "Library"},
-    { id: "viewpoint", name: "Viewpoint" },
-    { id: "dhaba", name: "Dhaba" },
-    { id: "nature", name: "Nature" },
-    { id: "food", name: "Food" },
-    { id: "culture", name: "Culture" },
-    { id: "adventure", name: "Adventure" },
-    { id: "city", name: "City"},
-    { id: "others", name: "Others" }
+    { id: "cafe", name: "Cafe" , icon: "/cafe.png"},
+    { id: "hotel", name: "Hotel", icon: "/hotel.jpg" },
+    { id: "restaurant", name: "Restaurant", icon:"/rest.png"},
+    { id: "homestay", name: "Homestay", icon:"/hs.png"},
+    { id: "hostel", name: "Hostel", icon: "/hostel.png" },
+    { id: "library", name: "Library", icon: "/lib.jpg"},
+    { id: "viewpoint", name: "Viewpoint", icon: "/vp.png" },
+    { id: "dhaba", name: "Dhaba" ,icon: "/dhaba.png"},
+    { id: "nature", name: "Nature", icon: "/nature.png" },
+    { id: "food", name: "Food", icon: "/food.png" },
+    { id: "culture", name: "Culture", icon:"/cultures.jpg"},
+    { id: "adventure", name: "Adventure", icon:"/adv.png"},
+    { id: "city", name: "City", icon:"/city.png"},
+    { id: "others", name: "Others", icon: "/other.jpg" }
   ]
   const [expandedCategories, setExpandedCategories] = useState(false)
   const [error, setError]= useState(null)
@@ -106,9 +106,7 @@ export default function SidebarComponent({
                   className="w-4 h-4 accent-stone-700"
                 />
 
-                <div className="w-9 h-9 rounded-lg bg-stone-200 flex items-center justify-center shrink-0">
-                  {/* image / svg here */}
-                </div>
+                <img className="w-9 h-9 rounded-lg bg-stone-200 flex items-center justify-center shrink-0" src={`${category.icon}`}/>
 
                 <span className="text-sm font-medium text-stone-800">
                   {category.name}

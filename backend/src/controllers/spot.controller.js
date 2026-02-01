@@ -40,11 +40,6 @@ const getAllSpots=asynchandler(async(req,res)=>{
         }},
     ])
     //console.log(allSpots);
-
-    if(allSpots.length===0){
-        throw new ApiError(500,"Error while fetching spots")
-    }
-    
     //console.log("getAllSpots: spots length =", allSpots.length);
     return res
     .status(200)

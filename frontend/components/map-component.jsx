@@ -52,7 +52,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
     const moveMap= async()=>{
       if(!map.current) return
     const getCoordOfPlace = async (place)=>{
-      console.log("place",place)
+      //console.log("place",place)
 
       const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}`
       const res= await axios.get(url)
@@ -74,7 +74,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
     //console.log("result:",result)
 
     
-    map.current.flyTo([result.lat, result.lng])
+    map.current.flyTo([result.lat, result.lng],16)
     const currIcon= L.icon({
       iconUrl: "/loc.png",
       iconSize: [55, 60],
