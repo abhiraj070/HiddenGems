@@ -136,8 +136,8 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-sand via-cream to-stone flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <Link href="/" className="inline-flex items-center mb-8 gap-2 hover:opacity-80 transition-opacity">
-          <div className="text-3xl font-bold text-gradient">HiddenGems</div>
+        <Link href="/" className="inline-flex items-center mb-8 gap-2 text-[#0F766E]">
+          <div className="text-3xl font-bold ">HiddenGems</div>
         </Link>
 
         <div className="bg-white rounded-lg border border-stone p-8 shadow-lg">

@@ -182,7 +182,7 @@ export default function ProfilePage() {
     <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
       <Link
         href="/home"
-        className="text-3xl font-bold text-gradient tracking-tight"
+        className="text-3xl font-bold text-[#0F766E] tracking-tight"
       >
         HiddenGems
       </Link>

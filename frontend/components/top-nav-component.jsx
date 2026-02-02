@@ -16,7 +16,7 @@ export default function TopNavComponent({ user, onAddSpot, setPlace, place, SetI
     }
 
     document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
+    return () => document.addEventListener("mousedown", handleClickOutside)
   }, [])
   //console.log("3. top nav component loaded");
   //console.log("user: ",user);
@@ -52,12 +52,9 @@ export default function TopNavComponent({ user, onAddSpot, setPlace, place, SetI
       <Link //like in react there is <a> tag for redirecting without the whole tab reload. we do not need onclick here
         href="/"
         className="
-          text-2xl font-bold text-gradient tracking-tight
+          text-3xl font-bold 
           relative
-          after:absolute after:-bottom-1 after:left-0
-          after:h-0.5 after:w-0 after:bg-teal
-          after:transition-all after:duration-300
-          hover:after:w-full
+          text-[#0F766E]
         "
       >
         HiddenGems
@@ -93,7 +90,7 @@ export default function TopNavComponent({ user, onAddSpot, setPlace, place, SetI
             absolute right-2 top-1/2 -translate-y-1/2
             h-10 w-10
             rounded-lg
-            bg-linear-to-br from-teal-500 bg-green-600
+            bg-linear-to-br from-teal-600 bg-green-700
             text-white
             flex items-center justify-center
             hover:shadow-lg
@@ -138,7 +135,7 @@ export default function TopNavComponent({ user, onAddSpot, setPlace, place, SetI
           onClick={onAddSpot}
           className="
             px-4 py-2.5 rounded-xl
-            bg-green-600 text-white hover:bg-green-700
+            bg-linear-to-r from-green-900 to-green-700 text-white hover:bg-green-700
             font-semibold
             shadow-md
             transition-all duration-150
