@@ -132,7 +132,6 @@ export default function UserProfilePage(){
                                 {user.bio || "Exploring and saving hidden gems 🌍"}
                             </div>
 
-                            {/* Stats (no components, no pills) */}
                             <div className="mt-6 flex flex-wrap justify-center md:justify-start gap-8">
                                 <div className="group text-center">
                                     <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">

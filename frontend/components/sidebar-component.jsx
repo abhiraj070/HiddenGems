@@ -30,7 +30,10 @@ export default function SidebarComponent({
 
   const [searchQuery, setSearchQuery] = useState("")
   const [selected, setSelected] = useState([])
-
+  
+  //console.log("selected: ",selected);  
+  //console.log("search",searchQuery);
+  
   useEffect(() => {
     const fetchlikes = async () => {
       const res = await axios.get(`/api/v1/like/get/likes`)
@@ -40,20 +43,21 @@ export default function SidebarComponent({
   }, [isSpotLiked])
 
   const toggleCategory = (id) => {
-    setSelected(prev =>
-      prev.includes(id)
-        ? prev.filter(x => x !== id)
-        : [...prev, id]
+    setSelected(prev=> //prev is the array stored till now.
+      prev.includes(id)? //includes checks if id exists in the array or not. it returns boolean.
+      prev.filter(x=>x!==id): //select only those ids which which doesnot match the toggles category id. filter will return a new array and that will be stored in the selected
+      [...prev,id] 
     )
   }
+  //we use prev instead of the state variable cuz the reason....
 
   return (
     <>
       <style>{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
-        }
-      `}</style>
+        }`}
+        </style>
     <aside className="
       fixed left-4 top-23.5 bottom-3 w-80
       rounded-3xl bg-white/75 backdrop-blur-xl
@@ -61,19 +65,17 @@ export default function SidebarComponent({
       flex flex-col overflow-hidden
     ">
 
-      {/* HEADER */}
       <div className="px-6 pt-6 pb-4 border-b border-stone-200">
         <h2 className="text-xl font-bold text-stone-900">
           Explore Places
         </h2>
       </div>
 
-      {/* SEARCH */}
       <div className="px-5 py-5">
         <div className="relative">
           <input
             value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
+            onChange={e => {setSearchQuery(e.target.value)}}
             placeholder="Search by name or city..."
             className="
               w-full px-4 py-3 pr-12 rounded-xl
@@ -117,8 +119,7 @@ export default function SidebarComponent({
         </div>
       </div>
 
-      {/* SCROLLABLE CATEGORIES SECTION */}
-      <div className="flex-1 overflow-y-auto px-5 py-5 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <div className="flex-1 overflow-y-auto px-5 py-5 scrollbar-hide" >
         <div className="space-y-4">
 
           <p className="font-semibold text-stone-800">
@@ -127,20 +128,19 @@ export default function SidebarComponent({
 
           <div className="grid grid-cols-2 gap-3">
 
-            {categories.map(cat => {
-              const active = selected.includes(cat.id)
-
-              return (
+            {categories.map((cat)=>{
+              const active= selected.includes(cat.id)
+              return(
                 <button
                   key={cat.id}
-                  onClick={() => toggleCategory(cat.id)}
+                  onClick={()=>{toggleCategory(cat.id)}}
                   className={`
-                    flex items-center gap-3 p-3 rounded-xl border
-                    transition relative
-                    ${active
-                      ? "bg-[#229466] text-white border-[#11422C] shadow-lg"
-                      : "bg-white border-stone-200 hover:shadow-md"}
-                  `}
+                      flex items-center gap-3 p-3 rounded-xl border
+                      transition relative
+                      ${active
+                        ? "bg-[#229466] text-white border-[#11422C] shadow-lg"
+                        : "bg-white border-stone-200 hover:shadow-md"}
+                    `}
                 >
                   <img
                     src={cat.icon}
@@ -150,9 +150,11 @@ export default function SidebarComponent({
                   <span className="text-sm font-medium">
                     {cat.name}
                   </span>
+
                 </button>
-              )
-            })}
+                
+
+            )})}
           </div>
 
           <button className="
@@ -165,7 +167,6 @@ export default function SidebarComponent({
         </div>
       </div>
 
-      {/* BOTTOM */}
       <div className="px-5 py-4 border-t border-stone-200">
         <button
           onClick={() => setDisplayFavBox(!displayFavBox)}

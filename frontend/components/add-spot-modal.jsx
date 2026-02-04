@@ -101,7 +101,7 @@ export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, form
           name="name"
           value={formData.name}
           onChange={handleChange}
-          placeholder="Secret Waterfall"
+          placeholder="eg: Secret Waterfall"
           className="
             w-full px-4 py-2 rounded-xl border border-gray-200
             focus:outline-none focus:ring-2 focus:ring-emerald-400
@@ -178,7 +178,7 @@ export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, form
               value={formData.lat}
               onChange={handleChange}
               step="0.0001"
-              placeholder="40.7128"
+              placeholder="eg: 40.7128"
               className="
                 w-full px-4 py-2 rounded-xl border border-gray-200
                 focus:outline-none focus:ring-2 focus:ring-emerald-400
@@ -197,7 +197,7 @@ export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, form
               value={formData.lng}
               onChange={handleChange}
               step="0.0001"
-              placeholder="-74.0060"
+              placeholder="eg: -74.0060"
               className="
                 w-full px-4 py-2 rounded-xl border border-gray-200
                 focus:outline-none focus:ring-2 focus:ring-emerald-400

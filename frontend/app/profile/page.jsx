@@ -25,7 +25,7 @@ export default function ProfilePage() {
   const [editedReview, setEditedReview]= useState("")
 
 
-  console.log("user:",user);
+  //console.log("user:",user);
   
   useEffect(() => {
     const userData = localStorage.getItem("user")
@@ -41,7 +41,7 @@ export default function ProfilePage() {
         setUser(res.data.data.user)
         
         setError(null)
-        console.log("user: ",res.data.data);
+        //console.log("user: ",res.data.data);
       } catch (error) {
         setError(error.response?.data?.message)
       }finally{  
@@ -336,7 +336,6 @@ export default function ProfilePage() {
 
   <section className="max-w-7xl mx-auto px-6 py-24 space-y-28">
 
-{/* ================= SAVED GEMS ================= */}
 
 <div className="space-y-10">
   <div className="flex justify-between items-end">
@@ -409,9 +408,6 @@ export default function ProfilePage() {
     ))}
   </div>
 </div>
-
-
-{/* ================= COMMENTS ================= */}
 
 <div className="space-y-10">
 
@@ -562,11 +558,6 @@ export default function ProfilePage() {
             ))}
       </div>
     </div>
-
-        
-
-
-{/* ================= REVIEWS ================= */}
 
 <div className="space-y-10">
 
