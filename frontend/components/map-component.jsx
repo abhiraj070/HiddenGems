@@ -13,6 +13,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
   const currentLocationMarkerRef = useRef(null)
   const [dbspots, setdbspots]= useState([])
   const [mapMoved, setMapMoved]= useState(false)
+  const [loading, setLoading]= useState(true)
   //console.log("p1:",place);
   //console.log("in",initializeSearch);
   
@@ -146,6 +147,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
   // database reviews marker and onclick for box adding 
   useEffect(()=>{
     if (!map.current || !window.L ) return
+    setLoading(false)
     dbspots.forEach((val)=>{
       const lat=val.latitude
       const lng=val.longitude
@@ -169,6 +171,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
         } catch (error) {
           setError(error.message)
         }
+        
         setCoordOfSpot({lat: lati,lng: lngi})
         ListBox(true)
       })
@@ -235,6 +238,14 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
   },[currentLocation, mapready])
 
   return (
+  <div className="relative">
+    {loading&&(
+    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="text-white text-xl font-semibold animate-pulse">
+        Loading Spots...
+      </div>
+    </div>
+  )}
     <div
       ref={mapContainer}
       style={{
@@ -263,5 +274,6 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
         </div>
       )}
       </div>
+    </div>
   )
 }

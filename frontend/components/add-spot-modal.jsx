@@ -71,7 +71,6 @@ export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, form
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
   <div className="bg-white rounded-2xl border border-emerald-100 shadow-2xl  max-w-md w-full transform transition-all">
 
-    {/* Header */}
     <div className="
       sticky top-0 z-10
       bg-linear-to-r from-emerald-500 to-teal-400
@@ -91,7 +90,6 @@ export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, form
 
     <form onSubmit={handleSubmit} className="p-6 space-y-5">
 
-      {/* Name */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Gem Name
@@ -111,7 +109,6 @@ export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, form
         />
       </div>
 
-      {/* Description */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Description
@@ -208,7 +205,6 @@ export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, form
         </div>
       </div>
 
-      {/* Buttons */}
       <div className="flex gap-3 pt-4">
         <button
           type="button"
