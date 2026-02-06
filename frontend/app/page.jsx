@@ -14,30 +14,22 @@ export default function LandingPage() {
 
   const gems = [
     {
-      title: "Verant Rooftop Oasis",
-      desc: "Hidden urban garden • 2.4 miles",
-      img: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6"
+      title: "Mumbai",
+      img: "/mumbai.jpg"
     },
     {
-      title: "Whispering Creek",
-      desc: "Secluded forest path • 5.1 miles",
-      img: "https://images.unsplash.com/photo-1501785888041-af3ef285b470"
+      title: "Sikkim",
+      img: "/sikkim.jpg"
     },
     {
-      title: "Neon Underground",
-      desc: "Basement cafe • 0.8 miles",
-      img: "https://images.unsplash.com/photo-1514933651103-005eec06c04b"
+      title: "Kerla",
+      img: "/kerla.jpg"
     }
   ]
-
-  const handleLoginClick=()=>{
-
-  }
   
   return (
     <div className="bg-backgroundLight dark:bg-backgroundDark font-display text-charcoal">
 
-      {/* NAVBAR */}
       <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur border-b border-primary/10 px-10 py-3">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h2 className="text-3xl font-bold text-primary">HiddenGems</h2>
@@ -48,9 +40,6 @@ export default function LandingPage() {
               </Link>
             ) : (
               <>
-                <Link href="/auth?mode=signup" className="btn-primary text-lg px-8 py-3">
-                  Get Started
-                </Link>
                 <Link href="/auth?mode=login" className="btn-outline text-lg px-8 py-3">
                   I Have an Account
                 </Link>
@@ -59,7 +48,6 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* HERO */}
       <section className="pt-32 px-10 max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
 
         <div className="space-y-8">
@@ -118,7 +106,6 @@ export default function LandingPage() {
               }
               
 
-              {/* hover glow layer */}
               <span className="
                 absolute inset-0 bg-white/20 opacity-0 
                 group-hover:opacity-100 transition
@@ -129,14 +116,13 @@ export default function LandingPage() {
 
         <div className="rounded-3xl overflow-hidden shadow-2xl">
           <img
-            src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"
+            src="/front.jpg"
             className="w-145 h-110 object-cover hover:scale-105 transition duration-700"
           />
         </div>
 
       </section>
 
-      {/* GEM GRID */}
       <section className="max-w-7xl mx-auto px-10 py-24">
 
         <div className="text-center mb-14">
@@ -174,7 +160,6 @@ export default function LandingPage() {
 
       </section>
 
-      {/* CTA */}
       <section className="bg-primary/10 py-24 text-center px-6">
 
         <h2 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">

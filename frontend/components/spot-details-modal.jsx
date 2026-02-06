@@ -246,7 +246,7 @@ export default function SpotDetailsModal({ onClose, reviewInherit }) {
         </div>
 
         <a
-        href={`https://www.google.com/maps?q=${review.latitude},${review.longitude}`}
+        href={`https://www.google.com/maps?q=${review.latitude},${review.longitude}`} //this is not a google maps api its jsut a url that redirects user to the maps tab and fill the required fields there.
         target="_blank"
         rel="noopener noreferrer"
         className="
@@ -269,8 +269,45 @@ export default function SpotDetailsModal({ onClose, reviewInherit }) {
         />
       </a>
 
+      <div className="flex flex-col">
+            <p className="text-m font-medium text-gray-800">
+              Book a ride to this spot
+            </p>
+            <p className="text-sm text-gray-500">
+              Ride straight to this place
+            </p>
         </div>
+
+        <a
+        href={`https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[latitude]=${review.latitude}&dropoff[longitude]=${review.longitude}`} //this is not a google maps api its jsut a url that redirects user to the maps tab and fill the required fields there.
+        target="_blank"
+        rel="noopener noreferrer"
+        className="
+          inline-flex items-center justify-center
+          w-10 h-10 rounded-full
+          overflow-hidden
+          border border-stone-300
+          shadow-sm
+
+          transition-all
+          hover:scale-105
+          hover:shadow-lg
+          active:scale-95
+        "
+      >
+        <img
+          src="/uber.png" 
+          alt="Open in Maps"
+          className="w-full h-full object-cover"
+        />
+      </a>
+
+        </div>
+
+        
+        
       </div>
+      
     </div>
           {openComments && 
             <div className="fixed top-70 left-1/2 z-60 w-full max-w-xl translate-x-40">
