@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 
-export default function ListBoxModal({ onClose, allReviews, setShowDetails, setTransferSpecificReview, coordOfSpot, setIsSpotLiked, isSpotLiked, onAddReviewClick }) {
+export default function ListBoxModal({ onClose, allReviews, setShowDetails, setTransferSpecificReview, coordOfSpot, setIsSpotLiked, onAddReviewClick }) {
   //console.log("allReviews: ",allReviews);
   //console.log(("set: ",allReviews[0].reviews));
   //console.log("cod:",coordOfSpot);
@@ -42,7 +42,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
         )
         //console.log("res:",res);
         setError(null)
-        setIsSpotLiked(!isSpotLiked)
+        setIsSpotLiked(prev=>!prev)
         setlikenumber(res.data.data.spot.likes)
         setTurnRed(!turnred)
       } catch (error) {

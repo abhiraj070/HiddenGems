@@ -77,7 +77,7 @@ const getAllSpots=asynchandler(async(req,res)=>{
 })
 
 const getSelectedSpot= asynchandler(async (req,res) => {
-    console.log("body:",req.body);
+    //console.log("body:",req.body);
     
     const {cats}= req.body
     if(!cats){
@@ -87,8 +87,8 @@ const getSelectedSpot= asynchandler(async (req,res) => {
         {$match:{ 
             $or:[
                 {tag: {$in: cats}}, //this is the way we match when the data is an array.
-                {spotName: {$in: cats.map(c=>new RegExp(c,"i"))}} //regular expression(regexp)o=is a smart text matcher. here it will check for c word in the whole spotName. regex is a class jsut like array.
-            ]
+                ...cats.map(c=>({spotName:{$regex: c, $options: "i"}})) //regular expression(regex) is a smart text matcher. here it will check for c word in the whole spotName without thinking about the cases, in this configeration of regex because i did not used ^ and $, i am allowing it to be searched in a string where the middleword will be the word i am searching. here "i" handels the problem of case sensitivity
+            ]//map is used because every spot has to be made case insensitive so that searching is smarter. if i wanted to search the exact name in spot name nothing in front nothing at back, i would have started c with ^ and ended with $=> `^c$`
         }}, 
     ])
     //console.log("spots",spots);
@@ -98,6 +98,30 @@ const getSelectedSpot= asynchandler(async (req,res) => {
     .json(new ApiResponse(200,spots,"fetched selected spots successfully"))
 })
 
+const getSpotsFromQuery= asynchandler(async (req, res) => {
+    const {query}= req.body
+    if(!query){
+        return new ApiError(402,"Query not found")
+    }
+    const stopword=new Set(["is","am","are","has","near","to","a","an","at","by","have","in","on","with","me"]) //.has only works with set.
+    const tokens= query.toLowerCase().split(" ").filter(Boolean).filter(x=>!stopword.has(x))// this technique will improve searching and avoid a whole string match logic.
+    const spots= await Spot.aggregate([
+        {$match:{
+            $or:[//so here at this stage a document is prepared making some data regex and keep some normal, and then the match takes place
+                {tag:{$in: tokens}},
+                ...tokens.map(t=>({spotName: {$regex:t,$options:"i"}})) //spread operator is used beacuse a array of objects will be returned from here as map is used. 
+            ]
+        }}
+    ])
+    const spotsFromReview= await Review.aggregate([
+        {$match:{
+            $or: tokens.map(t=>({content: {$regex: t, $options:"i"}})) //$or is used here for match, as there will be a lot of object to match from.
+        }}
+    ])
+    const finalSpots= [...spots,...spotsFromReview]
+    return res
+    .status(200)
+    .json(new ApiResponse(200,{spots: finalSpots},"fetched spots from query successfully"))
+})
 
-
-export {getSpotBox, getAllSpots, getSelectedSpot}
+export {getSpotBox, getAllSpots, getSelectedSpot, getSpotsFromQuery}

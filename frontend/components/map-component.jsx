@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 import "leaflet/dist/leaflet.css"
-export default function MapComponent({onLocationPicked, currentLocation, newspots, ListBox, setAllReviews, setCoordOfSpot, initializeSearch, place, applyFilter, selected, setApplyFilter, searchQuery}) {
+export default function MapComponent({onLocationPicked, currentLocation, newspots, ListBox, setAllReviews, setCoordOfSpot, initializeSearch, place, applyFilter, selected, setApplyFilter, searchQuery, setQueryButton, queryButton}) {
   const mapContainer = useRef(null) 
   const map = useRef(null) 
   const marked= useRef(new Set())// created a set here to avoid storing duplicates while storing
@@ -16,10 +16,16 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
   const [loading, setLoading]= useState(true)
   const markerLayer= useRef(null)
   const blockFirstRef= useRef(true)
+  const blockFirstRef2= useRef(true)
+
   const mapMoveHandler= useRef(null)
   //console.log("p1:",place);
   //console.log("in",initializeSearch);
   //console.log("selected:",selected);
+  console.log("query",searchQuery);
+  console.log("button:",queryButton);
+  
+  
   
   useEffect(() => {
     const initMap = async() => {
@@ -179,7 +185,6 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
           setError(null)
           setAllReviews(res.data.data.allCoordReviews)
           setLoading(false)
-          setApplyFilter(false)
         } catch (error) {
           setError(error.message)
         }
@@ -248,14 +253,18 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
     currentLocationMarkerRef.current= L.marker([lat,lng],{icon: currIcon}).addTo(map.current).bindPopup("Your Location").openPopup()
   },[currentLocation, mapready])
 
+  // get selected spots and send them for marking
   useEffect(()=>{
+    console.log("3");
+    
     if(blockFirstRef.current||!markerLayer.current){ //by this i am avoiding the useeffect to execute on its first render
       blockFirstRef.current=false
       return
     }
     if(!applyFilter) return
+    console.log("2");
+    
     markerLayer.current.clearLayers()
-    setLoading(true)
     const fetchSopts= async()=>{
       const res=await  axios.post(
         `/api/v1/spot/get/selectedSpot`,
@@ -270,6 +279,27 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
     fetchSopts()
 
   },[applyFilter])
+
+  //set spots from query
+  useEffect(()=>{
+    if(blockFirstRef2.current){
+      blockFirstRef2.current= false
+      return
+    }
+    if(!queryButton) return
+
+    markerLayer.current.clearLayers()
+    const fetchSpots=async()=>{
+      const res= await axios.post(
+        `/api/v1/spot/get/querrySpots`,
+        {query: searchQuery}
+      )
+      setdbspots(res.data.data.spots)
+      setQueryButton(false)
+      map.current.off("moveend zoomend",mapMoveHandler.current)
+    }
+    fetchSpots()
+  },[queryButton])
 
   return (
     <div className="relative">

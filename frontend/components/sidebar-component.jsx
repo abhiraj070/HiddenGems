@@ -13,7 +13,8 @@ export default function SidebarComponent({
   selected,
   setApplyFilter,
   searchQuery,
-  setSearchQuery
+  setSearchQuery,
+  setQueryButton
 }) {
 
   const categories = [
@@ -34,7 +35,7 @@ export default function SidebarComponent({
   ]
 
   
-  console.log("selected: ",selected);  
+  //console.log("selected: ",selected);  
   //console.log("search",searchQuery);
   
   useEffect(() => {
@@ -58,6 +59,10 @@ export default function SidebarComponent({
     setApplyFilter(true)
   }
 
+  const handleSearchClick=()=>{
+    setQueryButton(true)
+  }
+
   return (
     <>
       <style>{`
@@ -78,21 +83,44 @@ export default function SidebarComponent({
         </h2>
       </div>
 
+ <form
+      onSubmit={(e)=>{
+        e.preventDefault()
+        handleSearchClick()
+      }}
+    >
       <div className="px-5 py-5">
         <div className="relative">
           <input
-            value={searchQuery}
-            onChange={e => {setSearchQuery(e.target.value)}}
-            placeholder="Search by name or city..."
-            className="
-              w-full px-4 py-3 pr-12 rounded-xl
-              bg-stone-100 border border-stone-200
-              focus:bg-white focus:ring-2 focus:ring-stone-400
-              outline-none transition text-sm
-            "
-          />
+          type="text"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          placeholder="Search by name or city..."
+          className="
+            w-full px-4 py-3 pr-12 rounded-xl
+            bg-stone-100 border border-stone-300
+            text-sm
+
+            transition-all duration-200 ease-out
+
+            hover:bg-stone-50
+            hover:border-stone-400
+
+            focus:bg-white
+            focus:border-teal-500
+            focus:ring-4 focus:ring-teal-400/30
+            focus:shadow-lg
+            focus:scale-[1.01]
+
+            active:scale-[0.99]
+
+            outline-none
+          "
+        />
+
 
           <button
+          type="submit"
             className="
                     absolute right-2 top-1/2 -translate-y-1/2
                     h-10 w-10
@@ -107,6 +135,7 @@ export default function SidebarComponent({
                     focus:ring-2 focus:ring-teal-400/50
                   "
               aria-label="Search"
+              onClick={handleSearchClick}
           >
             <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -125,6 +154,7 @@ export default function SidebarComponent({
           </button>
         </div>
       </div>
+    </form>
 
       <div className="flex-1 overflow-y-auto px-5 py-5 scrollbar-hide" >
         <div className="space-y-4">

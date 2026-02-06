@@ -34,7 +34,7 @@ export default function HomePage() {
   const [selected, setSelected] = useState([])
   const [applyFilter, setApplyFilter]= useState(false)
   const [searchQuery, setSearchQuery] = useState("")
-
+  const [queryButton, setQueryButton]= useState(false)
   
   const [formData, setFormData] = useState({
         name: "",
@@ -89,10 +89,6 @@ export default function HomePage() {
     setPickingOnMap(true)
     istickedRef.current= true
   }
-
-  
-
-  const handleCategoryChange=()=>{}
 
   const handleAddSpot = async (newSpot) => {
     const addedSpot = {
@@ -155,6 +151,7 @@ export default function HomePage() {
           setApplyFilter={setApplyFilter}
           setSearchQuery={setSearchQuery}
           searchQuery={searchQuery}
+          setQueryButton={setQueryButton}
         />
 
         <div className="flex-1 ml-80 ">
@@ -171,6 +168,8 @@ export default function HomePage() {
             applyFilter={applyFilter}
             setApplyFilter={setApplyFilter}
             searchQuery={searchQuery}
+            setQueryButton={setQueryButton}
+            queryButton={queryButton}
           />
         </div>
       </div>
@@ -198,7 +197,6 @@ export default function HomePage() {
         setTransferSpecificReview={setTransferSpecificReview}
         coordOfSpot={coordOfSpot}
         setIsSpotLiked={setIsSpotLiked}
-        isSpotLiked={isSpotLiked}
         onAddReviewClick={()=>{setShowAddModal(true), setShowList(false), setSpotCoord(coordOfSpot)}}
       />}
 
