@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import axios from "axios"
+import api from "../../../backend/src/api/apiClient"
 import DeleteComponent from "../../components/delete-component"
 import FollowerBox from "../../components/follower-modal"
 import FollowingBox from "../../components/following-modal"
@@ -25,7 +25,7 @@ export default function ProfilePage() {
   const [editedReview, setEditedReview]= useState("")
 
 
-  //console.log("user:",user);
+  console.log("user:",user);
   
   useEffect(() => {
     const userData = localStorage.getItem("user")
@@ -35,7 +35,7 @@ export default function ProfilePage() {
     }
     const fetchUser= async ()=>{
       try {
-        const res= await axios.get(
+        const res= await api.get(
           `/api/v1/users/get/user`
         )
         setUser(res.data.data.user)
@@ -53,7 +53,7 @@ export default function ProfilePage() {
 
   const handleEditBio=async(bio)=>{
     try {
-      const res=await axios.post(
+      const res=await api.post(
         `/api/v1/users/addbio`,
         {bio: bio},
       )
@@ -80,7 +80,7 @@ export default function ProfilePage() {
       const fetchUser= async ()=>{
         try {
           setLoading(true)
-          const res= await axios.get(
+          const res= await api.get(
             `/api/v1/users/get/user`
           )
           setUser(res.data.data.user)
@@ -110,7 +110,7 @@ export default function ProfilePage() {
   const handleSaveReview= async(id)=>{
       setIsReviewEditing(false)
     try {
-      await axios.post(
+      await api.post(
         `/api/v1/review/edit/review/${id}`,
         {review: editedReview}
       )
@@ -139,7 +139,7 @@ export default function ProfilePage() {
   const handleSaveProfile = async() => {
     if (editedName.trim()) {
       try {
-        await axios.post(
+        await api.post(
           `/api/v1/users/edit/name`,
           {name: editedName}
         )
@@ -154,7 +154,7 @@ export default function ProfilePage() {
 
   const handleLogout = async () => {
     try {
-      await axios.post(
+      await api.post(
         `/api/v1/users/logout`
       )
       setError(null)
@@ -167,7 +167,7 @@ export default function ProfilePage() {
   }
 
   const handleCommentDelete= async(id)=>{
-    await axios.post(
+    await api.post(
       `/api/v1/review/delete/comment/${id}`
     )
   }
@@ -277,7 +277,7 @@ export default function ProfilePage() {
               onClick={()=>{handleFollowerClick()}}
               >
                 <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
-                  {user.followers.length ?? 0}
+                  {user.followers?.length ?? 0}
                 </p>
                 <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
                   Followers
@@ -287,7 +287,7 @@ export default function ProfilePage() {
               onClick={()=>{handleFollowingClick()}}
               >
                 <p className="text-2xl font-bold text-dark-text group-hover:text-green-600 transition">
-                  {user.followings.length ?? 0}
+                  {user.followings?.length ?? 0}
                 </p>
                 <p className="text-sm uppercase tracking-wide text-dark-text/50 group-hover:text-green-600 transition">
                   Following
@@ -522,7 +522,7 @@ export default function ProfilePage() {
                       "
                       
                     >
-                      {liked.owner.profilepicture ? (
+                      {liked.owner?.profilepicture ? (
                         <img
                           src={liked.owner.profilepicture}
                           alt={liked.owner.username}
@@ -530,12 +530,12 @@ export default function ProfilePage() {
                         />
                       ) : (
                         <span className="text-gray-600 text-m font-medium">
-                          {liked.owner.username?.[0]?.toUpperCase()}
+                          {liked.owner?.username?.[0]?.toUpperCase()}
                         </span>
                       )}
                     </div>
                     <div className="text-sm font-semibold text-gray-900">
-                      {liked.owner.username}
+                      {liked.owner?.username}
                     </div>
                   </div>
 

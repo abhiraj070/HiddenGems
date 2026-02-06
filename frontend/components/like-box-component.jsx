@@ -1,6 +1,6 @@
 "use client"
 import { useRef, useEffect, useState, useCallback } from "react";
-import axios from "axios";
+import api from "../../backend/src/api/apiClient"
 export default function LikeBoxComponent({ onClose, cursor, setCursor, likedlength, setFlyToCood}){
     const observerRef = useRef(null);
     const fetchRef = useRef(null);
@@ -18,7 +18,7 @@ export default function LikeBoxComponent({ onClose, cursor, setCursor, likedleng
                 const url = cursor 
                     ? `/api/v1/like/getlikedSpots?cursor=${cursor}&limit=5`
                     : `/api/v1/like/getlikedSpots?limit=5`;
-                const res= await axios.get(url)
+                const res= await api.get(url)
                 //console.log(res.data.data)
                 setError(null)
                 setCursor(res.data.data.nextCursor)

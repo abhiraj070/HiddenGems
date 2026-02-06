@@ -1,8 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import axios from "axios"
-
+import api from "../../backend/src/api/apiClient"
 export default function SidebarComponent({
   setDisplayFavBox,
   isSpotLiked,
@@ -40,7 +39,7 @@ export default function SidebarComponent({
   
   useEffect(() => {
     const fetchlikes = async () => {
-      const res = await axios.get(`/api/v1/like/get/likes`)
+      const res = await api.get(`/api/v1/like/get/likes`)
       setLikedLength(res.data.data.number)
     }
     fetchlikes()

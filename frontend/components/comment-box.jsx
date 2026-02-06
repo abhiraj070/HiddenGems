@@ -1,4 +1,4 @@
-import axios from "axios"
+import api from "../../backend/src/api/apiClient"
 import { useState, useEffect, useRef, useCallback } from "react"
 import Link from "next/link"
 export function CommentBox({reviewId, onClose}){
@@ -24,7 +24,7 @@ export function CommentBox({reviewId, onClose}){
     const fetchNewestComment= useCallback(async()=>{
       //console.log("reviewId:",reviewId);
       
-      const res= await axios.get(
+      const res= await api.get(
         `/api/v1/review/get/newcomment/${reviewId}`
       )
       setComments(prev=>[...res.data.data.comment, ...prev])
@@ -37,7 +37,7 @@ export function CommentBox({reviewId, onClose}){
     const fectchComments= useCallback( async()=>{
       if(hasMore){
           const url= cursor? `/api/v1/review/get/comments/${reviewId}?cursor=${cursor}&limit=3`: `/api/v1/review/get/comments/${reviewId}?limit=3`
-          const res= await axios.get(url)
+          const res= await api.get(url)
           setCursor(res.data.data.nextCursor)
           //console.log("res: ",res);
           
@@ -65,7 +65,7 @@ export function CommentBox({reviewId, onClose}){
     }, [])
 
     const handleSubmit=async ()=>{
-      await axios.post(
+      await api.post(
         `/api/v1/review/add/comment/${reviewId}`,
         {content: input}
       )
@@ -80,7 +80,7 @@ export function CommentBox({reviewId, onClose}){
     const handleCommentDelete=async(id)=>{
       //console.log("1");
       
-      await axios.post(
+      await api.post(
         `/api/v1/review/delete/comment/${id}`
       )
     }

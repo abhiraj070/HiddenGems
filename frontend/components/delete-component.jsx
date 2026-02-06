@@ -1,6 +1,6 @@
 "use client"
 
-import axios from "axios"
+import api from "../../backend/src/api/apiClient"
 import {useState} from "react"
 export default function DeleteComponent({setConfirmDelete, setShowPopUp, deleteReviewId, deleteSavedId}){
     const [error, setError]= useState(null)
@@ -8,7 +8,7 @@ export default function DeleteComponent({setConfirmDelete, setShowPopUp, deleteR
     const onConfirm=async ()=>{
         if(deleteReviewId){
             try {
-                await axios.post(
+                await api.post(
                     `/api/v1/users/delete/review/${deleteReviewId}`
                 )
                 setConfirmDelete(true)
@@ -20,7 +20,7 @@ export default function DeleteComponent({setConfirmDelete, setShowPopUp, deleteR
         }
         else if(deleteSavedId){
             try {
-                await axios.post(
+                await api.post(
                     `/api/v1/savedSpot/delete/saved/${deleteSavedId}`
                 )
                 setConfirmDelete(true)

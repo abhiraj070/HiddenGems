@@ -86,7 +86,7 @@ const getSelectedSpot= asynchandler(async (req,res) => {
     const spots= await Spot.aggregate([
         {$match:{ 
             $or:[
-                ...cats.map(c=>({tag: {$regx:c, options: "i"}})), //this is the way we match when the data is an array.
+                ...cats.map(c=>({tag: {$regex:c, $options: "i"}})), //this is the way we match when the data is an array.
                 ...cats.map(c=>({spotName:{$regex: c, $options: "i"}})) //regular expression(regex) is a smart text matcher. here it will check for c word in the whole spotName without thinking about the cases, in this configeration of regex because i did not used ^ and $, i am allowing it to be searched in a string where the middleword will be the word i am searching. here "i" handels the problem of case sensitivity
             ]//map is used because every spot has to be made case insensitive so that searching is smarter. if i wanted to search the exact name in spot name nothing in front nothing at back, i would have started c with ^ and ended with $=> `^c$`
         }}, 

@@ -1,10 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import axios from "axios"
 import { CommentBox } from "./comment-box"
 import Link from "next/link"
-
+import api from "../../backend/src/api/apiClient"
 export default function SpotDetailsModal({ onClose, reviewInherit }) {
   const [turnred, setTurnRed]= useState(false)
   const [review, setReview]= useState(null)
@@ -23,7 +22,7 @@ export default function SpotDetailsModal({ onClose, reviewInherit }) {
     //console.log("1");
     
     const fetchIsLiked= async ()=>{
-      const res= await axios.get(
+      const res= await api.get(
         `/api/v1/users/check/null/null/${review._id}/Review`
       )
       //console.log("res: ",res);
@@ -37,7 +36,7 @@ export default function SpotDetailsModal({ onClose, reviewInherit }) {
 
   const handleLike= async()=>{
     setTurnRed(!turnred)
-    const res= await axios.post(
+    const res= await api.post(
       `/api/v1/like/toggleLike/null/null/${review._id}/Review`
     )
     setReview(res.data.data.review)

@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import axios from "axios"
 import "leaflet/dist/leaflet.css"
+import api from "../../backend/src/api/apiClient"
 export default function MapComponent({onLocationPicked, currentLocation, newspots, ListBox, setAllReviews, setCoordOfSpot, initializeSearch, place, applyFilter, selected, setApplyFilter, searchQuery, setQueryButton, queryButton, flyToCoord}) {
   const mapContainer = useRef(null) 
   const map = useRef(null) 
@@ -67,7 +67,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
       //console.log("place",place)
 
       const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}`
-      const res= await axios.get(url)
+      const res= await api.get(url)
       if(!res.data.length){
         alert("Place not found")
         return null
@@ -145,7 +145,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
     //console.log("ne:",ne,"sw",sw);
     const fetchReviews =async ()=>{
       try {
-        const res= await axios.post(  
+        const res= await api.post(  
           `/api/v1/spot/get/spots`,
           {ne: ne, sw: sw},
         )
@@ -178,7 +178,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
         const lngi= lng
         //console.log("lat: ",lat,"lng: ",lng);
         try {
-          const res= await axios.get(
+          const res= await api.get(
             `/api/v1/spot/get/${lati}/${lngi}`,
             { withCredentials: true }
           )
@@ -220,7 +220,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
             const lati=lat
             const lngi=lng
             try {
-              const res= await axios.get(
+              const res= await api.get(
                 `/api/v1/spot/get/${lati}/${lngi}`
               )
               const spotAllReviews= res.data.data.allCoordReviews
@@ -267,7 +267,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
     
     markerLayer.current.clearLayers()
     const fetchSopts= async()=>{
-      const res=await  axios.post(
+      const res=await  api.post(
         `/api/v1/spot/get/selectedSpot`,
         {cats: selected}
       )
@@ -291,7 +291,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
 
     markerLayer.current.clearLayers()
     const fetchSpots=async()=>{
-      const res= await axios.post(
+      const res= await api.post(
         `/api/v1/spot/get/querrySpots`,
         {query: searchQuery}
       )

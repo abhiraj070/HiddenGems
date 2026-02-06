@@ -9,7 +9,7 @@ import AddSpotModal from "@/components/add-spot-modal"
 import ListBoxModal from "../../components/list-box-modal"
 import SpotDetailsModal from "../../components/spot-details-modal"
 import LikeBoxComponent from "../../components/like-box-component"
-import axios from "axios"
+import api from "../../backend/src/api/apiClient"
 
 export default function HomePage() {
   const router = useRouter()
@@ -102,7 +102,7 @@ export default function HomePage() {
     //filterSpots(updatedSpots, selectedCategories)
     setShowAddModal(false)
     try {
-       await axios.post(
+       await api.post(
         `/api/v1/review/createReview`,
         {
           spotName: formData.name,

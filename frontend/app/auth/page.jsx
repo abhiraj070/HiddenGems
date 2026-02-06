@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation"
 import { useState,useEffect, useRef } from "react"
 import Link from "next/link"
-import axios from "axios"
+import api from "../../backend/src/api/apiClient"
 export default function AuthPage() {
 
   const searchParams = useSearchParams()
@@ -32,7 +32,7 @@ export default function AuthPage() {
     setError("")
     setLoading(true)
     try {
-      const res = await axios.post(
+      const res = await api.post(
         `/api/v1/users/google-login`,
         { token: credential },
         { withCredentials: true }
@@ -95,7 +95,7 @@ export default function AuthPage() {
     try {
       if (isLogin) {
         // Login      
-        const res= await axios.post(
+        const res= await api.post(
           `/api/v1/users/login`,
           {email, password},
           { withCredentials: true }
@@ -114,7 +114,7 @@ export default function AuthPage() {
         formData.append("username", username);
         formData.append("password", password);
         formData.append("profilepicture", fileInputRef.current?.files?.[0]);
-        const res= await axios.post(
+        const res= await api.post(
           `/api/v1/users/register`, formData
         )
         const user= res.data.data

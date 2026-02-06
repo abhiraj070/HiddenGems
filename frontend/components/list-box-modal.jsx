@@ -1,7 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
-import axios from "axios"
-
+import api from "../../backend/src/api/apiClient"
 export default function ListBoxModal({ onClose, allReviews, setShowDetails, setTransferSpecificReview, coordOfSpot, setIsSpotLiked, onAddReviewClick }) {
   //console.log("allReviews: ",allReviews);
   //console.log(("set: ",allReviews[0].reviews));
@@ -15,7 +14,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
   useEffect(()=>{
     const fetchIsSavedLiked=async ()=>{
       try {
-        const res= await axios.get(
+        const res= await api.get(
           `/api/v1/users/check/${coordOfSpot.lat}/${coordOfSpot.lng}/null/Spot`
         )
         //console.log("res: ",res.data.data);
@@ -36,7 +35,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
   }
   const handleLike=async()=>{
       try {
-        const res= await axios.post(
+        const res= await api.post(
           `/api/v1/like/toggleLike/${coordOfSpot.lat}/${coordOfSpot.lng}/null/Spot`,
           { withCredentials: true }
         )
@@ -51,7 +50,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
   }
   const handleSave= async ()=>{
       try {
-        await axios.post(
+        await api.post(
           `/api/v1/savedSpot/toggleSave/${coordOfSpot.lat}/${coordOfSpot.lng}`
         )
         setError(null)

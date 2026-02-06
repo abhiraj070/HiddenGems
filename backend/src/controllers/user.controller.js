@@ -302,7 +302,7 @@ const refreshAccessToken= asynchandler(async(req,res)=>{
     //console.log(user);
     
     const accessToken= user.generateAccessToken()
-    const newrefreshToken= user.generateRefreshToken
+    const newrefreshToken= user.generateRefreshToken()
 
     const options={
         secure: false,
