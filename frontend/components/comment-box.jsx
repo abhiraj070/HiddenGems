@@ -1,4 +1,4 @@
-import api from "../../backend/src/api/apiClient"
+import api from "../app/api/apiClient"
 import { useState, useEffect, useRef, useCallback } from "react"
 import Link from "next/link"
 export function CommentBox({reviewId, onClose}){

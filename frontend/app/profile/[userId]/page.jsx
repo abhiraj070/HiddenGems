@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import FollowerBox from "../../../components/follower-modal"
 import FollowingBox from "../../../components/following-modal"
-import api from "../../../../backend/src/api/apiClient"
+import api from "../../api/apiClient"
 export default function UserProfilePage(){
     const [user, setUser]= useState(null)
     const [followers, setFollowers] = useState(null)

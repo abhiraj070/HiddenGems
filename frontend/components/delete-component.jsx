@@ -1,6 +1,6 @@
 "use client"
 
-import api from "../../backend/src/api/apiClient"
+import api from "../app/api/apiClient"
 import {useState} from "react"
 export default function DeleteComponent({setConfirmDelete, setShowPopUp, deleteReviewId, deleteSavedId}){
     const [error, setError]= useState(null)

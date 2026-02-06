@@ -1,6 +1,6 @@
 "use client"
 import { useRef, useEffect, useState, useCallback } from "react";
-import api from "../../backend/src/api/apiClient"
+import api from "../app/api/apiClient"
 export default function LikeBoxComponent({ onClose, cursor, setCursor, likedlength, setFlyToCood}){
     const observerRef = useRef(null);
     const fetchRef = useRef(null);
@@ -8,7 +8,7 @@ export default function LikeBoxComponent({ onClose, cursor, setCursor, likedleng
     const [hasMore, setHasMore]= useState(true)
     const [error, setError]= useState(null)
     const [loading, setLoading]= useState(false)
-    //console.log("liked",allLikedSpots);
+    console.log("liked",allLikedSpots);
     
 
     const fetchLikedSpots= useCallback(async ()=>{ //we didn't used useEffect here cuz useEffect will run this function when consditions achieved. but usecallback will only return a stable function refrence which only recreates when the dependencies changes.

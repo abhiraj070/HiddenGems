@@ -9,7 +9,7 @@ import AddSpotModal from "@/components/add-spot-modal"
 import ListBoxModal from "../../components/list-box-modal"
 import SpotDetailsModal from "../../components/spot-details-modal"
 import LikeBoxComponent from "../../components/like-box-component"
-import api from "../../backend/src/api/apiClient"
+import api from "../api/apiClient"
 
 export default function HomePage() {
   const router = useRouter()

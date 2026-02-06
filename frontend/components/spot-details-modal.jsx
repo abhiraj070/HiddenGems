@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { CommentBox } from "./comment-box"
 import Link from "next/link"
-import api from "../../backend/src/api/apiClient"
+import api from "../app/api/apiClient"
 export default function SpotDetailsModal({ onClose, reviewInherit }) {
   const [turnred, setTurnRed]= useState(false)
   const [review, setReview]= useState(null)

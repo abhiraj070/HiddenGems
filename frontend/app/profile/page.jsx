@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import api from "../../../backend/src/api/apiClient"
+import api from "../api/apiClient"
 import DeleteComponent from "../../components/delete-component"
 import FollowerBox from "../../components/follower-modal"
 import FollowingBox from "../../components/following-modal"

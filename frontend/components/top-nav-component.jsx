@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState, useRef, useEffect } from "react"
+import api from "../app/api/apiClient"
 export default function TopNavComponent({ user, onAddSpot, setPlace, place, SetInitializeSearch, initializeSearch }) {
   const router = useRouter()
   const [showProfileMenu, setShowProfileMenu] = useState(false)
@@ -22,9 +23,9 @@ export default function TopNavComponent({ user, onAddSpot, setPlace, place, SetI
   //console.log("user: ",user);
   const handleLogout = async() => {
     localStorage.removeItem("user")
-    // await axios.post(
-    //   `/api/v1/users/logout`
-    // )
+    await api.post(
+      `/api/v1/users/logout`
+    )
     router.push("/")
   }
   const handleSearch=()=>{

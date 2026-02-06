@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation"
 import { useState,useEffect, useRef } from "react"
 import Link from "next/link"
-import api from "../../backend/src/api/apiClient"
+import api from "../api/apiClient"
 export default function AuthPage() {
 
   const searchParams = useSearchParams()

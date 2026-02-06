@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react"
 import "leaflet/dist/leaflet.css"
-import api from "../../backend/src/api/apiClient"
+import api from "../app/api/apiClient"
+import axios from "axios"
 export default function MapComponent({onLocationPicked, currentLocation, newspots, ListBox, setAllReviews, setCoordOfSpot, initializeSearch, place, applyFilter, selected, setApplyFilter, searchQuery, setQueryButton, queryButton, flyToCoord}) {
   const mapContainer = useRef(null) 
   const map = useRef(null) 
@@ -67,7 +68,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
       //console.log("place",place)
 
       const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}`
-      const res= await api.get(url)
+      const res= await axios.get(url)
       if(!res.data.length){
         alert("Place not found")
         return null

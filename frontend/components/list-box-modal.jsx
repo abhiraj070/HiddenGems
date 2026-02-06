@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
-import api from "../../backend/src/api/apiClient"
+import api from "../app/api/apiClient"
 export default function ListBoxModal({ onClose, allReviews, setShowDetails, setTransferSpecificReview, coordOfSpot, setIsSpotLiked, onAddReviewClick }) {
   //console.log("allReviews: ",allReviews);
   //console.log(("set: ",allReviews[0].reviews));
@@ -64,9 +64,9 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
     return null
   }
   return (
-    <div className="fixed top-50 right-50 z-50 w-80 rounded-xl bg-white shadow-2xl border border-gray-200 flex flex-col">
+    <div className="fixed top-1/2 right-17 -translate-y-[40%] z-50 w-80 rounded-xl bg-white shadow-2xl border border-gray-200 flex flex-col">
       <div className="flex items-center justify-between px-5 py-4 border-b
-                      bg-linear-to-r from-gray-50 to-gray-100 rounded-t-xl">
+                      bg-linear-to-r from-gray-50 to-gray-100 rounded-t-xl shrink-0">
         <h3 className="text-lg font-semibold text-gray-800 tracking-wide">
           {allReviews.spotName[0].toUpperCase()+allReviews.spotName.slice(1)} Tags
         </h3>
@@ -80,7 +80,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
           ✕
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+      <div className="overflow-y-scroll px-5 py-4 space-y-3" style={{ maxHeight: '380px' }}>
         {allReviews.reviews.map((val) => (
           <div
             key={val._id}
@@ -161,7 +161,7 @@ export default function ListBoxModal({ onClose, allReviews, setShowDetails, setT
 
 
 
-      <div className="flex items-center justify-between px-5 py-3 border-t bg-gray-50 rounded-b-xl">
+      <div className="flex items-center justify-between px-5 py-3 border-t bg-gray-50 rounded-b-xl shrink-0">
         <button
           onClick={handleLike}
           className={`flex items-center gap-2 px-3 py-2 rounded-lg

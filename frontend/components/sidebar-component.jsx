@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import api from "../../backend/src/api/apiClient"
+import api from "../app/api/apiClient"
 export default function SidebarComponent({
   setDisplayFavBox,
   isSpotLiked,
