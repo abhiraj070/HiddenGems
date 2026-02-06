@@ -15,10 +15,8 @@ export default function HomePage() {
   const router = useRouter()
   const [user, setUser] = useState(null)
   const [newspots, setnewSpots] = useState(null)
-  const [selectedCategories, setSelectedCategories] = useState([])
   const [showAddModal, setShowAddModal] = useState(false)
   const [showList, setShowList]= useState(false)
-  const [selectedSpot, setSelectedSpot] = useState(null)
   const [currentLocation, setCurrentLocation]= useState()
   const [allReviews, setAllReviews]= useState()
   const [showDetails, setShowDetails]= useState(false)
@@ -33,6 +31,10 @@ export default function HomePage() {
   const [pickingOnMap, setPickingOnMap] = useState(false)
   const [place, setPlace]= useState("")
   const [initializeSearch, SetInitializeSearch]= useState(false)
+  const [selected, setSelected] = useState([])
+  const [applyFilter, setApplyFilter]= useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+
   
   const [formData, setFormData] = useState({
         name: "",
@@ -45,6 +47,7 @@ export default function HomePage() {
   const istickedRef= useRef(false)
 
   //console.log("place:12",place);
+  //console.log("selectedh:",selectedSpot);
   
   useEffect(() => {
     const userdata= localStorage.getItem("user")
@@ -142,18 +145,21 @@ export default function HomePage() {
 
       <div className="flex h-[calc(100vh-80px)]">
         <SidebarComponent
-          onCategoryChange={handleCategoryChange}
-          onSelectSpot={setSelectedSpot}
+          setSelected={setSelected}
+          selected={selected}
           setDisplayFavBox={setDisplayFavBox}
           isSpotLiked={isSpotLiked}
           displayFavBox={displayFavBox}
           setLikedLength={setLikedLength}
           likedlength={likedlength}
+          setApplyFilter={setApplyFilter}
+          setSearchQuery={setSearchQuery}
+          searchQuery={searchQuery}
         />
 
         <div className="flex-1 ml-80 ">
           <MapComponent
-            selectedSpot={selectedSpot}
+            selected={selected}
             onLocationPicked={handleLocationPicked}
             currentLocation={currentLocation}
             newspots={newspots}
@@ -162,6 +168,9 @@ export default function HomePage() {
             setCoordOfSpot={setCoordOfSpot}
             initializeSearch={initializeSearch}
             place={place}
+            applyFilter={applyFilter}
+            setApplyFilter={setApplyFilter}
+            searchQuery={searchQuery}
           />
         </div>
       </div>

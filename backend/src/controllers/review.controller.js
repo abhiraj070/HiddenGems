@@ -38,12 +38,11 @@ const createReview= asynchandler(async(req,res)=>{
             spotName,
             latitude,
             longitude,
-            reviews:[createdReview._id]
+            reviews:[createdReview._id],
+            tag: createdReview.tag
         })
     }
     else{
-        const reviewDocument= await Review.find({latitude,longitude}).sort({likes:-1})
-        isSpot.spotName=reviewDocument[0].spotName
         isSpot.reviews.push(createdReview._id)
         await isSpot.save()
         task= isSpot

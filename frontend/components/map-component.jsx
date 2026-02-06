@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 import "leaflet/dist/leaflet.css"
-export default function MapComponent({onLocationPicked, currentLocation, newspots, ListBox, setAllReviews, setCoordOfSpot, initializeSearch, place}) {
+export default function MapComponent({onLocationPicked, currentLocation, newspots, ListBox, setAllReviews, setCoordOfSpot, initializeSearch, place, applyFilter, selected, setApplyFilter, searchQuery}) {
   const mapContainer = useRef(null) 
   const map = useRef(null) 
   const marked= useRef(new Set())// created a set here to avoid storing duplicates while storing
@@ -14,13 +14,16 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
   const [dbspots, setdbspots]= useState([])
   const [mapMoved, setMapMoved]= useState(false)
   const [loading, setLoading]= useState(true)
+  const markerLayer= useRef(null)
+  const blockFirstRef= useRef(true)
+  const mapMoveHandler= useRef(null)
   //console.log("p1:",place);
   //console.log("in",initializeSearch);
+  //console.log("selected:",selected);
   
   useEffect(() => {
     const initMap = async() => {
       const L = (await import("leaflet")).default //dynamic import of leaflet because at the beginning window is not present.
-
       delete L.Icon.Default.prototype._getIconUrl //default code in order to make the marker visible
       L.Icon.Default.mergeOptions({
         iconRetinaUrl:
@@ -37,6 +40,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
           : [28.626, 77.213],
         10
       )
+      markerLayer.current= L.layerGroup().addTo(map.current)// for marker i will create a layer kind of thing on the map, the marker will not be planted directly on the map it will be on this ref and it will be updated on the map, coz if we do directly on the map it cannot be removed in any way. so we use markerlayer to add or remove marker
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {// OSM is the place where we get the whole map from, it is like a wikipidea for maps. and leaftet adds all the features in on the map like zoom, markers, popups, etc. it is like a brain for the maps
         maxZoom: 20,
       }).addTo(map.current)
@@ -106,14 +110,20 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
     }
   },[mapready]) 
 
+  //detects map movement
   useEffect(()=>{
     if(!map.current) return
-    map.current.on("moveend zoomend",()=>{
-      //console.log("4");
-      setMapMoved(prev => !prev)
-    })
+    mapMoveHandler.current= ()=>{
+      setMapMoved(prev=>!prev)
+    }
+
+    map.current.on("moveend zoomend",mapMoveHandler.current)
+    return ()=>{
+      map.current.off("moveend zoomend",mapMoveHandler.current)
+    }
   },[mapready])
 
+  //map fly
   useEffect(()=>{
     if(!map.current) return
     const bounds= map.current.getBounds()
@@ -153,7 +163,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
       const lng=val.longitude
       const key=`${lat},${lng}`
       if (marked.current.has(key)) return
-      const marker=L.marker([lat,lng]).addTo(map.current)
+      const marker=L.marker([lat,lng]).addTo(markerLayer.current)
       marker.on("click",async (e)=>{
         L.DomEvent.stop(e)
         //console.log("15");
@@ -168,10 +178,11 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
           //console.log("spotAllReviews: ",res.data.data.allCoordReviews)
           setError(null)
           setAllReviews(res.data.data.allCoordReviews)
+          setLoading(false)
+          setApplyFilter(false)
         } catch (error) {
           setError(error.message)
         }
-        
         setCoordOfSpot({lat: lati,lng: lngi})
         ListBox(true)
       })
@@ -188,7 +199,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
     }
   },[dbspots])
   
-  // // new current reviews marker and onclick for box adding
+  // new current reviews marker and onclick for box adding
    useEffect(()=>{
      if (!map.current || !window.L || !newspots) return
      const addmarker=()=>{
@@ -196,7 +207,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
        const lng=newspots.lng
        const key= `${lat},${lng}`
        if(!marked.current.has(key)){
-          const marker=L.marker([lat,lng]).addTo(map.current)
+          const marker=L.marker([lat,lng]).addTo(markerLayer.current)
           //console.log("marked");
           marker.on("click",async (e)=>{
             L.DomEvent.stop(e)
@@ -237,8 +248,31 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
     currentLocationMarkerRef.current= L.marker([lat,lng],{icon: currIcon}).addTo(map.current).bindPopup("Your Location").openPopup()
   },[currentLocation, mapready])
 
+  useEffect(()=>{
+    if(blockFirstRef.current||!markerLayer.current){ //by this i am avoiding the useeffect to execute on its first render
+      blockFirstRef.current=false
+      return
+    }
+    if(!applyFilter) return
+    markerLayer.current.clearLayers()
+    setLoading(true)
+    const fetchSopts= async()=>{
+      const res=await  axios.post(
+        `/api/v1/spot/get/selectedSpot`,
+        {cats: selected}
+      )
+      //console.log("res:",res);
+      setApplyFilter(false)
+      setdbspots(res.data.data)
+      marked.current=new Set()
+      map.current.off("moveend zoomend", mapMoveHandler.current)
+    }
+    fetchSopts()
+
+  },[applyFilter])
+
   return (
-  <div className="relative">
+    <div className="relative">
     {loading&&(
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="text-white text-xl font-semibold animate-pulse">

@@ -8,7 +8,12 @@ export default function SidebarComponent({
   isSpotLiked,
   displayFavBox,
   likedlength,
-  setLikedLength
+  setLikedLength,
+  setSelected,
+  selected,
+  setApplyFilter,
+  searchQuery,
+  setSearchQuery
 }) {
 
   const categories = [
@@ -28,10 +33,8 @@ export default function SidebarComponent({
     { id: "others", name: "Others", icon: "/other.jpg" }
   ]
 
-  const [searchQuery, setSearchQuery] = useState("")
-  const [selected, setSelected] = useState([])
   
-  //console.log("selected: ",selected);  
+  console.log("selected: ",selected);  
   //console.log("search",searchQuery);
   
   useEffect(() => {
@@ -50,6 +53,10 @@ export default function SidebarComponent({
     )
   }
   //we use prev instead of the state variable cuz the reason....
+
+  const handleApplyClick=()=>{
+    setApplyFilter(true)
+  }
 
   return (
     <>
@@ -160,8 +167,9 @@ export default function SidebarComponent({
           <button className="
             w-full py-3 rounded-xl
             bg-yellow-500 text-white font-semibold text-sm
-            hover:bg-yellow-600 transition shadow-md
-          ">
+            hover:bg-yellow-600 transition shadow-md"
+            onClick={handleApplyClick}
+            >
             Apply Filters
           </button>
         </div>

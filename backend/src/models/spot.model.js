@@ -8,6 +8,11 @@ const spotSchema= Schema({
         trim: true,
         index: true
     },
+    tag:{
+        type: String,
+        trim: true,
+        index: true
+    },
     reviews:[{
         type: Schema.Types.ObjectId,
         ref: "Review",
@@ -18,7 +23,7 @@ const spotSchema= Schema({
         set: val => {
             const num = Number(val)
             if (Number.isNaN(num)) return undefined
-            return Number(num.toFixed(6));
+            return Number(num.toFixed(3));
         }
     },
     longitude:{
@@ -26,7 +31,7 @@ const spotSchema= Schema({
         set: val => {
             const num = Number(val);
             if (Number.isNaN(num)) return undefined;
-            return Number(num.toFixed(6));
+            return Number(num.toFixed(3));
         }
     },
     likes:{
