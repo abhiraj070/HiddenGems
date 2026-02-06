@@ -95,7 +95,7 @@ export default function SidebarComponent({
           type="text"
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
-          placeholder="Search by name or city..."
+          placeholder="Search Tag, Spotname or Review...."
           className="
             w-full px-4 py-3 pr-12 rounded-xl
             bg-stone-100 border border-stone-300

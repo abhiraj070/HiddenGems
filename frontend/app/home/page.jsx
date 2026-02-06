@@ -39,7 +39,7 @@ export default function HomePage() {
   const [formData, setFormData] = useState({
         name: "",
         description: "",
-        category: "nature",
+        category: "",
         photoUrl: "",
         lat: "",
         lng: "",
@@ -178,7 +178,7 @@ export default function HomePage() {
       {/* heres how the popup components are handeled. if i press the button then only render the component */}
       {showAddModal && 
       <AddSpotModal  
-        onClose={() => {setShowAddModal(false), setFormData({name: "",description: "",category: "nature",lat: "",lng: ""}, istickedRef.current=false, setPickingOnMap(false))}} 
+        onClose={() => {setShowAddModal(false), setFormData({name: "",description: "",category: "",lat: "",lng: ""}, istickedRef.current=false, setPickingOnMap(false))}} 
         onAddSpot={handleAddSpot} 
         formData={formData}
         setFormData={setFormData} 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect } from "react"
 
 const CATEGORIES = [
   { id: "nature", name: "Nature" },
@@ -127,31 +127,67 @@ export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, form
         />
       </div>
 
-      {/* Category */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Tag
-        </label>
-        <select
-          name="category"
-          value={formData.category}
-          onChange={handleChange}
-          className="
-            w-full px-4 py-2 rounded-xl border border-gray-200 bg-white
-            focus:outline-none focus:ring-2 focus:ring-emerald-400
-            transition shadow-sm hover:shadow
-          "
-          required
-        >
-          {CATEGORIES.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <div className="space-y-1">
+  <label className="block text-sm font-medium text-gray-700">
+    Tag
+  </label>
 
-      {/* Map toggle */}
+  <div className="relative flex gap-2">
+
+    <input
+      type="text"
+      placeholder="Type custom tag..."
+      value={formData.category} 
+      onChange={e =>
+        setFormData(prev => ({
+          ...prev,
+          category: e.target.value
+        }))
+      }
+      className="
+        flex-1 px-4 py-2 rounded-xl
+        border border-gray-200 bg-white
+        transition-all
+
+        hover:border-gray-300
+        focus:border-emerald-500
+        focus:ring-4 focus:ring-emerald-400/30
+        focus:shadow-lg
+        outline-none
+      "
+    />
+
+    <select
+      onChange={e =>
+        setFormData(prev => ({
+          ...prev,
+          category: e.target.value
+        }))
+      }
+      className="
+        px-3 py-2 rounded-xl
+        border border-gray-200 bg-white
+        cursor-pointer
+
+        transition-all
+        hover:border-gray-300
+        focus:border-emerald-500
+        focus:ring-4 focus:ring-emerald-400/30
+        outline-none
+      "
+    >
+      <option value="">Pick</option>
+      {CATEGORIES.map(cat => (
+        <option key={cat.id} value={cat.name}>
+          {cat.name}
+        </option>
+      ))}
+    </select>
+
+  </div>
+</div>
+
+
       <div className="border-t pt-4">
         <label className="flex items-center gap-3 text-sm font-medium text-gray-700 cursor-pointer">
           <input
@@ -163,7 +199,6 @@ export default function AddSpotModal({ onClose, onAddSpot, setShowAddModal, form
           Pick location on map
         </label>
 
-        {/* Coordinates */}
         <div className="grid grid-cols-2 gap-4 mt-4">
           <div>
             <label className="block text-xs text-gray-600 mb-1">
