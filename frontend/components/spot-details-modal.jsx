@@ -246,16 +246,29 @@ export default function SpotDetailsModal({ onClose, reviewInherit }) {
         </div>
 
         <a
-            href={`https://www.google.com/maps?q=${review.latitude},${review.longitude}`}
-            className="
-            text-m font-medium
-            text-blue-600
-            hover:text-blue-700
-            underline
-            "
-        >
-            Open →
-        </a>
+        href={`https://www.google.com/maps?q=${review.latitude},${review.longitude}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="
+          inline-flex items-center justify-center
+          w-10 h-10 rounded-full
+          overflow-hidden
+          border border-stone-300
+          shadow-sm
+
+          transition-all
+          hover:scale-105
+          hover:shadow-lg
+          active:scale-95
+        "
+      >
+        <img
+          src="/logo.png" 
+          alt="Open in Maps"
+          className="w-full h-full object-cover"
+        />
+      </a>
+
         </div>
       </div>
     </div>

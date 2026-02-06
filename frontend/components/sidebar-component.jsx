@@ -217,7 +217,7 @@ export default function SidebarComponent({
         >
           <div>
             <p className="font-semibold">Liked Places</p>
-            <p className="text-xs opacity-80">Saved locations</p>
+            <p className="text-xs opacity-80">Locations You Loved</p>
           </div>
 
           <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-bold">

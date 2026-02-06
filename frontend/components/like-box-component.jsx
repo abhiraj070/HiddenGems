@@ -1,13 +1,15 @@
 "use client"
 import { useRef, useEffect, useState, useCallback } from "react";
 import axios from "axios";
-export default function LikeBoxComponent({ onClose, cursor, setCursor, likedlength}){
+export default function LikeBoxComponent({ onClose, cursor, setCursor, likedlength, setFlyToCood}){
     const observerRef = useRef(null);
     const fetchRef = useRef(null);
     const [allLikedSpots, setAllLikedSpots]= useState([])
     const [hasMore, setHasMore]= useState(true)
     const [error, setError]= useState(null)
     const [loading, setLoading]= useState(false)
+    //console.log("liked",allLikedSpots);
+    
 
     const fetchLikedSpots= useCallback(async ()=>{ //we didn't used useEffect here cuz useEffect will run this function when consditions achieved. but usecallback will only return a stable function refrence which only recreates when the dependencies changes.
         if(!loading && hasMore){//if we dont want our function refrence to change on every rerender(because this function is present in ome useeffects dependency array and if the refrence changes it triggers the effect), we use useCallback
@@ -51,6 +53,10 @@ export default function LikeBoxComponent({ onClose, cursor, setCursor, likedleng
         }
         return () => observer.disconnect();
     }, [])
+
+    const handleLikePlaceClick=(lat,lng)=>{
+        setFlyToCood({lat,lng})
+    }
 
     if(!allLikedSpots){
         return null
@@ -99,7 +105,7 @@ export default function LikeBoxComponent({ onClose, cursor, setCursor, likedleng
         <div className="flex-1 overflow-y-auto pr-1">
             <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2">
                 {allLikedSpots.map((place) => (
-                <div
+                <button
                     key={place._id}
                     className="
                     group
@@ -113,6 +119,7 @@ export default function LikeBoxComponent({ onClose, cursor, setCursor, likedleng
                     transition-all duration-300
                     cursor-pointer
                     "
+                    onClick={()=>{handleLikePlaceClick(place.spotsLiked[0].latitude,place.spotsLiked[0].longitude),onClose()}}
                  >
                     <div className="flex items-start justify-between mb-3">
                     <h3 className="text-lg font-semibold text-stone-800 group-hover:text-green-700 transition">
@@ -128,7 +135,7 @@ export default function LikeBoxComponent({ onClose, cursor, setCursor, likedleng
                             {place.spotsLiked[0].likes}
                         </span>
 
-                        <button
+                        <div
                             className="
                             text-green-500
                             transition
@@ -139,7 +146,7 @@ export default function LikeBoxComponent({ onClose, cursor, setCursor, likedleng
                             title="Remove from liked"
                         >
                             ♥
-                        </button>
+                        </div>
                     </div>
                 </div>
 
@@ -153,7 +160,7 @@ export default function LikeBoxComponent({ onClose, cursor, setCursor, likedleng
                         Hidden Gem
                     </span>
                     </div>
-                </div>
+                </button>
                 ))}
             </div>
             <div ref={observerRef}></div> {/*observerRef is a useRef which will be used to store the refrence of this html so that 

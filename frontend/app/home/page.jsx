@@ -35,6 +35,7 @@ export default function HomePage() {
   const [applyFilter, setApplyFilter]= useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [queryButton, setQueryButton]= useState(false)
+  const [flyToCoord, setFlyToCood]= useState(null)
   
   const [formData, setFormData] = useState({
         name: "",
@@ -170,6 +171,7 @@ export default function HomePage() {
             searchQuery={searchQuery}
             setQueryButton={setQueryButton}
             queryButton={queryButton}
+            flyToCoord={flyToCoord}
           />
         </div>
       </div>
@@ -213,6 +215,7 @@ export default function HomePage() {
           cursor={cursor}
           setCursor={setCursor}
           likedlength={likedlength}
+          setFlyToCood={setFlyToCood}
         />
       }
 

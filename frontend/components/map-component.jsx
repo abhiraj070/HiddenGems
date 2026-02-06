@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 import "leaflet/dist/leaflet.css"
-export default function MapComponent({onLocationPicked, currentLocation, newspots, ListBox, setAllReviews, setCoordOfSpot, initializeSearch, place, applyFilter, selected, setApplyFilter, searchQuery, setQueryButton, queryButton}) {
+export default function MapComponent({onLocationPicked, currentLocation, newspots, ListBox, setAllReviews, setCoordOfSpot, initializeSearch, place, applyFilter, selected, setApplyFilter, searchQuery, setQueryButton, queryButton, flyToCoord}) {
   const mapContainer = useRef(null) 
   const map = useRef(null) 
   const marked= useRef(new Set())// created a set here to avoid storing duplicates while storing
@@ -22,8 +22,8 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
   //console.log("p1:",place);
   //console.log("in",initializeSearch);
   //console.log("selected:",selected);
-  console.log("query",searchQuery);
-  console.log("button:",queryButton);
+  //console.log("query",searchQuery);
+  //console.log("button:",queryButton);
   
   
   
@@ -59,6 +59,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
     onLocationPicked(lat,lng)
   }
 
+  //fly to the searched place
   useEffect(()=>{
     const moveMap= async()=>{
       if(!map.current) return
@@ -129,7 +130,7 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
     }
   },[mapready])
 
-  //map fly
+  //get spot in optimised way
   useEffect(()=>{
     if(!map.current) return
     const bounds= map.current.getBounds()
@@ -255,14 +256,14 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
 
   // get selected spots and send them for marking
   useEffect(()=>{
-    console.log("3");
+    //console.log("3");
     
     if(blockFirstRef.current||!markerLayer.current){ //by this i am avoiding the useeffect to execute on its first render
       blockFirstRef.current=false
       return
     }
     if(!applyFilter) return
-    console.log("2");
+    //console.log("2");
     
     markerLayer.current.clearLayers()
     const fetchSopts= async()=>{
@@ -300,6 +301,12 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
     }
     fetchSpots()
   },[queryButton])
+
+  //fly to liked spot
+  useEffect(()=>{
+    if(!flyToCoord) return
+    map.current.flyTo([flyToCoord.lat,flyToCoord.lng],16)
+  },[flyToCoord])
 
   return (
     <div className="relative">
