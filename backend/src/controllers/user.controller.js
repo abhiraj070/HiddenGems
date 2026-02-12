@@ -163,6 +163,8 @@ const loginUser= asynchandler(async(req,res)=>{
 const googleSignIn=asynchandler(async (req,res) => {
     //console.log("google-login hit");
     //console.log("BODY:", req.body);
+    console.log("1");
+    
     const {token}= req.body
     const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
     const ticket= await client.verifyIdToken({
@@ -171,12 +173,13 @@ const googleSignIn=asynchandler(async (req,res) => {
     })
     const payload= ticket.getPayload()
     const user= await User.findOne({email: payload.email})
-    const option={
-        secure: false,
+    const options={
         httpOnly: true,
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
         path:"/"
     }
+
     if(user){
         const accessToken= await user.generateAccessToken()
         const refreshToken= await user.generateRefreshToken()
@@ -305,11 +308,12 @@ const refreshAccessToken= asynchandler(async(req,res)=>{
     const newrefreshToken= user.generateRefreshToken()
 
     const options={
-        secure: false,
-        path:"/",
         httpOnly: true,
-        sameSite: "lax"
+        secure: true,
+        sameSite: "none",
+        path:"/"
     }
+
 
     return res
     .status(200)
