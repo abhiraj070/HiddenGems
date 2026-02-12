@@ -191,8 +191,8 @@ const googleSignIn=asynchandler(async (req,res) => {
         const userdocument= await User.findById(user._id).select("-refreshToken -password")
         return res
         .status(200)
-        .cookie("accessToken",accessToken,option)
-        .cookie("refreshToken",refreshToken,option)
+        .cookie("accessToken",accessToken,options)
+        .cookie("refreshToken",refreshToken,options)
         .json(new ApiResponse(200,{user: userdocument},"Successfully loggined"))
     }
     else{

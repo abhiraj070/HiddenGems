@@ -223,7 +223,7 @@ useEffect(() => {
                 placeholder="your@email.com"
               />
             </div>
-
+            <label className="block text-sm font-medium text-dark-text mb-2">Password</label>
             <input
             type="password"
             value={password}
