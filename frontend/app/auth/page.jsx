@@ -8,10 +8,15 @@ export default function AuthPage() {
 
   const searchParams = useSearchParams()
   const router = useRouter()
-  const mode = searchParams.get("mode") || "login"
   const fileInputRef = useRef(null)
 
-  const [isLogin, setIsLogin] = useState(mode === "login")
+  const [isLogin, setIsLogin] = useState(true)
+
+useEffect(() => {
+  const mode = searchParams.get("mode") || "login"
+  setIsLogin(mode === "login")
+}, [searchParams])
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [name, setName] = useState("")
