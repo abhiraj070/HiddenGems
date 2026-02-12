@@ -1,21 +1,23 @@
 "use client"
 
-import { useSearchParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useState,useEffect, useRef } from "react"
 import Link from "next/link"
 import api from "../api/apiClient"
 export default function AuthPage() {
 
-  const searchParams = useSearchParams()
   const router = useRouter()
   const fileInputRef = useRef(null)
 
   const [isLogin, setIsLogin] = useState(true)
 
+
 useEffect(() => {
-  const mode = searchParams.get("mode") || "login"
+  const params = new URLSearchParams(window.location.search)
+  const mode = params.get("mode") || "login"
   setIsLogin(mode === "login")
-}, [searchParams])
+}, [])
+
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
