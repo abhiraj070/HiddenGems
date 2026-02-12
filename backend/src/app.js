@@ -5,7 +5,7 @@ import cors from 'cors'
 const app=express()
 app.use(cors({
     credentials: true,
-    origin: "https://hidden-gems-859h.vercel.app"
+    origin: "https://hidden-gems-859h.vercel.app/"
 }))
 
 app.use(cookieParser())
