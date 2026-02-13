@@ -163,7 +163,6 @@ const loginUser= asynchandler(async(req,res)=>{
 const googleSignIn=asynchandler(async (req,res) => {
     //console.log("google-login hit");
     //console.log("BODY:", req.body);
-    console.log("1");
     
     const {token}= req.body
     const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
@@ -216,8 +215,8 @@ const googleSignIn=asynchandler(async (req,res) => {
         const userdocument= await User.findById(createUser._id).select("-refreshToken -password")
         return res
         .status(200)
-        .cookie("accessToken",accessToken,option)
-        .cookie("refreshToken",refreshToken,option)
+        .cookie("accessToken",accessToken,options)
+        .cookie("refreshToken",refreshToken,options)
         .json(new ApiResponse(200,{user: userdocument},"Successfully created the user"))
     }
 })
