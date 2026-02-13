@@ -49,5 +49,6 @@ reviewSchema.index(
     {latitude:1, longitude:1}
 )
 
+reviewSchema.index({ owner: 1 });
 
 export const Review= mongoose.model("Review",reviewSchema)

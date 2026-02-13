@@ -39,7 +39,7 @@ export default function SpotDetailsModal({ onClose, reviewInherit }) {
     const res= await api.post(
       `/api/v1/like/toggleLike/null/null/${review._id}/Review`
     )
-    // setReview(res.data.data.review)
+    setReview(res.data.data.review)
   }
   const handleCommentOpen=()=>{
     setOpenComments(true)

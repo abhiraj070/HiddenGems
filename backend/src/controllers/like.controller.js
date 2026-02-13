@@ -46,7 +46,7 @@ const toggleLike= asynchandler(async (req,res) => {
             targetType: type
         })
         if(type==="Spot"){
-            [userdocument, spotDocumnet]= Promise.all([
+            [userdocument, spotDocumnet]= await Promise.all([
                 User.findByIdAndUpdate(user_id,{$push:{favourite: target_id}},{new: true}),
                 Spot.findByIdAndUpdate(target_id,{$inc:{likes: 1}},{new: true})
             ])
@@ -61,13 +61,13 @@ const toggleLike= asynchandler(async (req,res) => {
     else{
         await Like.findOneAndDelete({likedBy: user_id, targetId: target_id, targetType: type})    
         if(type==="Spot"){
-            [userdocument, spotDocumnet]= Promise.all([
+            [userdocument, spotDocumnet]=await  Promise.all([
                 User.findByIdAndUpdate(user_id,{$pull:{favourite: target_id}}, {new: true}),
                 Spot.findByIdAndUpdate(target_id, {$inc:{likes: -1}},{new: true})
             ])
         }
         else{
-            [reviewDocument, userdocument]= Promise.all([
+            [reviewDocument, userdocument]=await  Promise.all([
                 Review.findByIdAndUpdate(target_id, {$inc:{likes:-1}},{new: true}).populate("owner"),
                 User.findByIdAndUpdate(user_id,{$pull:{likedReviews: target_id}},{new: true})
             ])

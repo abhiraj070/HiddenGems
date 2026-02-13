@@ -23,6 +23,8 @@ LikeSchema.index(
     {likedBy:1, targetId:1, targetType:1},
     {unique: true}
 )
+likeSchema.index({ likedBy: 1, targetType: 1, createdAt: -1 }); //is is because of sorting. sorting is a heavy operation, it also requires indexing for faster results.
+
 //this is compound indexing, i took 3 fields and created an index, index like ({id1,id2,id3}->idlike), till here only searching is getting faster. after this when we add unique: true, this gareenties me that no other document with same field values will be created
 export const Like= mongoose.model("Like", LikeSchema)
 //additional info about compound indexing speed: we get the speed advantage only if either all the fields in the index are present while searching or if we are unsing only first field it should be the leftmost ortherwise no speed advantage
