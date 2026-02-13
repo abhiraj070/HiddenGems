@@ -46,31 +46,36 @@ const toggleLike= asynchandler(async (req,res) => {
             targetType: type
         })
         if(type==="Spot"){
-            userdocument= await User.findByIdAndUpdate(user_id,{$push:{favourite: target_id}},{new: true}).populate("favourite")
-            spotDocumnet= await Spot.findByIdAndUpdate(target_id,{$inc:{likes: 1}},{new: true})
-            //console.log("spot: ",spotDocumnet);
-            
+            [userdocument, spotDocumnet]= Promise.all([
+                User.findByIdAndUpdate(user_id,{$push:{favourite: target_id}},{new: true}),
+                Spot.findByIdAndUpdate(target_id,{$inc:{likes: 1}},{new: true})
+            ])
         }
         else{
-            userdocument= await User.findByIdAndUpdate(user_id, {$push:{likedReviews: target_id}},{new: true}).populate("likedReviews")
-            reviewDocument= await Review.findByIdAndUpdate(target_id, {$inc:{likes: 1}},{new: true}).populate("owner")
+            [userdocument, reviewDocument]= await Promise.all([
+                User.findByIdAndUpdate(user_id, {$push:{likedReviews: target_id}},{new: true}),
+                Review.findByIdAndUpdate(target_id, {$inc:{likes: 1}},{new: true}).populate("owner")
+            ])
         }
     }
     else{
         await Like.findOneAndDelete({likedBy: user_id, targetId: target_id, targetType: type})    
         if(type==="Spot"){
-            spotDocumnet= await Spot.findByIdAndUpdate(target_id, {$inc:{likes: -1}},{new: true})
-            userdocument= await User.findByIdAndUpdate(user_id,{$pull:{favourite: target_id}}, {new: true}).populate("favourite")
+            [userdocument, spotDocumnet]= Promise.all([
+                User.findByIdAndUpdate(user_id,{$pull:{favourite: target_id}}, {new: true}),
+                Spot.findByIdAndUpdate(target_id, {$inc:{likes: -1}},{new: true})
+            ])
         }
         else{
-            reviewDocument= await Review.findByIdAndUpdate(target_id, {$inc:{likes:-1}},{new: true}).populate("owner")
-            userdocument= await User.findByIdAndUpdate(user_id,{$pull:{likedReviews: target_id}},{new: true}).populate("likedReviews")
+            [reviewDocument, userdocument]= Promise.all([
+                Review.findByIdAndUpdate(target_id, {$inc:{likes:-1}},{new: true}).populate("owner"),
+                User.findByIdAndUpdate(user_id,{$pull:{likedReviews: target_id}},{new: true})
+            ])
         }
     }
-
     return res
         .status(200)
-        .json(new ApiResponse(200,{user: userdocument, spot: spotDocumnet, review: reviewDocument},"Like toggled Successfully"))
+        .json(new ApiResponse(200,{ spot: spotDocumnet, review: reviewDocument},"Like toggled Successfully"))
 })
 
 //cursor based pagination with infinite scroll 
