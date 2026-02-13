@@ -69,7 +69,7 @@ const editReview= asynchandler(async (req,res) => {
             content: review,
         },
         {new: true}
-    )
+    ).lean()
 
     if(!updatedreview){
         throw new ApiError(404,"Review not found")
@@ -82,7 +82,7 @@ const editReview= asynchandler(async (req,res) => {
 
 const deleteReview= asynchandler(async (req,res) => {
     const review_id= req.params.id
-    const deletedReview= await Review.findByIdAndDelete(review_id)
+    const deletedReview= await Review.findByIdAndDelete(review_id).lean()
     if(!deletedReview){
         throw new ApiError(404,"review not found or already deleted")
     }
@@ -162,11 +162,11 @@ const addAComment= asynchandler(async (req,res) => {
         review: id,
         content: content
     })
-    await User.findByIdAndDelete(userId,{comments: commentDocument._id})
+    await User.findByIdAndUpdate(userId,{comments: commentDocument._id}).lean()
     const reviewDocument= await Review.findByIdAndUpdate(
         reviewId,
         {$push:{comments: commentDocument._id}}
-    )
+    ).lean()
     //console.log("review:",reviewDocument);
     
     return res
@@ -183,20 +183,20 @@ const deleteAComment= asynchandler(async (req,res) => {
     if(!userId){
         throw new ApiError(404,"Unautharised user")
     }
-    if(!commentid || !mongoose.Types.ObjectId.isValid(id)){ //isValid will check if its a 24 char string or not if yes return true else false
+    if(!commentid || !mongoose.Types.ObjectId.isValid(commentid)){ //isValid will check if its a 24 char string or not if yes return true else false
         throw new ApiError(400,"id recived is not valid")
     }
     const commentId= new mongoose.Types.ObjectId(commentid) //this will throw error if id is somthing other that 12 byte/ 24 character string, so for this we need to check if its valid or not.
     const commentDocument= await Comment.findOneAndDelete({
         _id: commentId, owner: userId
-    })
+    }).lean()
     //console.log(commentDocument);
     
     const reviewDocument= await Review.findOneAndUpdate(
         {owner: userId, comments: commentDocument._id},
         {$pull:{comments: commentDocument._id}},
         {new: true}
-    )
+    ).lean()
     //console.log("4");
     
     return res
@@ -219,7 +219,7 @@ const getNewestComment= asynchandler(async (req,res) => {
         throw new ApiError(400,"id recived is not valid")
     }
     const reviewId= new mongoose.Types.ObjectId(reviewid)
-    const commentDocument= await Comment.find({owner: userId, review: reviewId}).sort({createdAt:-1}).limit(1).populate("owner")
+    const commentDocument= await Comment.find({owner: userId, review: reviewId}).sort({createdAt:-1}).limit(1).populate("owner").lean()
     return res
     .status(200)
     .json(new ApiResponse(200,{comment: commentDocument},"Comment fetched successfully"))

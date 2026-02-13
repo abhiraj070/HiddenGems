@@ -20,10 +20,10 @@ const toggleLike= asynchandler(async (req,res) => {
     }
     let target
     if(type==="Spot"){
-        target= await Spot.findOne({latitude: lat, longitude: lng})
+        target= await Spot.findOne({latitude: lat, longitude: lng}).lean()// lean is used for optimisation. it skips the step where mongoose wrapper is wrapped on the returned value. that wrapper helps use to use .save. so a palin JS object is returned instead of mongoose document
     }
     else{
-        target= await Review.findById(id)
+        target= await Review.findById(id).lean()
     }
     if(!target){
         throw ApiError(400,"No spot/Review created on recived coordinates")
@@ -35,7 +35,7 @@ const toggleLike= asynchandler(async (req,res) => {
     if(!mongoose.Types.ObjectId.isValid(target_id)){
         throw new ApiError(402, "invalid parameter")
     }
-    const isPresent= await Like.findOne({likedBy:user_id, targetId: target_id, targetType: type})
+    const isPresent= await Like.findOneAndDelete({likedBy:user_id, targetId: target_id, targetType: type})
     let userdocument, spotDocumnet, reviewDocument
     //console.log("id: ",user_id);
     
@@ -47,29 +47,28 @@ const toggleLike= asynchandler(async (req,res) => {
         })
         if(type==="Spot"){
             [userdocument, spotDocumnet]= await Promise.all([
-                User.findByIdAndUpdate(user_id,{$push:{favourite: target_id}},{new: true}),
-                Spot.findByIdAndUpdate(target_id,{$inc:{likes: 1}},{new: true})
+                User.findByIdAndUpdate(user_id,{$push:{favourite: target_id}},{new: true}).lean(),
+                Spot.findByIdAndUpdate(target_id,{$inc:{likes: 1}},{new: true}).lean()
             ])
         }
         else{
             [userdocument, reviewDocument]= await Promise.all([
-                User.findByIdAndUpdate(user_id, {$push:{likedReviews: target_id}},{new: true}),
-                Review.findByIdAndUpdate(target_id, {$inc:{likes: 1}},{new: true}).populate("owner")
+                User.findByIdAndUpdate(user_id, {$push:{likedReviews: target_id}},{new: true}).lean(),
+                Review.findByIdAndUpdate(target_id, {$inc:{likes: 1}},{new: true}).populate("owner").lean()
             ])
         }
     }
     else{
-        await Like.findOneAndDelete({likedBy: user_id, targetId: target_id, targetType: type})    
         if(type==="Spot"){
             [userdocument, spotDocumnet]=await  Promise.all([
-                User.findByIdAndUpdate(user_id,{$pull:{favourite: target_id}}, {new: true}),
-                Spot.findByIdAndUpdate(target_id, {$inc:{likes: -1}},{new: true})
+                User.findByIdAndUpdate(user_id,{$pull:{favourite: target_id}}, {new: true}).lean(),
+                Spot.findByIdAndUpdate(target_id, {$inc:{likes: -1}},{new: true}).lean()
             ])
         }
         else{
             [reviewDocument, userdocument]=await  Promise.all([
-                Review.findByIdAndUpdate(target_id, {$inc:{likes:-1}},{new: true}).populate("owner"),
-                User.findByIdAndUpdate(user_id,{$pull:{likedReviews: target_id}},{new: true})
+                Review.findByIdAndUpdate(target_id, {$inc:{likes:-1}},{new: true}).populate("owner").lean(),
+                User.findByIdAndUpdate(user_id,{$pull:{likedReviews: target_id}},{new: true}).lean()
             ])
         }
     }
@@ -123,7 +122,7 @@ const getNumberOfFavSpots= asynchandler(async (req,res) => {
     if(!user_id){
         throw ApiError(404,"Unathorized request")
     }
-    const likeSpots= await Like.find({likedBy: user_id, targetType: "Spot"})
+    const likeSpots= await Like.find({likedBy: user_id, targetType: "Spot"}).lean()
     const number= likeSpots.length
     return res
     .status(200)

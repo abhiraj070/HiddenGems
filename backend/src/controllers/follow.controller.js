@@ -13,7 +13,7 @@ const isFollowing=asynchandler(async (req,res) => {
     const followingdocument= await Follow.exists({
         targetId: user_id,
         followerId: curruser_id
-    })
+    }).lean()
     const result= Boolean(followingdocument)    
     //console.log("followers2: ",user.followers);
     return res

@@ -30,7 +30,7 @@ export default function SpotDetailsModal({ onClose, reviewInherit }) {
       setTurnRed(res.data.data.likeresult)
     }
     fetchIsLiked()
-  },[review])
+  },[])
 
   //here the flow of the useEffects are intersting: first each effect will run sequentially, but after the 1st effect rerender will not be triggered because then 2nd effect will never run, so in react all the effects runs first then the rerender takes place.
 
