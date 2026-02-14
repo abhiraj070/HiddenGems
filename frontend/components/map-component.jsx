@@ -253,6 +253,9 @@ export default function MapComponent({onLocationPicked, currentLocation, newspot
     })
     map.current.setView([lat, lng], 10)
     currentLocationMarkerRef.current= L.marker([lat,lng],{icon: currIcon}).addTo(map.current).bindPopup("Your Location").openPopup()
+    currentLocationMarkerRef.current.on("click",async (e)=>{
+            onMapClick({lat,lng})
+         })
   },[currentLocation, mapready])
 
   // get selected spots and send them for marking
