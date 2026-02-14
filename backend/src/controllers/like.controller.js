@@ -40,11 +40,24 @@ const toggleLike= asynchandler(async (req,res) => {
     //console.log("id: ",user_id);
     
     if(!isPresent){
-        await Like.create({
-            likedBy: user_id,
-            targetId: target_id,
-            targetType: type
-        })
+        
+        try {
+            await Like.create({
+                likedBy: user_id,
+                targetId: target_id,
+                targetType: type
+            })
+        } catch (error) {// i am doing this to handle the case where user hit the like button multiple times to generate unlike/like reqs. 
+        // imagine 3 unlike req almost same time par generate hui, ek ne deakha ki koi like document hai toh usse delete kar diya aur baaki 2 
+        // ko koi documents nhi mile toh unhe laga like karna hai. phir dono like documment create karne nikal padenge. taaki dono like docs 
+        // generate na kar de hum ke duplicate keys wala check laga reh hai. 
+            if(error.code==11000){//error code when there is a duplicate ley error.
+                return res
+                .status(200)
+                .json(new ApiResponse(200,{},"review already liked"))
+            }
+            return new ApiError(500,`${error}`)
+        }
         if(type==="Spot"){
             [userdocument, spotDocumnet]= await Promise.all([
                 User.findByIdAndUpdate(user_id,{$push:{favourite: target_id}},{new: true}).lean(),
