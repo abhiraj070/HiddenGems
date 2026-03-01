@@ -294,17 +294,31 @@ const changePhoto= asynchandler(async(req,res)=>{
 //so it becomes important to verify the user. 
 const refreshAccessToken= asynchandler(async(req,res)=>{
     const refreshToken= req.cookies.refreshToken || req.body.refreshToken
-    
-    const decoded=JWT.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET, {ignoreExpiration: true}) //if the token is expired using ignoreExpiration: true. i can still access the jwt.sign data.
+
+    if(!refreshToken){
+        throw new ApiError(401,"Refresh token missing")
+    }
+
+    let decoded
+    try {
+        decoded=JWT.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET)
+    } catch (error) {
+        throw new ApiError(401,"Invalid or expired refresh token")
+    }
 
     const user= await User.findById(decoded?._id)
     if(!user){
         throw new ApiError(400,"Unauthorized request")
     }
+    if(user.refreshToken!==refreshToken){
+        throw new ApiError(401,"Refresh token mismatch")
+    }
     //console.log(user);
     
     const accessToken= user.generateAccessToken()
     const newrefreshToken= user.generateRefreshToken()
+    user.refreshToken= newrefreshToken
+    await user.save({validateBeforeSave: false})
 
     const options={
         httpOnly: true,
@@ -318,7 +332,7 @@ const refreshAccessToken= asynchandler(async(req,res)=>{
     .status(200)
     .cookie("accessToken",accessToken,options)
     .cookie("refreshToken",newrefreshToken,options)
-    .json(new ApiResponse(200,{accessToken,refreshToken},"Refresh token updated"))
+    .json(new ApiResponse(200,{accessToken,refreshToken: newrefreshToken},"Refresh token updated"))
 })
 
 const changePassword= asynchandler(async(req,res)=>{

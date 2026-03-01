@@ -5,15 +5,27 @@ const api = axios.create({
   withCredentials: true
 })
 
+const refreshClient = axios.create({
+  baseURL: "https://hiddengems-1.onrender.com",
+  withCredentials: true
+})
+
 api.interceptors.response.use(
   res => res,
   async error => {
-    if (error.response?.status === 401) {
+    const originalRequest = error.config
+    const isUnauthorized = error.response?.status === 401
+    const isRefreshCall = originalRequest?.url?.includes("/api/v1/users/refreshtoken")
+
+    if (isUnauthorized && !originalRequest?._retry && !isRefreshCall) {
+      originalRequest._retry = true
       try {
-        await api.post("/api/v1/users/refreshtoken")
-        return api(error.config) //error.config stores the exact error that failed.
+        await refreshClient.post("/api/v1/users/refreshtoken")
+        return api(originalRequest)
       } catch {
-        window.location.href = "/login"
+        if (typeof window !== "undefined") {
+          window.location.href = "/auth"
+        }
       }
     }
     return Promise.reject(error)
